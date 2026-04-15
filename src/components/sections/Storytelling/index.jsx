@@ -11,8 +11,10 @@ const Chapter = ({ chapter, index, total, scrollYProgress }) => {
   const start = index / total;
   const end = (index + 1) / total;
   const mid = (start + end) / 2;
+  const duration = end - start;
+  
   const scale = useTransform(scrollYProgress, [start, mid, end], [0.5, 1, 2]);
-  const opacity = useTransform(scrollYProgress, [start, mid - 0.1, mid + 0.1, end], [0, 1, 1, 0]);
+  const opacity = useTransform(scrollYProgress, [start, mid - duration * 0.1, mid + duration * 0.1, end], [0, 1, 1, 0]);
   const blur = useTransform(scrollYProgress, [start, mid, end], ["blur(10px)", "blur(0px)", "blur(20px)"]);
   return (
     <motion.div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '0 10%', scale, opacity, filter: blur, zIndex: total - index }}>

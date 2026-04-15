@@ -179,8 +179,11 @@ const IndiaPresenceGlobe = ({ theme }) => {
 
     // ── Resize ────────────────────────────────────────────────────────
     const onResize = () => {
+      if (!container) return;
       const nW = container.clientWidth;
       const nH = container.clientHeight;
+      if (nW === 0 || nH === 0) return;
+
       renderer.setSize(nW, nH);
       camera.aspect = nW / nH;
       camera.updateProjectionMatrix();

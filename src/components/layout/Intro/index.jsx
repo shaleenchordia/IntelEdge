@@ -16,7 +16,12 @@ const Intro = ({ onFinish }) => {
       console.log('Intro: Triggered, starting timeout...');
       timeoutId = setTimeout(() => {
         console.log('Intro: Timeout finished, calling onFinish');
-        onFinish();
+        try {
+          onFinish();
+        } catch (e) {
+          console.error("onFinish failed, trying to handle manually:", e);
+          // Fallback if prop call fails
+        }
       }, 1100);
     };
 

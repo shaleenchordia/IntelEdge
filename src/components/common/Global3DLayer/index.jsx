@@ -86,6 +86,8 @@ const Points = ({ count, color }) => {
   }, [count]);
 
   useFrame(() => {
+    if (!pointsRef.current || !pointsRef.current.geometry || !pointsRef.current.geometry.attributes.position) return;
+    
     particles.forEach((p, i) => {
       p.t += p.speed;
       const s = Math.cos(p.t);

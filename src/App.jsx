@@ -77,7 +77,6 @@ const App = () => {
   const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
-    // Initialize Lenis for smooth scrolling
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -106,10 +105,7 @@ const App = () => {
 
   return (
     <div className={`app-container theme-${theme}`} style={{ background: '#000', color: '#fff', minHeight: '100vh', overflow: showIntro ? 'hidden' : 'auto' }}>
-      <CustomCursor theme={theme} />
-      <Global3DLayer theme={theme} />
-      
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {showIntro ? (
           <Intro 
             key="intro-screen" 
@@ -123,8 +119,9 @@ const App = () => {
             key="main-content"
             initial={{ opacity: 0, scale: 1.05, filter: 'blur(10px)' }}
             animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-            transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1], delay: 0.1 }}
-            style={{
+            exit={{ opacity: 0, filter: 'blur(10px)' }}
+            transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
+            style={{ 
               background: '#000',
               width: '100%',
               minHeight: '100vh',
@@ -132,8 +129,12 @@ const App = () => {
               zIndex: 1
             }}
           >
+            {/* Global layers mounted only after intro to maximize performance/stability */}
+            <CustomCursor theme={theme} />
+            <Global3DLayer theme={theme} />
+            
             <Navbar theme={theme} />
-
+            
             <main style={{ position: 'relative', zIndex: 2 }}>
               <Hero theme={theme} />
               <WhoWeAre theme={theme} />

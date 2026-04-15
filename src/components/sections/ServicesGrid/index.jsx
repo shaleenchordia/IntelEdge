@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Zap, Shield, Cpu, Users, Bot, MessageSquare, BarChart, Database, X } from 'lucide-react';
 
 const services = [
@@ -80,10 +80,12 @@ const services = [
 const ServiceCard = ({ service, index, scrollYProgress, color, total }) => {
   const start = index / total;
   const end = (index + 1) / total;
+  const range = end - start;
   
   // High-impact exit animation: card shrinks and fades upward
-  const scale = useTransform(scrollYProgress, [start, end - 0.05, end], [1, 1, 0.8]);
-  const opacity = useTransform(scrollYProgress, [start, start + 0.1, end - 0.1, end], [0, 1, 1, 0]);
+  // Use relative offsets (e.g., 0.1 * range) to ensure they are always monotonic
+  const scale = useTransform(scrollYProgress, [start, end - range * 0.1, end], [1, 1, 0.8]);
+  const opacity = useTransform(scrollYProgress, [start, start + range * 0.2, end - range * 0.2, end], [0, 1, 1, 0]);
   const y = useTransform(scrollYProgress, [start, end], [0, -100]);
   const rotate = useTransform(scrollYProgress, [start, end], [0, -2]);
 
