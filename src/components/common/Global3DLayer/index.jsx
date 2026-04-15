@@ -7,7 +7,7 @@ import * as THREE from 'three';
 const RollingBall = ({ theme }) => {
   const meshRef = useRef();
   const { scrollYProgress } = useScroll();
-  
+
   // Smooth out the scroll progress for more professional movement
   const smoothProgress = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -31,7 +31,7 @@ const RollingBall = ({ theme }) => {
       const rotationAngle = smoothProgress.get() * Math.PI * 10;
       meshRef.current.rotation.x = rotationAngle;
       meshRef.current.rotation.y += 0.01; // Constant slow spin
-      
+
       // Update position from Framer Motion
       meshRef.current.position.y = yPos.get();
       meshRef.current.position.x = xPos.get();
@@ -43,7 +43,7 @@ const RollingBall = ({ theme }) => {
       <ambientLight intensity={0.4} />
       <pointLight position={[10, 10, 10]} intensity={1.5} color={color} />
       <pointLight position={[-10, -10, -10]} intensity={0.5} color="#fff" />
-      
+
       <Float speed={1.5} rotationIntensity={0.5} floatIntensity={0.5}>
         <mesh ref={meshRef}>
           <sphereGeometry args={[0.8, 64, 64]} />
@@ -61,7 +61,7 @@ const RollingBall = ({ theme }) => {
           />
         </mesh>
       </Float>
-      
+
       {/* Subtle trail particles */}
       <Points count={50} color={color} />
     </group>
@@ -87,7 +87,7 @@ const Points = ({ count, color }) => {
 
   useFrame(() => {
     if (!pointsRef.current || !pointsRef.current.geometry || !pointsRef.current.geometry.attributes.position) return;
-    
+
     particles.forEach((p, i) => {
       p.t += p.speed;
       const s = Math.cos(p.t);
@@ -120,7 +120,7 @@ const Points = ({ count, color }) => {
   );
 };
 
-const Global3DLayer = ({ theme }) => {
+const Global3DLayer = ({ theme, scale = 1 }) => {
   return (
     <div style={{
       position: 'fixed',
@@ -128,12 +128,14 @@ const Global3DLayer = ({ theme }) => {
       left: 0,
       width: '100%',
       height: '100vh',
-      zIndex: 5, // Above content background, below interactive elements if needed
+      zIndex: 0, // Behind everything
       pointerEvents: 'none',
       opacity: 0.8
     }}>
       <Canvas camera={{ position: [0, 0, 10], fov: 45 }}>
-        <RollingBall theme={theme} />
+        <group scale={scale}>
+          <RollingBall theme={theme} />
+        </group>
       </Canvas>
     </div>
   );

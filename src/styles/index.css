@@ -30,7 +30,8 @@ body {
   color: var(--text-primary);
   font-family: var(--font-main);
   overflow-x: hidden;
-  /* scroll-behavior: smooth; */ /* Managed by Lenis */
+  /* scroll-behavior: smooth; */
+  /* Managed by Lenis */
   scroll-snap-type: y proximity;
 }
 

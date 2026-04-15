@@ -7,7 +7,7 @@ const ArchitectureCore = ({ theme }) => {
   const monolithRef = useRef();
   const scannerRef = useRef();
   const gridRef = useRef();
-  
+
   const isLabs = theme.mode === 'labs';
   const color = isLabs ? '#ff00f2' : '#00f2ff';
 
@@ -16,7 +16,7 @@ const ArchitectureCore = ({ theme }) => {
     if (monolithRef.current) {
       monolithRef.current.rotation.y = Math.sin(time * 0.2) * 0.1;
     }
-    
+
     // Animate the vertical scanner plane
     if (scannerRef.current) {
       scannerRef.current.position.y = Math.sin(time * 1.5) * 2.5;
@@ -43,7 +43,7 @@ const ArchitectureCore = ({ theme }) => {
           transparent
           opacity={0.9}
         />
-        
+
         {/* Glow Edges */}
         <Box args={[2.52, 4.52, 0.42]}>
           <meshBasicMaterial color={color} wireframe transparent opacity={0.1} />
@@ -54,10 +54,10 @@ const ArchitectureCore = ({ theme }) => {
       <group ref={scannerRef}>
         <mesh rotation-x={Math.PI / 2}>
           <planeGeometry args={[3, 1]} />
-          <meshBasicMaterial 
-            color={color} 
-            transparent 
-            opacity={0.3} 
+          <meshBasicMaterial
+            color={color}
+            transparent
+            opacity={0.3}
             side={THREE.DoubleSide}
           />
         </mesh>
