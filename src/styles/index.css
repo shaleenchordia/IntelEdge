@@ -12,7 +12,7 @@
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
   --font-main: 'Inter', system-ui, -apple-system, sans-serif;
-  
+
   --cursor-size: 20px;
 }
 
@@ -24,17 +24,19 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-html, body {
+html,
+body {
   background: var(--bg-color);
   color: var(--text-primary);
   font-family: var(--font-main);
   overflow-x: hidden;
-  scroll-behavior: smooth;
-  scroll-snap-type: y mandatory;
+  /* scroll-behavior: smooth; */ /* Managed by Lenis */
+  scroll-snap-type: y proximity;
 }
 
 body {
-  cursor: none; /* Hide default cursor for custom cursor implementation */
+  cursor: none;
+  /* Hide default cursor for custom cursor implementation */
 }
 
 a {
@@ -93,21 +95,67 @@ button {
 }
 
 @keyframes glitch-anim {
-  0% { clip: rect(44px, 900px, 56px, 0); transform: translate(-2px, 0); }
-  20% { clip: rect(12px, 900px, 88px, 0); transform: translate(2px, 0); }
-  40% { clip: rect(67px, 900px, 12px, 0); transform: translate(-2px, 0); }
-  60% { clip: rect(21px, 900px, 45px, 0); transform: translate(2px, 0); }
-  80% { clip: rect(90px, 900px, 67px, 0); transform: translate(-2px, 0); }
-  100% { clip: rect(10px, 900px, 32px, 0); transform: translate(2px, 0); }
+  0% {
+    clip: rect(44px, 900px, 56px, 0);
+    transform: translate(-2px, 0);
+  }
+
+  20% {
+    clip: rect(12px, 900px, 88px, 0);
+    transform: translate(2px, 0);
+  }
+
+  40% {
+    clip: rect(67px, 900px, 12px, 0);
+    transform: translate(-2px, 0);
+  }
+
+  60% {
+    clip: rect(21px, 900px, 45px, 0);
+    transform: translate(2px, 0);
+  }
+
+  80% {
+    clip: rect(90px, 900px, 67px, 0);
+    transform: translate(-2px, 0);
+  }
+
+  100% {
+    clip: rect(10px, 900px, 32px, 0);
+    transform: translate(2px, 0);
+  }
 }
 
 @keyframes glitch-anim2 {
-  0% { clip: rect(12px, 900px, 67px, 0); transform: translate(2px, 0); }
-  20% { clip: rect(89px, 900px, 12px, 0); transform: translate(-2px, 0); }
-  40% { clip: rect(21px, 900px, 45px, 0); transform: translate(2px, 0); }
-  60% { clip: rect(67px, 900px, 90px, 0); transform: translate(-2px, 0); }
-  80% { clip: rect(32px, 900px, 10px, 0); transform: translate(-2px, 0); }
-  100% { clip: rect(45px, 900px, 67px, 0); transform: translate(2px, 0); }
+  0% {
+    clip: rect(12px, 900px, 67px, 0);
+    transform: translate(2px, 0);
+  }
+
+  20% {
+    clip: rect(89px, 900px, 12px, 0);
+    transform: translate(-2px, 0);
+  }
+
+  40% {
+    clip: rect(21px, 900px, 45px, 0);
+    transform: translate(2px, 0);
+  }
+
+  60% {
+    clip: rect(67px, 900px, 90px, 0);
+    transform: translate(-2px, 0);
+  }
+
+  80% {
+    clip: rect(32px, 900px, 10px, 0);
+    transform: translate(-2px, 0);
+  }
+
+  100% {
+    clip: rect(45px, 900px, 67px, 0);
+    transform: translate(2px, 0);
+  }
 }
 
 /* Custom Cursor */
@@ -130,10 +178,12 @@ section {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  scroll-snap-align: start;
 }
 
 /* Lenis Smooth Scroll Optimization */
-html.lenis, html.lenis body {
+html.lenis,
+html.lenis body {
   height: auto;
 }
 

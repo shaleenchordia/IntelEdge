@@ -7,17 +7,32 @@ const CustomCursor = ({ theme }) => {
   const cursorX = useSpring(0, springConfig);
   const cursorY = useSpring(0, springConfig);
 
+  // Robust color detection with multiple layers of safety
+  const safeTheme = theme || {};
+  const accentColor = typeof theme === 'string' 
+    ? (theme === 'labs' ? '#ff00f2' : (theme === 'advisory' ? '#00f2ff' : '#00f2ff'))
+    : (safeTheme.accent || '#00f2ff');
+
   useEffect(() => {
     const handleMouseMove = (e) => {
-      cursorX.set(e.clientX - 10);
-      cursorY.set(e.clientY - 10);
+      // Use requestAnimationFrame for smoother updates and less React churn
+      requestAnimationFrame(() => {
+        cursorX.set(e.clientX - 10);
+        cursorY.set(e.clientY - 10);
+      });
     };
 
     const handleMouseOver = (e) => {
-      if (e.target.closest('button, a, .interactive')) {
-        setIsHovering(true);
-      } else {
-        setIsHovering(false);
+      try {
+        if (e.target && typeof e.target.closest === 'function') {
+          if (e.target.closest('button, a, .interactive')) {
+            setIsHovering(true);
+          } else {
+            setIsHovering(false);
+          }
+        }
+      } catch (err) {
+        // Silently fail to avoid crashing the whole app
       }
     };
 
@@ -36,16 +51,16 @@ const CustomCursor = ({ theme }) => {
         position: 'fixed',
         width: '20px',
         height: '20px',
-        background: theme.accent,
+        background: accentColor,
         borderRadius: '50%',
         pointerEvents: 'none',
         zIndex: 9999,
         mixBlendMode: 'difference',
-        translateX: cursorX,
-        translateY: cursorY,
+        x: cursorX,
+        y: cursorY,
         scale: isHovering ? 3 : 1,
-        boxShadow: `0 0 20px ${theme.accent}`,
-        transition: 'transform 0.1s ease-out, background 0.5s ease'
+        boxShadow: `0 0 20px ${accentColor}`,
+        transition: 'scale 0.3s ease, background 0.5s ease'
       }}
     />
   );

@@ -21,7 +21,7 @@ const RollingBall = ({ theme }) => {
   // Map scroll progress to horizontal movement (optional, but keep it centered/offset)
   const xPos = useTransform(smoothProgress, [0, 0.2, 0.5, 0.8, 1], [3, 2, -3, -2, 3]);
 
-  const isLabs = theme.mode === 'labs';
+  const isLabs = theme === 'labs' || theme?.mode === 'labs';
   const color = isLabs ? '#ff00f2' : '#00f2ff';
 
   useFrame((state) => {
@@ -95,17 +95,25 @@ const Points = ({ count, color }) => {
     pointsRef.current.geometry.attributes.position.needsUpdate = true;
   });
 
+  const positions = useMemo(() => {
+    const array = new Float32Array(count * 3);
+    for (let i = 0; i < count * 3; i++) {
+      array[i] = (Math.random() - 0.5) * 15;
+    }
+    return array;
+  }, [count]);
+
   return (
     <points ref={pointsRef}>
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
           count={count}
-          array={new Float32Array(count * 3).map(() => (Math.random() - 0.5) * 15)}
+          array={positions}
           itemSize={3}
         />
       </bufferGeometry>
-      <pointsMaterial size={0.05} color={color} transparent opacity={0.4} sizeAttenuation />
+      <pointsMaterial size={0.05} color={color || '#00f2ff'} transparent opacity={0.4} sizeAttenuation />
     </points>
   );
 };

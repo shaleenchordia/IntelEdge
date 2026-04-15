@@ -1,7 +1,60 @@
-import React from 'react';
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence, useScroll } from 'framer-motion';
 
-const TiltCard = ({ tagline, title, description, buttonText, label, onHoverStart, onHoverEnd, background, accentColor }) => {
+const BubbleButton = ({ title, color, onClick }) => (
+  <motion.div
+    initial={{ scale: 0, opacity: 0 }}
+    animate={{ 
+      scale: 1, 
+      opacity: 1,
+      y: [0, -20, 0],
+    }}
+    transition={{
+      scale: { type: "spring", stiffness: 200, damping: 15 },
+      opacity: { duration: 0.5 },
+      y: { repeat: Infinity, duration: 4, ease: "easeInOut" }
+    }}
+    whileHover={{ scale: 1.1, boxShadow: `0 0 50px ${color}44` }}
+    whileTap={{ scale: 0.9 }}
+    onClick={onClick}
+    style={{
+      width: '220px',
+      height: '220px',
+      borderRadius: '50%',
+      background: `radial-gradient(circle at 30% 30%, ${color} 0%, ${color}99 100%)`,
+      border: `2px solid rgba(255, 255, 255, 0.2)`,
+      backdropFilter: 'blur(10px)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      cursor: 'pointer',
+      boxShadow: `0 0 40px ${color}33`,
+      fontSize: '1.4rem',
+      fontWeight: 900,
+      color: '#fff',
+      textTransform: 'uppercase',
+      letterSpacing: '4px',
+      position: 'relative',
+      overflow: 'hidden'
+    }}
+  >
+    <motion.div
+      animate={{
+        opacity: [0.3, 0.6, 0.3],
+        scale: [1, 1.2, 1],
+      }}
+      transition={{ repeat: Infinity, duration: 3 }}
+      style={{
+        position: 'absolute',
+        inset: 0,
+        background: `radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, transparent 70%)`,
+      }}
+    />
+    <span style={{ zIndex: 1 }}>{title}</span>
+  </motion.div>
+);
+
+const TiltCard = ({ tagline, title, description, buttonText, label, onHoverStart, onHoverEnd, background, accentColor, isVisible }) => {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -30,12 +83,14 @@ const TiltCard = ({ tagline, title, description, buttonText, label, onHoverStart
   };
 
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 0, x: (title === "Advisory" ? -100 : 100) },
     visible: {
       opacity: 1,
+      x: 0,
       transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.2
+        duration: 0.8,
+        ease: [0.16, 1, 0.3, 1],
+        staggerChildren: 0.1,
       }
     }
   };
@@ -65,8 +120,7 @@ const TiltCard = ({ tagline, title, description, buttonText, label, onHoverStart
       onMouseEnter={onHoverStart}
       variants={containerVariants}
       initial="hidden"
-      whileInView="visible"
-      viewport={{ once: false, amount: 0.2 }}
+      animate={isVisible ? "visible" : "hidden"}
       style={{
         rotateX,
         rotateY,
@@ -141,33 +195,137 @@ const TiltCard = ({ tagline, title, description, buttonText, label, onHoverStart
 };
 
 const Divisions = ({ setGlobalTheme }) => {
-  return (
-    <section id="divisions" style={{ padding: 0, minHeight: '100vh', display: 'flex', background: '#000', overflow: 'hidden' }}>
-      {/* Advisory */}
-      <TiltCard 
-        tagline="Strategic Arm"
-        title="Advisory"
-        description="Architecting board-level intelligence strategies. We bridge the gap between enterprise goals and architectural reality."
-        buttonText="Explore Design"
-        label="ADV"
-        background="linear-gradient(180deg, #050505 0%, #001a33 100%)"
-        accentColor="var(--accent-cyan)"
-        onHoverStart={() => setGlobalTheme('advisory')}
-        onHoverEnd={() => {}}
-      />
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
 
-      {/* Labs */}
-      <TiltCard 
-        tagline="Engineering Arm"
-        title="Labs"
-        description="Building the frontier of agentic systems. From R&D to production-grade intelligent infrastructure."
-        buttonText="Explore Build"
-        label="LAB"
-        background="linear-gradient(180deg, #050505 0%, #33001a 100%)"
-        accentColor="var(--accent-magenta)"
-        onHoverStart={() => setGlobalTheme('labs')}
-        onHoverEnd={() => {}}
-      />
+  const [isPopped, setIsPopped] = React.useState(false);
+
+  // Trigger pop earlier and more responsively
+  React.useEffect(() => {
+    const unsubscribe = scrollYProgress.on("change", (latest) => {
+      // Trigger when section top enters viewport more (0.3 instead of 0.45)
+      if (latest > 0.3 && !isPopped) {
+        setIsPopped(true);
+      } else if (latest < 0.15 && isPopped) {
+        // Reset when scrolling back up
+        setIsPopped(false);
+      }
+    });
+    return () => unsubscribe();
+  }, [scrollYProgress, isPopped]);
+
+  return (
+    <section 
+      id="divisions" 
+      ref={containerRef}
+      style={{ 
+        padding: 0, 
+        minHeight: '180vh', // Reduced height for quicker passage
+        background: '#000', 
+        position: 'relative',
+        marginTop: '-20vh' // Pull the section up higher into the previous section's space
+      }}
+    >
+      <div style={{ 
+        position: 'sticky', 
+        top: 0, 
+        left: 0, 
+        width: '100%', 
+        height: '100vh',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <AnimatePresence mode="wait">
+          {!isPopped ? (
+            <motion.div
+              key="bubble-container"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ 
+                scale: 3, 
+                opacity: 0,
+                filter: 'blur(30px)',
+                transition: { duration: 0.6, ease: [0.76, 0, 0.24, 1] }
+              }}
+              style={{
+                display: 'flex',
+                gap: '8rem',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10,
+                width: '100%'
+              }}
+            >
+              <BubbleButton 
+                title="Advisory" 
+                color="#00f2ff" 
+                onClick={() => setIsPopped(true)} 
+              />
+              <BubbleButton 
+                title="Labs" 
+                color="#ff00ff" 
+                onClick={() => setIsPopped(true)} 
+              />
+              
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0.2, 0.6, 0.2] }}
+                transition={{ repeat: Infinity, duration: 2 }}
+                style={{
+                  position: 'absolute',
+                  bottom: '10%',
+                  fontSize: '0.9rem',
+                  letterSpacing: '8px',
+                  textTransform: 'uppercase',
+                  color: '#fff',
+                  fontWeight: 300
+                }}
+              >
+                Scroll to Pop
+              </motion.div>
+            </motion.div>
+          ) : (
+            <motion.div 
+              key="content-container"
+              style={{ display: 'flex', width: '100%', height: '100%' }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+            >
+              <TiltCard 
+                tagline="Strategic Arm"
+                title="Advisory"
+                description="Architecting board-level intelligence strategies. We bridge the gap between enterprise goals and architectural reality."
+                buttonText="Explore Design"
+                label="ADV"
+                background="linear-gradient(180deg, #050505 0%, #001a33 100%)"
+                accentColor="var(--accent-cyan)"
+                onHoverStart={() => setGlobalTheme('advisory')}
+                onHoverEnd={() => {}}
+                isVisible={isPopped}
+              />
+
+              <TiltCard 
+                tagline="Engineering Arm"
+                title="Labs"
+                description="Building the frontier of agentic systems. From R&D to production-grade intelligent infrastructure."
+                buttonText="Explore Build"
+                label="LAB"
+                background="linear-gradient(180deg, #050505 0%, #33001a 100%)"
+                accentColor="var(--accent-magenta)"
+                onHoverStart={() => setGlobalTheme('labs')}
+                onHoverEnd={() => {}}
+                isVisible={isPopped}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </section>
   );
 };

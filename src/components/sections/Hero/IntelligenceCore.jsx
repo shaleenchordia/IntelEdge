@@ -6,7 +6,7 @@ import * as THREE from 'three';
 const IntelligenceCore = ({ theme }) => {
   const meshRef = useRef();
   
-  const isLabs = theme.mode === 'labs';
+  const isLabs = theme === 'labs' || theme?.mode === 'labs';
   const color = isLabs ? '#ff00f2' : '#00f2ff';
   const secondaryColor = isLabs ? '#ff0066' : '#0066ff';
 
