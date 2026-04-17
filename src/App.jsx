@@ -8,6 +8,7 @@ import CustomCursor from './components/common/CustomCursor';
 import ScrollBall from './components/common/ScrollBall';
 import Global3DLayer from './components/common/Global3DLayer';
 import Intro from './components/layout/Intro';
+import Footer from './components/layout/Footer';
 
 // Sections
 import Hero from './components/sections/Hero';
@@ -17,6 +18,8 @@ import ServicesGrid from './components/sections/ServicesGrid';
 import Storytelling from './components/sections/Storytelling';
 import WhoWeAre from './components/sections/WhoWeAre';
 import AboutStats from './components/sections/AboutStats';
+import OrbitalPartners from './components/sections/OrbitalPartners';
+import Contact from './components/sections/Contact';
 
 import logo from './assets/IntelEdge.PNG';
 
@@ -35,9 +38,9 @@ const ScrollSection = ({ children, zIndex, noExit = false }) => {
   // Smooth the raw scroll progress so the exit feels fluid, not mechanical
   const smooth = useSpring(scrollYProgress, { stiffness: 120, damping: 30, restDelta: 0.001 });
 
-  const scale   = useTransform(smooth, [0.6, 1], [1, 0.88]);
+  const scale = useTransform(smooth, [0.6, 1], [1, 0.88]);
   const opacity = useTransform(smooth, [0.7, 1], [1, 0]);
-  const y       = useTransform(smooth, [0.6, 1], [0, -40]);
+  const y = useTransform(smooth, [0.6, 1], [0, -40]);
 
   return (
     <div
@@ -67,8 +70,8 @@ const ScrollSection = ({ children, zIndex, noExit = false }) => {
 
 const Vision = () => {
   const { scrollYProgress } = useScroll();
-  const scale   = useTransform(scrollYProgress, [0.8, 1],      [0.8, 1]);
-  const opacity = useTransform(scrollYProgress, [0.8, 0.95],   [0, 1]);
+  const scale = useTransform(scrollYProgress, [0.8, 1], [0.8, 1]);
+  const opacity = useTransform(scrollYProgress, [0.8, 0.95], [0, 1]);
 
   return (
     <section id="vision" style={{ textAlign: 'center', padding: '200px 5%' }}>
@@ -84,43 +87,6 @@ const Vision = () => {
     </section>
   );
 };
-
-const Footer = () => (
-  <footer className="glass" style={{ padding: '80px 5%', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-      <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-          <img src={logo} alt="Inteledge Logo" style={{ height: '35px', width: 'auto' }} />
-          <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>INTELEDGE<span style={{ color: 'var(--accent-primary)' }}>.</span></div>
-        </div>
-        <p style={{ opacity: 0.4, maxWidth: '300px', fontSize: '0.9rem' }}>
-          Applied Intelligence Architecture for the modern enterprise.
-        </p>
-      </div>
-      <div style={{ display: 'flex', gap: '4rem' }}>
-        <div>
-          <h5 style={{ marginBottom: '1.5rem', fontSize: '0.8rem', opacity: 0.3, letterSpacing: '2px', textTransform: 'uppercase' }}>Division</h5>
-          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.9rem' }}>
-            <li>Advisory</li>
-            <li>Labs</li>
-          </ul>
-        </div>
-        <div>
-          <h5 style={{ marginBottom: '1.5rem', fontSize: '0.8rem', opacity: 0.3, letterSpacing: '2px', textTransform: 'uppercase' }}>Company</h5>
-          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.9rem' }}>
-            <li>About</li>
-            <li>About Us</li>
-            <li>Careers</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <div style={{ marginTop: '80px', paddingTop: '40px', borderTop: '1px solid rgba(255, 255, 255, 0.05)', display: 'flex', justifyContent: 'space-between', opacity: 0.3, fontSize: '0.8rem' }}>
-      <span>© 2026 Inteledge Advisory & Labs. All rights reserved.</span>
-      <span>Privacy Policy / Terms of Service</span>
-    </div>
-  </footer>
-);
 
 const UseCases = ({ id }) => (
   <section
@@ -144,7 +110,7 @@ const UseCases = ({ id }) => (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', width: '100%' }}>
       {[
         { title: 'Autonomous Supply Chain', client: 'Fortune 500 Retailer', impact: '32% Efficiency Gain' },
-        { title: 'Unified Risk Engine',     client: 'Global FinTech',        impact: 'Zero False Positives' },
+        { title: 'Unified Risk Engine', client: 'Global FinTech', impact: 'Zero False Positives' },
       ].map((item, i) => (
         <motion.div
           key={i}
@@ -202,48 +168,12 @@ const Insights = ({ id }) => (
   </section>
 );
 
-const Contact = ({ id }) => (
-  <section
-    id={id || 'contact'}
-    style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#050505', padding: '120px 10%' }}
-  >
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }}
-      transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-      style={{ width: '100%', maxWidth: '1200px' }}
-    >
-      <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: 'max(5rem, 10vw)', fontWeight: 800, letterSpacing: '-8px', lineHeight: 0.8 }}>
-        READY TO <br /><span className="gradient-text">INITIALIZE?</span>
-      </h2>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5rem', marginTop: '6rem' }}>
-        <div>
-          <p style={{ fontSize: '1.5rem', opacity: 0.6, lineHeight: 1.5, marginBottom: '3rem' }}>
-            Transform your enterprise architecture from human-led to intelligence-first. Our partners are ready to discuss your systemic evolution.
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <div style={{ fontSize: '1.1rem', fontWeight: 700 }}>hello@inteledge.com</div>
-            <div style={{ fontSize: '1.1rem', fontWeight: 700 }}>+1 (800) ARCHITECT</div>
-          </div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          <input type="text"   placeholder="FULL NAME"           style={{ background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.1)', padding: '20px 0', color: '#fff', fontSize: '1rem', outline: 'none' }} />
-          <input type="email"  placeholder="ENTERPRISE EMAIL"    style={{ background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.1)', padding: '20px 0', color: '#fff', fontSize: '1rem', outline: 'none' }} />
-          <textarea            placeholder="SYSTEM REQUIREMENTS" style={{ background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.1)', padding: '20px 0', color: '#fff', fontSize: '1rem', outline: 'none', minHeight: '150px' }} />
-          <button className="interactive" style={{ marginTop: '2rem', padding: '30px', borderRadius: '100px', background: 'var(--accent-primary)', color: '#000', fontWeight: 900, fontSize: '1.2rem' }}>SEND INITIATION REQUEST</button>
-        </div>
-      </div>
-    </motion.div>
-  </section>
-);
-
 // ─────────────────────────────────────────────────────────────────────────────
 // App
 // ─────────────────────────────────────────────────────────────────────────────
 
 const App = () => {
-  const [theme, setTheme]       = useState('cyan');
+  const [theme, setTheme] = useState('cyan');
   const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
@@ -322,32 +252,36 @@ const App = () => {
                 </ScrollSection>
 
                 <ScrollSection zIndex={4}>
+                  <OrbitalPartners />
+                </ScrollSection>
+
+                <ScrollSection zIndex={5}>
                   <AIAFramework theme={theme} id="services" />
                 </ScrollSection>
 
-                <ScrollSection zIndex={5} noExit>
+                <ScrollSection zIndex={6} noExit>
                   {/* ServicesGrid uses internal sticky scroll — skip exit to not interfere */}
                   <ServicesGrid theme={theme} />
                 </ScrollSection>
 
-                <ScrollSection zIndex={6} noExit>
+                <ScrollSection zIndex={7} noExit>
                   {/* Divisions has complex scroll-triggered bubble pop — skip exit */}
                   <Divisions setGlobalTheme={setTheme} mode="labs" id="labs" />
                 </ScrollSection>
 
-                <ScrollSection zIndex={7}>
+                <ScrollSection zIndex={8}>
                   <UseCases id="products" />
                 </ScrollSection>
 
-                <ScrollSection zIndex={8}>
+                <ScrollSection zIndex={9}>
                   <Vision />
                 </ScrollSection>
 
-                <ScrollSection zIndex={9}>
+                <ScrollSection zIndex={10}>
                   <Insights id="insights" />
                 </ScrollSection>
 
-                <ScrollSection zIndex={10}>
+                <ScrollSection zIndex={11}>
                   <Contact id="contact" />
                 </ScrollSection>
               </main>

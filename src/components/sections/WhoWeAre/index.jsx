@@ -3,12 +3,12 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Canvas } from '@react-three/fiber';
 import ArchitectureCore from './ArchitectureCore';
 
-import WiproLogo from "../../../assets/wipro.png";
-import HCLLogo from "../../../assets/hcl.png";
-import TataAigLogo from "../../../assets/tataaig.png";
+import WiproLogo     from "../../../assets/wipro.png";
+import HCLLogo       from "../../../assets/hcl.png";
+import TataAigLogo   from "../../../assets/tataaig.png";
 import AccentureLogo from "../../../assets/accenture.png";
-import PwcLogo from "../../../assets/pwc.jpeg";
-import UiPathLogo from "../../../assets/uipath.png";
+import PwcLogo       from "../../../assets/pwc.jpeg";
+import UiPathLogo    from "../../../assets/uipath.png";
 
 const logoMeta = [
   { src: WiproLogo,     name: 'Wipro' },
@@ -31,12 +31,8 @@ const LogoStrip = () => {
           from { transform: translateX(0); }
           to   { transform: translateX(-33.33%); }
         }
-        .logo-track {
-          animation: logoScroll 40s linear infinite;
-        }
-        .logo-track.paused {
-          animation-play-state: paused;
-        }
+        .logo-track { animation: logoScroll 40s linear infinite; }
+        .logo-track.paused { animation-play-state: paused; }
       `}</style>
 
       <div
@@ -44,7 +40,6 @@ const LogoStrip = () => {
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => { setPaused(false); setHoveredIdx(null); }}
       >
-        {/* Edge fades */}
         <div style={{
           position: 'absolute', inset: 0,
           background: 'linear-gradient(90deg, #050505 0%, transparent 15%, transparent 85%, #050505 100%)',
@@ -64,7 +59,6 @@ const LogoStrip = () => {
                 onMouseEnter={() => setHoveredIdx(index)}
                 onMouseLeave={() => setHoveredIdx(null)}
               >
-                {/* Glow behind logo when hovered */}
                 <div style={{
                   position: 'absolute', inset: '-12px',
                   borderRadius: '12px',
@@ -76,18 +70,15 @@ const LogoStrip = () => {
                   src={logo.src}
                   alt={logo.name}
                   style={{
-                    height: '50px',
-                    width: 'auto',
-                    display: 'block',
+                    height: '50px', width: 'auto', display: 'block',
                     filter: isHovered
                       ? 'brightness(1.15) saturate(1.3) drop-shadow(0 0 8px rgba(0,242,255,0.4))'
                       : 'grayscale(1) invert(1) brightness(1.2)',
                     mixBlendMode: isHovered ? 'normal' : 'screen',
                     opacity: isHovered ? 1 : 0.55,
                     transform: isHovered ? 'scale(1.12)' : 'scale(1)',
-                    transition: 'filter 0.35s ease, opacity 0.35s ease, transform 0.35s cubic-bezier(0.16,1,0.3,1), mix-blend-mode 0s',
-                    position: 'relative',
-                    zIndex: 1,
+                    transition: 'filter 0.35s ease, opacity 0.35s ease, transform 0.35s cubic-bezier(0.16,1,0.3,1)',
+                    position: 'relative', zIndex: 1,
                   }}
                 />
               </div>
@@ -104,7 +95,6 @@ const WhoWeAre = ({ theme, id }) => {
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start end', 'end start'] });
   const opacity = useTransform(scrollYProgress, [0.05, 0.3, 0.75, 1], [0, 1, 1, 0]);
   const y = useTransform(scrollYProgress, [0.05, 0.3], [60, 0]);
-  // Explode ref for 3D (driven by R3F loop, stays 0 in this section)
   const explodeRef = useRef(0);
 
   return (
@@ -123,14 +113,12 @@ const WhoWeAre = ({ theme, id }) => {
         zIndex: 2,
       }}
     >
-      {/* Full-screen 3D planet background */}
       <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
         <Canvas gl={{ antialias: true, alpha: true }}>
           <ArchitectureCore explodeRef={explodeRef} />
         </Canvas>
       </div>
 
-      {/* Text content — right-aligned */}
       <motion.div style={{
         width: '100%',
         maxWidth: '1200px',
@@ -163,20 +151,20 @@ const WhoWeAre = ({ theme, id }) => {
         <div style={{
           marginTop: '2.5rem', maxWidth: '520px',
           textAlign: 'right', display: 'flex',
-          flexDirection: 'column', alignItems: 'flex-end'
+          flexDirection: 'column', alignItems: 'flex-end',
         }}>
           <div style={{
             fontSize: '0.75rem', fontWeight: 800,
             color: 'var(--accent-primary)',
             textTransform: 'uppercase',
-            letterSpacing: '5px', marginBottom: '1rem'
+            letterSpacing: '5px', marginBottom: '1rem',
           }}>
             Adoption — Sustain & Scale
           </div>
           <p style={{
             fontSize: '1.2rem', lineHeight: 1.5,
             color: '#e0e0e0', marginBottom: '2rem',
-            fontWeight: 300
+            fontWeight: 300,
           }}>
             Human-first AI integration. We deliver long-term success through{' '}
             <span style={{ fontWeight: 600, color: '#fff' }}>workflow evolution</span>,
@@ -193,7 +181,7 @@ const WhoWeAre = ({ theme, id }) => {
               <span style={{
                 color: 'var(--accent-primary)', fontWeight: 800,
                 textTransform: 'uppercase', fontSize: '0.65rem',
-                letterSpacing: '1px', marginRight: '8px'
+                letterSpacing: '1px', marginRight: '8px',
               }}>Outcome:</span>
               A seamless 'AI-first' culture where technology and talent are perfectly unified.
             </p>
