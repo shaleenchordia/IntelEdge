@@ -13,15 +13,17 @@ import Footer from './components/layout/Footer';
 // Sections
 import Hero from './components/sections/Hero';
 import AIAFramework from './components/sections/AIAFramework';
-import Divisions from './components/sections/Divisions';
+//import Divisions from './components/sections/Divisions';
 import ServicesGrid from './components/sections/ServicesGrid';
 import Storytelling from './components/sections/Storytelling';
 import WhoWeAre from './components/sections/WhoWeAre';
 import AboutStats from './components/sections/AboutStats';
 import OrbitalPartners from './components/sections/OrbitalPartners';
 import Contact from './components/sections/Contact';
-
-import logo from './assets/IntelEdge.PNG';
+import LabsAdvisoryPage from './components/sections/LabsAdvisoryHero';
+import ProductsSlider from './components/sections/Products';
+import Testimonials from './components/sections/Testimonials';
+import logo from './assets/inteledge.webp';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ScrollSection — wraps a section and animates it OUT as it leaves the viewport.
@@ -68,103 +70,51 @@ const ScrollSection = ({ children, zIndex, noExit = false }) => {
 // Inline section components
 // ─────────────────────────────────────────────────────────────────────────────
 
-const Vision = () => {
-  const { scrollYProgress } = useScroll();
-  const scale = useTransform(scrollYProgress, [0.8, 1], [0.8, 1]);
-  const opacity = useTransform(scrollYProgress, [0.8, 0.95], [0, 1]);
-
-  return (
-    <section id="vision" style={{ textAlign: 'center', padding: '200px 5%' }}>
-      <motion.div style={{ scale, opacity }}>
-        <h2 style={{ fontSize: 'max(5rem, 8vw)', fontWeight: 800, letterSpacing: '-5px', lineHeight: 0.9 }}>
-          AI IS NOT AN INITIATIVE. <br />
-          <span className="gradient-text">IT IS INFRASTRUCTURE.</span>
-        </h2>
-        <p style={{ marginTop: '4rem', fontSize: '1.5rem', opacity: 0.5, maxWidth: '800px', margin: '4rem auto 0 auto' }}>
-          We design the systems that make intelligence pervasive, autonomous, and architecturally sound.
-        </p>
-      </motion.div>
-    </section>
-  );
-};
-
-const UseCases = ({ id }) => (
+const LabsAdvisoryIntro = () => (
   <section
-    id={id || 'use-cases'}
-    style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#050505', padding: '120px 10%' }}
+    style={{
+      minHeight: '55vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: '#050505',
+      padding: '100px 10%',
+      textAlign: 'center',
+    }}
   >
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
-      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-      style={{ textAlign: 'left', width: '100%', marginBottom: '5rem' }}
+      transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
     >
-      <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: 'max(4rem, 8vw)', fontWeight: 800, letterSpacing: '-5px', lineHeight: 0.9 }}>
-        USE <br /><span className="gradient-text">CASES</span>
-      </h2>
-      <p style={{ fontFamily: "'Montserrat', sans-serif", letterSpacing: '8px', opacity: 0.5, marginTop: '1.5rem', textTransform: 'uppercase', fontSize: '0.9rem' }}>
-        Proven Intelligence Architectures
+      <span style={{
+        display: 'block',
+        fontSize: '0.65rem',
+        fontWeight: 800,
+        letterSpacing: '5px',
+        textTransform: 'uppercase',
+        color: 'var(--accent-primary)',
+        fontFamily: "'Montserrat', sans-serif",
+        marginBottom: '2.5rem',
+      }}>
+        The Inteledge Model
+      </span>
+      <p style={{
+        fontSize: 'clamp(1.4rem, 2.8vw, 2.4rem)',
+        color: 'rgba(255,255,255,0.75)',
+        lineHeight: 1.55,
+        maxWidth: '820px',
+        margin: '0 auto',
+        fontWeight: 300,
+        letterSpacing: '-0.5px',
+      }}>
+        We operate at the intersection of deep technical capability and strategic intelligence.{' '}
+        <span style={{ color: '#fff', fontWeight: 600 }}>Two disciplines.</span>{' '}
+        <span style={{ color: '#fff', fontWeight: 600 }}>One unified practice.</span>
       </p>
     </motion.div>
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', width: '100%' }}>
-      {[
-        { title: 'Autonomous Supply Chain', client: 'Fortune 500 Retailer', impact: '32% Efficiency Gain' },
-        { title: 'Unified Risk Engine', client: 'Global FinTech', impact: 'Zero False Positives' },
-      ].map((item, i) => (
-        <motion.div
-          key={i}
-          className="glass"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.8, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] }}
-          style={{ padding: '60px', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.05)' }}
-        >
-          <span style={{ fontSize: '0.7rem', color: 'var(--accent-primary)', fontWeight: 800, letterSpacing: '3px' }}>{item.client}</span>
-          <h3 style={{ fontSize: '2.5rem', fontWeight: 800, margin: '1.5rem 0' }}>{item.title}</h3>
-          <div style={{ height: '2px', width: '40px', background: 'var(--accent-primary)', marginBottom: '1.5rem' }} />
-          <p style={{ fontSize: '1.5rem', fontWeight: 900, opacity: 0.9 }}>{item.impact}</p>
-        </motion.div>
-      ))}
-    </div>
-  </section>
-);
-
-const Insights = ({ id }) => (
-  <section
-    id={id || 'insights'}
-    style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#060606', padding: '120px 10%' }}
-  >
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }}
-      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-      style={{ textAlign: 'center', marginBottom: '5rem' }}
-    >
-      <h2 style={{ fontFamily: "'Cinzel', serif", fontSize: 'max(4rem, 8vw)', fontWeight: 800, letterSpacing: '-5px' }}>
-        INS<span className="gradient-text">IGHTS</span>
-      </h2>
-      <p style={{ fontFamily: "'Montserrat', sans-serif", letterSpacing: '8px', opacity: 0.5, marginTop: '1rem', textTransform: 'uppercase', fontSize: '0.8rem' }}>
-        Advancing the field of Systemic Intelligence
-      </p>
-    </motion.div>
-    <div style={{ display: 'flex', gap: '2rem', width: '100%' }}>
-      {[1, 2, 3].map(i => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.8, delay: (i - 1) * 0.12, ease: [0.16, 1, 0.3, 1] }}
-          style={{ flex: 1, height: '400px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '24px', padding: '40px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}
-        >
-          <span style={{ opacity: 0.3, fontSize: '0.8rem', letterSpacing: '2px' }}>APRIL 2026</span>
-          <h4 style={{ fontSize: '1.5rem', fontWeight: 800, marginTop: '1rem' }}>The Architecture of Autonomy: Beyond LLM Wrappers</h4>
-        </motion.div>
-      ))}
-    </div>
   </section>
 );
 
@@ -259,29 +209,29 @@ const App = () => {
                   <AIAFramework theme={theme} id="services" />
                 </ScrollSection>
 
-                <ScrollSection zIndex={6} noExit>
+                <ScrollSection zIndex={6}>
+                  <LabsAdvisoryIntro />
+                </ScrollSection>
+
+                <ScrollSection zIndex={7} noExit>
+                  <LabsAdvisoryPage />
+                </ScrollSection>
+
+
+                <ScrollSection zIndex={9} noExit>
                   {/* ServicesGrid uses internal sticky scroll — skip exit to not interfere */}
                   <ServicesGrid theme={theme} />
                 </ScrollSection>
 
-                <ScrollSection zIndex={7} noExit>
-                  {/* Divisions has complex scroll-triggered bubble pop — skip exit */}
-                  <Divisions setGlobalTheme={setTheme} mode="labs" id="labs" />
-                </ScrollSection>
-
-                <ScrollSection zIndex={8}>
-                  <UseCases id="products" />
-                </ScrollSection>
-
-                <ScrollSection zIndex={9}>
-                  <Vision />
-                </ScrollSection>
-
                 <ScrollSection zIndex={10}>
-                  <Insights id="insights" />
+                  <ProductsSlider id="products" />
                 </ScrollSection>
 
                 <ScrollSection zIndex={11}>
+                  <Testimonials id="testimonials" />
+                </ScrollSection>
+
+                <ScrollSection zIndex={13}>
                   <Contact id="contact" />
                 </ScrollSection>
               </main>

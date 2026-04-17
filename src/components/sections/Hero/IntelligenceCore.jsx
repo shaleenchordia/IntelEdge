@@ -3,101 +3,143 @@ import { useFrame } from '@react-three/fiber';
 import { PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
 
-const SEGS = 250;
-const TOTAL_WIDTH = 14;
+// ── Single bubble orb ─────────────────────────────────────────────────────────
+// Layered spheres: core glow → inner body → surface → rim glow (back-face) → outer halo → specular dot
 
-// A flat ribbon that flows like a sine wave
-const WaveRibbon = ({ color, amplitude, frequency, speed, phase, ribbonHeight, opacity, zPos = 0 }) => {
-  const ref = useRef();
-
-  const geo = useMemo(() => {
-    const g = new THREE.BufferGeometry();
-    const verts = new Float32Array((SEGS + 1) * 2 * 3);
-    const indices = [];
-
-    for (let i = 0; i <= SEGS; i++) {
-      const x = (i / SEGS - 0.5) * TOTAL_WIDTH;
-      const ti = i * 2;      // top vertex index
-      const bi = i * 2 + 1;  // bottom vertex index
-
-      verts[ti * 3]     = x;
-      verts[ti * 3 + 1] = ribbonHeight * 0.5;
-      verts[ti * 3 + 2] = zPos;
-
-      verts[bi * 3]     = x;
-      verts[bi * 3 + 1] = -ribbonHeight * 0.5;
-      verts[bi * 3 + 2] = zPos;
-
-      if (i < SEGS) {
-        const a = ti, b = bi, c = ti + 2, d = bi + 2;
-        indices.push(a, b, c);
-        indices.push(b, d, c);
-      }
-    }
-
-    g.setAttribute('position', new THREE.BufferAttribute(verts, 3));
-    g.setIndex(indices);
-    return g;
-  }, [ribbonHeight, zPos]);
+function GlowOrb({ position, radius, color, speed, phase }) {
+  const groupRef = useRef();
 
   useFrame(({ clock }) => {
+    if (!groupRef.current) return;
     const t = clock.getElapsedTime();
-    const pos = ref.current.geometry.attributes.position;
-
-    for (let i = 0; i <= SEGS; i++) {
-      const x = (i / SEGS - 0.5) * TOTAL_WIDTH;
-
-      const y =
-        Math.sin(x * frequency + t * speed + phase) * amplitude +
-        Math.sin(x * frequency * 0.55 + t * speed * 0.8 + phase + 1.4) * amplitude * 0.45 +
-        Math.sin(x * frequency * 1.7 + t * speed * 1.2 + phase - 0.8) * amplitude * 0.2;
-
-      const ti = i * 2;
-      const bi = i * 2 + 1;
-      pos.setY(ti, y + ribbonHeight * 0.5);
-      pos.setY(bi, y - ribbonHeight * 0.5);
-    }
-    pos.needsUpdate = true;
+    // Float on Y axis
+    groupRef.current.position.y = position[1] + Math.sin(t * speed * 0.42 + phase) * 0.36;
+    // Breathe (subtle scale pulse)
+    const breathe = 1 + Math.sin(t * speed * 0.88 + phase) * 0.022;
+    groupRef.current.scale.setScalar(breathe);
+    // Slow drift rotation
+    groupRef.current.rotation.y = t * speed * 0.038;
+    groupRef.current.rotation.x = t * speed * 0.022;
   });
 
   return (
-    <mesh ref={ref} geometry={geo}>
-      <meshBasicMaterial
-        color={color}
-        transparent
-        opacity={opacity}
-        blending={THREE.AdditiveBlending}
-        depthWrite={false}
-        side={THREE.DoubleSide}
-      />
-    </mesh>
+    <group ref={groupRef} position={position}>
+      {/* 1 — Core: tight bright centre */}
+      <mesh>
+        <sphereGeometry args={[radius * 0.28, 32, 32]} />
+        <meshBasicMaterial
+          color={color} transparent opacity={0.7}
+          blending={THREE.AdditiveBlending} depthWrite={false}
+        />
+      </mesh>
+
+      {/* 2 — Inner atmosphere */}
+      <mesh>
+        <sphereGeometry args={[radius * 0.60, 40, 40]} />
+        <meshBasicMaterial
+          color={color} transparent opacity={0.22}
+          blending={THREE.AdditiveBlending} depthWrite={false}
+        />
+      </mesh>
+
+      {/* 3 — Bubble surface (nearly transparent) */}
+      <mesh>
+        <sphereGeometry args={[radius, 64, 64]} />
+        <meshBasicMaterial
+          color={color} transparent opacity={0.055}
+          blending={THREE.AdditiveBlending} depthWrite={false}
+        />
+      </mesh>
+
+      {/* 4 — Rim glow: back-face trick — bright only at silhouette edges */}
+      <mesh>
+        <sphereGeometry args={[radius * 1.04, 48, 48]} />
+        <meshBasicMaterial
+          color={color} transparent opacity={0.28}
+          side={THREE.BackSide}
+          blending={THREE.AdditiveBlending} depthWrite={false}
+        />
+      </mesh>
+
+      {/* 5 — Outer halo: large, very faint */}
+      <mesh>
+        <sphereGeometry args={[radius * 1.90, 24, 24]} />
+        <meshBasicMaterial
+          color={color} transparent opacity={0.045}
+          blending={THREE.AdditiveBlending} depthWrite={false}
+        />
+      </mesh>
+
+      {/* 6 — Specular highlight: white dot for glass sheen */}
+      <mesh position={[radius * 0.38, radius * 0.44, radius * 0.72]}>
+        <sphereGeometry args={[radius * 0.09, 16, 16]} />
+        <meshBasicMaterial
+          color="#ffffff" transparent opacity={0.80}
+          blending={THREE.AdditiveBlending} depthWrite={false}
+        />
+      </mesh>
+
+      {/* 7 — Secondary smaller specular (realism) */}
+      <mesh position={[radius * -0.22, radius * 0.52, radius * 0.80]}>
+        <sphereGeometry args={[radius * 0.04, 12, 12]} />
+        <meshBasicMaterial
+          color="#ffffff" transparent opacity={0.50}
+          blending={THREE.AdditiveBlending} depthWrite={false}
+        />
+      </mesh>
+
+      {/* 8 — Subsurface warmth: significantly richer orange internal volume */}
+      <mesh>
+        <sphereGeometry args={[radius * 0.65, 32, 32]} />
+        <meshBasicMaterial
+          color="#ff7700" transparent opacity={0.32}
+          blending={THREE.AdditiveBlending} depthWrite={false}
+        />
+      </mesh>
+
+      {/* 9 — Orange Rim: sharp edge highlight for that 'orangeious' punch */}
+      <mesh>
+        <sphereGeometry args={[radius * 1.05, 48, 48]} />
+        <meshBasicMaterial
+          color="#ff4400" transparent opacity={0.45}
+          side={THREE.BackSide}
+          blending={THREE.AdditiveBlending} depthWrite={false}
+        />
+      </mesh>
+    </group>
   );
-};
+}
 
-// Floating gold sparkle dots
-const Sparkles = () => {
+// ── Ambient particle cloud ────────────────────────────────────────────────────
+
+function Particles() {
   const ref = useRef();
-  const COUNT = 90;
+  const COUNT = 340;
 
-  const { positions, speeds } = useMemo(() => {
-    const pos = new Float32Array(COUNT * 3);
-    const spd = new Float32Array(COUNT);
+  const { positions, phases } = useMemo(() => {
+    const positions = new Float32Array(COUNT * 3);
+    const phases    = new Float32Array(COUNT);
     for (let i = 0; i < COUNT; i++) {
-      pos[i * 3]     = (Math.random() - 0.5) * 12;
-      pos[i * 3 + 1] = Math.random() * 2.5 + 0.2;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 1.5;
-      spd[i] = 0.2 + Math.random() * 0.5;
+      positions[i * 3]     = (Math.random() - 0.45) * 11;
+      positions[i * 3 + 1] = (Math.random() - 0.5)  * 8;
+      positions[i * 3 + 2] = (Math.random() - 0.5)  * 6 - 2;
+      phases[i] = Math.random() * Math.PI * 2;
     }
-    return { positions: pos, speeds: spd };
+    return { positions, phases };
   }, []);
+
+  const baseY = useMemo(() => {
+    const arr = new Float32Array(COUNT);
+    for (let i = 0; i < COUNT; i++) arr[i] = positions[i * 3 + 1];
+    return arr;
+  }, [positions]);
 
   useFrame(({ clock }) => {
     if (!ref.current) return;
-    const t = clock.getElapsedTime();
+    const t   = clock.getElapsedTime();
     const pos = ref.current.geometry.attributes.position;
     for (let i = 0; i < COUNT; i++) {
-      const baseY = positions[i * 3 + 1];
-      pos.setY(i, baseY + Math.sin(t * speeds[i] + i) * 0.08);
+      pos.setY(i, baseY[i] + Math.sin(t * 0.28 + phases[i]) * 0.14);
     }
     pos.needsUpdate = true;
   });
@@ -105,75 +147,119 @@ const Sparkles = () => {
   return (
     <points ref={ref}>
       <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={COUNT}
-          array={positions.slice()}
-          itemSize={3}
-        />
+        <bufferAttribute attach="attributes-position" args={[positions.slice(), 3]} />
       </bufferGeometry>
       <pointsMaterial
-        color="#ffcc55"
-        size={0.045}
-        transparent
-        opacity={0.85}
+        size={0.026} color="#88ddff"
+        transparent opacity={0.45}
         blending={THREE.AdditiveBlending}
-        depthWrite={false}
-        sizeAttenuation
+        depthWrite={false} sizeAttenuation
       />
     </points>
   );
-};
+}
+
+// ── Energy filaments between orbs ─────────────────────────────────────────────
+
+function Filaments() {
+  const orbs = [
+    [0.5,  0.2,  0.0],
+    [-1.0, -1.0, -1.5],
+    [2.0,  -0.5, -2.0],
+    [-0.2,  1.8, -1.2],
+  ];
+
+  const geo = useMemo(() => {
+    const pts = [];
+    for (let i = 0; i < orbs.length; i++) {
+      for (let j = i + 1; j < orbs.length; j++) {
+        const dx = orbs[i][0] - orbs[j][0];
+        const dy = orbs[i][1] - orbs[j][1];
+        const dz = orbs[i][2] - orbs[j][2];
+        if (Math.sqrt(dx * dx + dy * dy + dz * dz) < 3.2) {
+          pts.push(new THREE.Vector3(...orbs[i]));
+          pts.push(new THREE.Vector3(...orbs[j]));
+        }
+      }
+    }
+    return new THREE.BufferGeometry().setFromPoints(pts);
+  }, []);
+
+  return (
+    <lineSegments geometry={geo}>
+      <lineBasicMaterial
+        color="#00f2ff" transparent opacity={0.07}
+        blending={THREE.AdditiveBlending} depthWrite={false}
+      />
+    </lineSegments>
+  );
+}
+
+// ── Scene ─────────────────────────────────────────────────────────────────────
 
 const IntelligenceCore = () => {
-  const groupRef = useRef();
+  const masterRef = useRef();
 
   useFrame(({ pointer }) => {
-    if (!groupRef.current) return;
-    // Subtle tilt following mouse
-    groupRef.current.rotation.x = THREE.MathUtils.lerp(
-      groupRef.current.rotation.x,
-      -pointer.y * 0.12,
-      0.04
+    if (!masterRef.current) return;
+    masterRef.current.rotation.x = THREE.MathUtils.lerp(
+      masterRef.current.rotation.x, pointer.y * -0.09, 0.032
+    );
+    masterRef.current.rotation.y = THREE.MathUtils.lerp(
+      masterRef.current.rotation.y, pointer.x *  0.09, 0.032
     );
   });
 
   return (
     <>
-      {/* Camera: slightly elevated, looking at wave plane */}
-      <PerspectiveCamera makeDefault position={[0, 1.2, 5]} fov={55} />
-      <ambientLight intensity={0} />
+      <PerspectiveCamera makeDefault position={[0, 0.4, 8]} fov={55} />
 
-      {/* Tilt the whole group slightly for perspective depth feel */}
-      <group ref={groupRef} rotation={[-0.25, 0, 0]} position={[0, 0.6, 0]}>
+      {/* Subtle deep-space background bloom */}
+      <mesh position={[1, 0, -5]}>
+        <sphereGeometry args={[7, 20, 20]} />
+        <meshBasicMaterial
+          color="#001020" transparent opacity={0.18}
+          blending={THREE.AdditiveBlending} depthWrite={false}
+        />
+      </mesh>
 
-        {/* ── Thick glowing base ribbons ── */}
-        <WaveRibbon color="#1144ff" amplitude={0.55} frequency={1.1} speed={1.0} phase={0}    ribbonHeight={0.14} opacity={0.60} zPos={0.0} />
-        <WaveRibbon color="#ff6600" amplitude={0.60} frequency={0.9} speed={0.8} phase={1.2}  ribbonHeight={0.16} opacity={0.40} zPos={-0.1} />
-        <WaveRibbon color="#0a2288" amplitude={0.45} frequency={1.3} speed={1.2} phase={2.4}  ribbonHeight={0.11} opacity={0.50} zPos={0.05} />
+      <group ref={masterRef} position={[1.2, 0, 0]}>
 
-        {/* ── Bright mid ribbons ── */}
-        <WaveRibbon color="#ffcc44" amplitude={0.50} frequency={1.0} speed={1.1} phase={0.6}  ribbonHeight={0.06} opacity={0.70} zPos={0.15} />
-        <WaveRibbon color="#88aaff" amplitude={0.55} frequency={1.2} speed={0.9} phase={3.0}  ribbonHeight={0.04} opacity={0.60} zPos={0.10} />
+        {/* ── Main cyan orb (hero) ── */}
+        <GlowOrb
+          position={[0.5, 0.2, 0.0]}
+          radius={1.80} color="#00f2ff"
+          speed={0.55} phase={0.0}
+        />
 
-        {/* ── Sharp bright centerline (white / gold light) ── */}
-        <WaveRibbon color="#ffffff" amplitude={0.52} frequency={1.15} speed={1.05} phase={0.1}  ribbonHeight={0.018} opacity={0.95} zPos={0.2} />
-        <WaveRibbon color="#ffddaa" amplitude={0.48} frequency={1.05} speed={0.95} phase={0.3}  ribbonHeight={0.014} opacity={0.80} zPos={0.18} />
+        {/* ── Purple secondary ── */}
+        <GlowOrb
+          position={[-1.0, -1.0, -1.5]}
+          radius={1.25} color="#a855f7"
+          speed={0.75} phase={2.1}
+        />
 
-        {/* ── Fiery/warm accent ribbons ── */}
-        <WaveRibbon color="#ff4400" amplitude={0.42} frequency={0.85} speed={0.75} phase={4.5}  ribbonHeight={0.07} opacity={0.45} zPos={-0.05} />
-        <WaveRibbon color="#4488ff" amplitude={0.38} frequency={0.95} speed={0.85} phase={5.2}  ribbonHeight={0.025} opacity={0.60} zPos={0.12} />
+        {/* ── Green tertiary ── */}
+        <GlowOrb
+          position={[2.0, -0.5, -2.0]}
+          radius={0.95} color="#00ff88"
+          speed={0.90} phase={4.2}
+        />
 
-        {/* ── Glow halo behind (wide, very soft) ── */}
-        <WaveRibbon color="#050522" amplitude={0.70} frequency={0.7}  speed={0.6} phase={1.8}  ribbonHeight={0.50} opacity={0.20} zPos={-0.4} />
-        <WaveRibbon color="#221100" amplitude={0.65} frequency={0.6}  speed={0.5} phase={3.5}  ribbonHeight={0.65} opacity={0.15} zPos={-0.6} />
+        {/* ── Small accent orbs ── */}
+        <GlowOrb
+          position={[-0.2, 1.8, -1.2]}
+          radius={0.46} color="#ffffff"
+          speed={1.30} phase={1.0}
+        />
+        <GlowOrb
+          position={[2.8, 0.8, -1.0]}
+          radius={0.40} color="#00f2ff"
+          speed={1.20} phase={3.5}
+        />
 
-        {/* ── Floor reflection glow ── */}
-        <WaveRibbon color="#112288" amplitude={0.30} frequency={1.1}  speed={1.0} phase={0.0}  ribbonHeight={0.03} opacity={0.30} zPos={0.0} />
-
-        {/* ── Sparkle particles above the wave ── */}
-        <Sparkles />
-
+        <Filaments />
+        <Particles />
       </group>
     </>
   );

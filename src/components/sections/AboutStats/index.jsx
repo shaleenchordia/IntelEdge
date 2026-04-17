@@ -1,477 +1,660 @@
-import React, { useRef, useMemo, useCallback, Suspense } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { Canvas, useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
+import React, { useRef, useCallback, useState, useEffect } from 'react';
+import { motion, useMotionValue, useSpring, useTransform, useScroll, useInView } from 'framer-motion';
+import { Clock, Users, Star, Rocket, Handshake, Trophy } from 'lucide-react';
 
-// ── Card data ─────────────────────────────────────────────────────────────────
+const ACCENT = '#00f2ff';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CARDS  —  each card has a distinct subtle decorative motif
+// ═══════════════════════════════════════════════════════════════════════════
 
 const cardData = [
   {
-    id: 1, icon: '⏳', iconBg: '#6c5ce7', label: 'Experience',
-    title: '14+ Years of Advisory', subtitle: '2010 – 2024',
-    location: 'Global Operations', date: '12 Oct 2024', pattern: 'waves',
+    id: 1, Icon: Clock, label: 'Experience',
+    title: 'Years of Advisory', subtitle: 'Since 2010',
+    location: 'Global Operations', date: '2010 — 2024',
+    motif: 'concentric',
+    metric: { value: 14, suffix: '+', unit: 'YEARS' },
+    scatter: { x: 380, y: 90, rot: -18 }
   },
   {
-    id: 2, icon: '👥', iconBg: '#0984e3', label: 'Adoption',
-    title: '7000+ Participants', subtitle: '2022 – 2024',
-    location: 'Enterprise Scale', date: '28 Dec 2023', pattern: 'dots',
+    id: 2, Icon: Users, label: 'Adoption',
+    title: 'Enterprise Participants', subtitle: 'Trained & Deployed',
+    location: 'Cross-Industry', date: '2022 — 2024',
+    motif: 'grid',
+    metric: { value: 7000, suffix: '+', unit: 'PEOPLE' },
+    scatter: { x: 30, y: 110, rot: 12 }
   },
   {
-    id: 3, icon: '⭐', iconBg: '#fdcb6e', label: 'Rating',
-    title: '4.75 Avg. Client Score', subtitle: '2023 – 2024',
-    location: 'Global Feedback', date: '15 Jan 2024', pattern: 'lines',
+    id: 3, Icon: Star, label: 'Rating',
+    title: 'Average Client Score', subtitle: 'Independently Verified',
+    location: 'Global Feedback', date: '2023 — 2024',
+    motif: 'arc',
+    metric: { value: 4.75, suffix: '', unit: 'SCORE' },
+    scatter: { x: -340, y: 60, rot: 22 }
   },
   {
-    id: 4, icon: '🚀', iconBg: '#00b894', label: 'Impact',
-    title: '250+ AI Solutions', subtitle: '2018 – 2024',
-    location: 'Multi-Sector Delivery', date: '28 Nov 2023', pattern: 'circles',
+    id: 4, Icon: Rocket, label: 'Impact',
+    title: 'AI Solutions Shipped', subtitle: 'Production-grade systems',
+    location: 'Multi-Sector Delivery', date: '2018 — 2024',
+    motif: 'lines',
+    metric: { value: 250, suffix: '+', unit: 'SHIPPED' },
+    scatter: { x: 360, y: -80, rot: -9 }
   },
   {
-    id: 5, icon: '🤝', iconBg: '#e17055', label: 'Network',
-    title: 'Global Alliance Award', subtitle: '2023 – 2024',
-    location: 'Strategic Operations', date: '30 Dec 2023', pattern: 'grid',
+    id: 5, Icon: Handshake, label: 'Network',
+    title: 'Global Alliance Recognition', subtitle: 'Strategic Partnership Award',
+    location: 'International Advisory', date: 'Awarded 2023',
+    motif: 'nodes',
+    metric: { value: 1, suffix: '', unit: 'HONOR' },
+    scatter: { x: 20, y: -70, rot: 17 }
   },
   {
-    id: 6, icon: '🏆', iconBg: '#d63031', label: 'Leadership',
-    title: 'Top 5% Advisory Firm', subtitle: '2024 Status',
-    location: 'Advisory Excellence', date: '13 Aug 2024', pattern: 'shapes',
+    id: 6, Icon: Trophy, label: 'Leadership',
+    title: 'Top-tier Advisory Firm', subtitle: '2024 Industry Standing',
+    location: 'Advisory Excellence', date: '2024',
+    motif: 'diamonds',
+    metric: { value: 5, suffix: '%', unit: 'PERCENTILE' },
+    scatter: { x: -320, y: -90, rot: -14 }
   },
 ];
 
-// ── Floating shapes config — one per card accent colour ───────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// COUNT UP
+// ═══════════════════════════════════════════════════════════════════════════
 
-const SHAPES = [
-  { pos: [-8,  1.5, -6], color: '#6c5ce7', type: 'torusKnot',    speed: 0.38, rot: 0.80 },
-  { pos: [ 6.5,-2.0, -8], color: '#0984e3', type: 'icosahedron',  speed: 0.52, rot: 0.65 },
-  { pos: [ 1.0, 3.5,-10], color: '#fdcb6e', type: 'octahedron',   speed: 0.33, rot: 1.00 },
-  { pos: [-4.5,-2.5, -7], color: '#00b894', type: 'cone',         speed: 0.47, rot: 0.70 },
-  { pos: [ 9.0, 0.5,-10], color: '#e17055', type: 'torus',        speed: 0.42, rot: 0.90 },
-  { pos: [ 2.5,-4.0, -6], color: '#d63031', type: 'dodecahedron', speed: 0.58, rot: 0.55 },
-];
-
-// ── 3D: Floating wireframe shape ──────────────────────────────────────────────
-
-function FloatingShape({ pos, color, type, speed, rot }) {
-  const groupRef = useRef();
-  const phase = useRef(Math.random() * Math.PI * 2);
-
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
-    if (!groupRef.current) return;
-    groupRef.current.position.y = pos[1] + Math.sin(t * speed + phase.current) * 1.1;
-    groupRef.current.rotation.x += rot * 0.003;
-    groupRef.current.rotation.y += rot * 0.005;
-  });
-
-  return (
-    <group ref={groupRef} position={[pos[0], pos[1], pos[2]]}>
-      <mesh>
-        {type === 'torusKnot'    && <torusKnotGeometry    args={[0.85, 0.28, 90, 12]} />}
-        {type === 'icosahedron'  && <icosahedronGeometry  args={[1.05, 1]}             />}
-        {type === 'octahedron'   && <octahedronGeometry   args={[1.00, 0]}             />}
-        {type === 'cone'         && <coneGeometry         args={[0.75, 1.5,  7]}       />}
-        {type === 'torus'        && <torusGeometry        args={[0.75, 0.30, 14, 40]}  />}
-        {type === 'dodecahedron' && <dodecahedronGeometry args={[0.95, 0]}             />}
-        <meshPhongMaterial
-          color={color}
-          emissive={color}
-          emissiveIntensity={0.9}
-          transparent
-          opacity={0.22}
-          wireframe
-          blending={THREE.AdditiveBlending}
-          depthWrite={false}
-        />
-      </mesh>
-      <pointLight intensity={50} color={color} distance={8} decay={2} />
-    </group>
-  );
+function CountUp({ value, suffix = '', trigger, delay = 0, decimals = 0 }) {
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    if (!trigger) return;
+    const start = performance.now() + delay * 1000;
+    const dur = 1800;
+    let id;
+    const tick = (now) => {
+      if (now < start) { id = requestAnimationFrame(tick); return; }
+      const p = Math.min((now - start) / dur, 1);
+      const e = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+      setDisplay(value * e);
+      if (p < 1) id = requestAnimationFrame(tick);
+    };
+    id = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(id);
+  }, [trigger, value, delay]);
+  const formatted = decimals > 0 ? display.toFixed(decimals) : Math.round(display).toLocaleString();
+  return <span>{formatted}{suffix}</span>;
 }
 
-// ── 3D: Particle field ────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// CARD MOTIFS — low-opacity decorative SVGs, one per card
+// ═══════════════════════════════════════════════════════════════════════════
 
-function ParticleField() {
-  const count = 200;
-  const positions = useMemo(() => {
-    const arr = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      arr[i * 3]     = (Math.random() - 0.5) * 36;
-      arr[i * 3 + 1] = (Math.random() - 0.5) * 22;
-      arr[i * 3 + 2] = (Math.random() - 0.5) * 14 - 5;
-    }
-    return arr;
-  }, []);
+const Motif = ({ type, active }) => {
+  const stroke = active ? 'rgba(0, 242, 255, 0.22)' : 'rgba(0, 242, 255, 0.1)';
+  const common = {
+    position: 'absolute', inset: 0, width: '100%', height: '100%',
+    pointerEvents: 'none', transition: 'all 0.5s ease',
+  };
 
-  const ref = useRef();
-  useFrame(({ clock }) => {
-    if (ref.current) ref.current.rotation.y = clock.getElapsedTime() * 0.01;
-  });
-
-  return (
-    <points ref={ref}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={count} array={positions} itemSize={3} />
-      </bufferGeometry>
-      <pointsMaterial
-        color="#7799dd"
-        size={0.055}
-        transparent
-        opacity={0.38}
-        sizeAttenuation
-        blending={THREE.AdditiveBlending}
-        depthWrite={false}
-      />
-    </points>
-  );
-}
-
-// ── 3D: Connecting energy lines between shapes ────────────────────────────────
-
-function EnergyLines() {
-  const ref = useRef();
-  const positions = useMemo(() => {
-    const pairs = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], [0, 3], [1, 4]];
-    const arr = new Float32Array(pairs.length * 2 * 3);
-    pairs.forEach(([a, b], i) => {
-      arr[i * 6]     = SHAPES[a].pos[0]; arr[i * 6 + 1] = SHAPES[a].pos[1]; arr[i * 6 + 2] = SHAPES[a].pos[2];
-      arr[i * 6 + 3] = SHAPES[b].pos[0]; arr[i * 6 + 4] = SHAPES[b].pos[1]; arr[i * 6 + 5] = SHAPES[b].pos[2];
-    });
-    return arr;
-  }, []);
-
-  useFrame(({ clock }) => {
-    if (ref.current) ref.current.material.opacity = 0.06 + Math.sin(clock.getElapsedTime() * 0.5) * 0.03;
-  });
-
-  return (
-    <lineSegments ref={ref}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={positions.length / 3} array={positions} itemSize={3} />
-      </bufferGeometry>
-      <lineBasicMaterial
-        color="#4466aa"
-        transparent
-        opacity={0.07}
-        blending={THREE.AdditiveBlending}
-        depthWrite={false}
-      />
-    </lineSegments>
-  );
-}
-
-function StatsScene() {
-  return (
-    <>
-      <ambientLight intensity={0.04} />
-      <ParticleField />
-      <EnergyLines />
-      {SHAPES.map((s, i) => <FloatingShape key={i} {...s} />)}
-    </>
-  );
-}
-
-// ── Mouse-tilt wrapper ────────────────────────────────────────────────────────
-
-function TiltCard({ children, accent }) {
-  const wrapRef = useRef();
-  const glowRef = useRef();
-
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const sx = useSpring(mx, { stiffness: 130, damping: 22 });
-  const sy = useSpring(my, { stiffness: 130, damping: 22 });
-  const rotateX = useTransform(sy, [-0.5, 0.5], ['8deg', '-8deg']);
-  const rotateY = useTransform(sx, [-0.5, 0.5], ['-8deg', '8deg']);
-
-  const handleMove = useCallback((e) => {
-    const r = wrapRef.current?.getBoundingClientRect();
-    if (!r) return;
-    const cx = (e.clientX - r.left) / r.width;
-    const cy = (e.clientY - r.top)  / r.height;
-    mx.set(cx - 0.5);
-    my.set(cy - 0.5);
-    if (glowRef.current) {
-      glowRef.current.style.background =
-        `radial-gradient(circle at ${cx * 100}% ${cy * 100}%, ${accent}45, transparent 65%)`;
-      glowRef.current.style.opacity = '1';
-    }
-  }, [accent, mx, my]);
-
-  const handleLeave = useCallback(() => {
-    mx.set(0);
-    my.set(0);
-    if (glowRef.current) glowRef.current.style.opacity = '0';
-  }, [mx, my]);
-
-  return (
-    <div style={{ perspective: '900px', height: '100%' }}>
-      <motion.div
-        ref={wrapRef}
-        onMouseMove={handleMove}
-        onMouseLeave={handleLeave}
-        style={{ rotateX, rotateY, transformStyle: 'preserve-3d', height: '100%', position: 'relative' }}
-      >
-        {/* Mouse-following glow overlay */}
-        <div
-          ref={glowRef}
-          style={{
-            position: 'absolute', inset: 0, borderRadius: '16px',
-            zIndex: 3, pointerEvents: 'none',
-            transition: 'opacity 0.35s ease', opacity: 0,
-          }}
-        />
-        {children}
-      </motion.div>
-    </div>
-  );
-}
-
-// ── SVG accent patterns ───────────────────────────────────────────────────────
-
-const AccentPattern = ({ type, color }) => {
-  const base = { position: 'absolute', bottom: 8, right: 8, opacity: 0.45, pointerEvents: 'none' };
-
-  if (type === 'waves') return (
-    <svg width="120" height="120" viewBox="0 0 120 120" style={base}>
-      <path d="M0 78 Q30 56 60 78 T120 78" fill="none" stroke={color} strokeWidth="2" />
-      <path d="M0 92 Q30 70 60 92 T120 92" fill="none" stroke={color} strokeWidth="2" opacity="0.55" />
-      <path d="M0 106 Q30 84 60 106 T120 106" fill="none" stroke={color} strokeWidth="2" opacity="0.25" />
+  if (type === 'concentric') return (
+    <svg viewBox="0 0 400 320" preserveAspectRatio="none" style={common}>
+      {[40, 80, 120, 160, 200, 240].map((r, i) => (
+        <circle key={i} cx="340" cy="40" r={r}
+          fill="none" stroke={stroke} strokeWidth="0.5" opacity={1 - i * 0.12} />
+      ))}
     </svg>
   );
-  if (type === 'dots') return (
-    <svg width="120" height="120" viewBox="0 0 120 120" style={base}>
-      {[...Array(9)].map((_, i) => (
-        <circle key={i} cx={76 + (i % 3) * 15} cy={76 + Math.floor(i / 3) * 15}
-          r={i % 2 === 0 ? 4 : 3} fill={color} opacity={0.75 - i * 0.06} />
+  if (type === 'grid') return (
+    <svg viewBox="0 0 400 320" preserveAspectRatio="none" style={common}>
+      <defs>
+        <pattern id="m-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+          <path d="M 24 0 L 0 0 0 24" fill="none" stroke={stroke} strokeWidth="0.4" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#m-grid)" />
+    </svg>
+  );
+  if (type === 'arc') return (
+    <svg viewBox="0 0 400 320" preserveAspectRatio="none" style={common}>
+      {[0, 1, 2, 3, 4].map(i => (
+        <path key={i}
+          d={`M 0 ${340 - i * 22} Q 200 ${260 - i * 22}, 400 ${340 - i * 22}`}
+          fill="none" stroke={stroke} strokeWidth="0.5" opacity={1 - i * 0.15} />
       ))}
     </svg>
   );
   if (type === 'lines') return (
-    <svg width="120" height="120" viewBox="0 0 120 120" style={base}>
-      <line x1="120" y1="120" x2="36" y2="36" stroke={color} strokeWidth="3.5" />
-      <line x1="120" y1="100" x2="56" y2="36" stroke={color} strokeWidth="3.5" />
-      <line x1="100" y1="120" x2="56" y2="76" stroke={color} strokeWidth="3.5" />
+    <svg viewBox="0 0 400 320" preserveAspectRatio="none" style={common}>
+      {[...Array(14)].map((_, i) => (
+        <line key={i}
+          x1={-40 + i * 40} y1="-10"
+          x2={40 + i * 40} y2="340"
+          stroke={stroke} strokeWidth="0.5" opacity={1 - Math.abs(i - 7) * 0.12} />
+      ))}
     </svg>
   );
-  if (type === 'circles') return (
-    <svg width="120" height="120" viewBox="0 0 120 120" style={base}>
-      <circle cx="100" cy="100" r="17" stroke={color} strokeWidth="2" fill="none" />
-      <circle cx="100" cy="100" r="29" stroke={color} strokeWidth="1.2" fill="none" opacity="0.5" />
-      <circle cx="100" cy="100" r="41" stroke={color} strokeWidth="0.6" fill="none" opacity="0.25" />
+  if (type === 'nodes') {
+    const pts = [[60, 60], [140, 40], [220, 90], [300, 50], [360, 120], [80, 180], [180, 220], [280, 180], [340, 240]];
+    const lines = [[0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7], [7, 8], [2, 6]];
+    return (
+      <svg viewBox="0 0 400 320" preserveAspectRatio="none" style={common}>
+        {lines.map(([a, b], i) => (
+          <line key={`l${i}`} x1={pts[a][0]} y1={pts[a][1]} x2={pts[b][0]} y2={pts[b][1]}
+            stroke={stroke} strokeWidth="0.4" opacity="0.5" />
+        ))}
+        {pts.map(([x, y], i) => (
+          <circle key={`c${i}`} cx={x} cy={y} r="2.5" fill={stroke} />
+        ))}
+      </svg>
+    );
+  }
+  if (type === 'diamonds') return (
+    <svg viewBox="0 0 400 320" preserveAspectRatio="none" style={common}>
+      <defs>
+        <pattern id="m-dia" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <rect width="24" height="24" fill="none" stroke={stroke} strokeWidth="0.5" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#m-dia)" />
     </svg>
   );
-  if (type === 'grid') return (
-    <svg width="120" height="120" viewBox="0 0 120 120" style={base}>
-      <path d="M76 76 L120 76 M76 91 L120 91 M76 106 L120 106 M86 66 L86 120 M101 66 L101 120"
-        stroke={color} strokeWidth="1.5" fill="none" />
-    </svg>
-  );
+  return null;
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STAT CARD
+// ═══════════════════════════════════════════════════════════════════════════
+
+const StatCard = ({ data, index, spreadProgress, isHovered, anyHovered, onHover, onLeave, countTrigger }) => {
+  const invSpread = 1 - spreadProgress;
+  const collapseX = data.scatter.x * invSpread;
+  const collapseY = data.scatter.y * invSpread;
+  const collapseR = data.scatter.rot * invSpread;
+  const collapseScale = 0.82 + 0.18 * spreadProgress;
+
+  const dimmed = anyHovered && !isHovered;
+  const currentZ = isHovered ? 50 : 10 + index;
+
+  const tiltRef = useRef(null);
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const sx = useSpring(mx, { stiffness: 180, damping: 20 });
+  const sy = useSpring(my, { stiffness: 180, damping: 20 });
+  const rX = useTransform(sy, [-0.5, 0.5], ['5deg', '-5deg']);
+  const rY = useTransform(sx, [-0.5, 0.5], ['-5deg', '5deg']);
+  const glowRef = useRef(null);
+
+  const handleMove = useCallback((e) => {
+    const r = tiltRef.current?.getBoundingClientRect();
+    if (!r) return;
+    const cx = (e.clientX - r.left) / r.width;
+    const cy = (e.clientY - r.top) / r.height;
+    mx.set(cx - 0.5);
+    my.set(cy - 0.5);
+    if (glowRef.current) {
+      glowRef.current.style.background =
+        `radial-gradient(circle at ${cx * 100}% ${cy * 100}%, rgba(0,242,255,0.08), transparent 60%)`;
+      glowRef.current.style.opacity = '1';
+    }
+  }, [mx, my]);
+
+  const handleLeave = useCallback(() => {
+    mx.set(0); my.set(0);
+    if (glowRef.current) glowRef.current.style.opacity = '0';
+    onLeave?.();
+  }, [mx, my, onLeave]);
+
+  const { Icon } = data;
+
   return (
-    <svg width="120" height="120" viewBox="0 0 120 120" style={base}>
-      <rect x="80" y="80" width="27" height="27" fill={color} opacity="0.28" rx="3" />
-      <path d="M68 110 L110 68" stroke={color} strokeWidth="2.5" />
-      <path d="M79 110 L110 79" stroke={color} strokeWidth="2.5" opacity="0.45" />
-    </svg>
+    <motion.div
+      animate={{
+        x: collapseX, y: collapseY, rotate: collapseR,
+        scale: isHovered ? 1.03 : (dimmed ? collapseScale * 0.96 : collapseScale),
+        opacity: dimmed ? 0.3 : 1,
+        zIndex: currentZ,
+      }}
+      transition={{ type: 'spring', stiffness: 120, damping: 18, mass: 1 }}
+      style={{ position: 'relative', height: '260px', perspective: 1200, willChange: 'transform' }}
+    >
+      <motion.div
+        ref={tiltRef}
+        onMouseMove={handleMove}
+        onMouseEnter={onHover}
+        onMouseLeave={handleLeave}
+        style={{ rotateX: rX, rotateY: rY, transformStyle: 'preserve-3d', height: '100%', position: 'relative' }}
+      >
+        {/* ambient outer glow */}
+        <motion.div
+          animate={{ opacity: isHovered ? 1 : 0 }}
+          transition={{ duration: 0.5 }}
+          style={{
+            position: 'absolute', inset: -28, borderRadius: 20,
+            background: 'radial-gradient(ellipse, rgba(0,242,255,0.12) 0%, transparent 70%)',
+            filter: 'blur(20px)', pointerEvents: 'none', zIndex: 0,
+          }}
+        />
+
+        <div style={{
+          position: 'relative', zIndex: 2, height: '100%',
+          background: 'linear-gradient(180deg, rgba(18,22,28,0.98) 0%, rgba(10,12,16,0.98) 100%)',
+          borderRadius: 10,
+          padding: '1.4rem 1.5rem 1.2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          overflow: 'hidden',
+          border: `1px solid ${isHovered ? 'rgba(0,242,255,0.22)' : 'rgba(255,255,255,0.06)'}`,
+          boxShadow: isHovered
+            ? '0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,242,255,0.08), inset 0 1px 0 rgba(255,255,255,0.05)'
+            : '0 16px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)',
+          transition: 'box-shadow 0.5s ease, border-color 0.5s ease',
+        }}>
+
+          <Motif type={data.motif} active={isHovered} />
+
+          {/* ghost number watermark */}
+          <div style={{
+            position: 'absolute',
+            bottom: -30, right: -20,
+            fontSize: 220,
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontWeight: 900,
+            color: 'rgba(255,255,255,0.025)',
+            lineHeight: 0.8,
+            letterSpacing: '-10px',
+            pointerEvents: 'none', userSelect: 'none', zIndex: 0,
+          }}>
+            {String(data.id).padStart(2, '0')}
+          </div>
+
+          <div ref={glowRef} style={{
+            position: 'absolute', inset: 0, borderRadius: 10,
+            zIndex: 1, pointerEvents: 'none',
+            transition: 'opacity 0.4s ease', opacity: 0,
+          }} />
+
+          {/* top edge hairline */}
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, height: 1,
+            background: isHovered
+              ? 'linear-gradient(90deg, transparent, rgba(0,242,255,0.5), transparent)'
+              : 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)',
+            transition: 'background 0.5s ease',
+          }} />
+
+          {/* TOP: label + index */}
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            zIndex: 2, position: 'relative', transform: 'translateZ(25px)',
+          }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 10,
+              fontSize: 9.5, fontWeight: 700, letterSpacing: '3px',
+              textTransform: 'uppercase', color: ACCENT,
+            }}>
+              <motion.div
+                animate={{ opacity: [0.3, 1, 0.3] }}
+                transition={{ duration: 2.4, repeat: Infinity }}
+                style={{ width: 4, height: 4, borderRadius: '50%', background: ACCENT }}
+              />
+              {data.label}
+            </div>
+            <div style={{
+              fontSize: 9.5, color: 'rgba(255,255,255,0.3)',
+              fontVariantNumeric: 'tabular-nums', letterSpacing: '1.5px', fontWeight: 500,
+            }}>
+              {String(data.id).padStart(2, '0')} / 06
+            </div>
+          </div>
+
+          {/* MIDDLE: big serif number */}
+          <div style={{ zIndex: 2, position: 'relative', transform: 'translateZ(35px)', marginTop: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10 }}>
+              <div style={{
+                fontFamily: "'Playfair Display', Georgia, serif",
+                fontSize: 54, fontWeight: 500, color: '#ffffff',
+                letterSpacing: '-2px', lineHeight: 0.95,
+                fontVariantNumeric: 'tabular-nums',
+              }}>
+                <CountUp
+                  value={data.metric.value}
+                  suffix={data.metric.suffix}
+                  trigger={countTrigger}
+                  delay={index * 0.1 + 0.3}
+                  decimals={data.metric.value % 1 !== 0 ? 2 : 0}
+                />
+              </div>
+              <div style={{
+                fontSize: 8.5, fontWeight: 700, letterSpacing: '2.5px',
+                color: 'rgba(0,242,255,0.55)', marginBottom: 16,
+                textTransform: 'uppercase',
+                borderLeft: '1px solid rgba(0,242,255,0.25)',
+                paddingLeft: 10,
+              }}>
+                {data.metric.unit}
+              </div>
+            </div>
+
+            <h3 style={{
+              fontSize: 14, fontWeight: 500,
+              color: 'rgba(255,255,255,0.92)',
+              lineHeight: 1.4, margin: '10px 0 3px',
+              letterSpacing: '-0.1px',
+            }}>
+              {data.title}
+            </h3>
+            <div style={{
+              fontSize: 12, color: 'rgba(255,255,255,0.35)',
+              fontStyle: 'italic',
+              fontFamily: "'Playfair Display', Georgia, serif",
+            }}>
+              {data.subtitle}
+            </div>
+          </div>
+
+          {/* FOOTER */}
+          <div style={{
+            zIndex: 2, position: 'relative', transform: 'translateZ(10px)',
+            borderTop: '1px solid rgba(255,255,255,0.05)',
+            paddingTop: 13,
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+              <Icon size={11} color={ACCENT} strokeWidth={1.5} style={{ opacity: 0.75 }} />
+              <span style={{
+                fontSize: 10.5, color: 'rgba(255,255,255,0.45)',
+                fontWeight: 500, letterSpacing: '0.3px',
+              }}>
+                {data.location}
+              </span>
+            </div>
+            <span style={{
+              fontSize: 10, color: 'rgba(255,255,255,0.28)',
+              fontVariantNumeric: 'tabular-nums', fontWeight: 400,
+              letterSpacing: '0.5px',
+            }}>
+              {data.date}
+            </span>
+          </div>
+
+          {/* corner bracket marks */}
+          <div style={{
+            position: 'absolute', top: 14, right: 14,
+            width: 10, height: 10, pointerEvents: 'none',
+            borderTop: `1px solid ${isHovered ? ACCENT : 'rgba(255,255,255,0.2)'}`,
+            borderRight: `1px solid ${isHovered ? ACCENT : 'rgba(255,255,255,0.2)'}`,
+            transition: 'border-color 0.4s ease', zIndex: 3,
+          }} />
+          <div style={{
+            position: 'absolute', bottom: 14, left: 14,
+            width: 10, height: 10, pointerEvents: 'none',
+            borderBottom: `1px solid ${isHovered ? ACCENT : 'rgba(255,255,255,0.2)'}`,
+            borderLeft: `1px solid ${isHovered ? ACCENT : 'rgba(255,255,255,0.2)'}`,
+            transition: 'border-color 0.4s ease', zIndex: 3,
+          }} />
+        </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
-// ── Stat card ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// HEADING REVEAL
+// ═══════════════════════════════════════════════════════════════════════════
 
-const StatCard = ({ data, index }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 45 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: '-60px' }}
-    transition={{ duration: 0.75, delay: index * 0.09, ease: [0.16, 1, 0.3, 1] }}
-    style={{ height: '330px' }}
-  >
-    <TiltCard accent={data.iconBg}>
-      <div style={{
-        background: 'rgba(255,255,255,0.035)',
-        backdropFilter: 'blur(28px)',
-        WebkitBackdropFilter: 'blur(28px)',
-        borderRadius: '16px',
-        padding: '1.9rem',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        overflow: 'hidden',
-        position: 'relative',
-        border: '1px solid rgba(255,255,255,0.07)',
-        boxShadow: `0 8px 40px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.05)`,
-        cursor: 'default',
-      }}>
-        {/* Top gradient accent line */}
-        <div style={{
-          position: 'absolute', top: 0, left: '12%', right: '12%', height: '1px',
-          background: `linear-gradient(90deg, transparent, ${data.iconBg}90, transparent)`,
-        }} />
-
-        {/* Bottom ambient glow */}
-        <div style={{
-          position: 'absolute', bottom: -30, left: '15%', right: '15%', height: '90px',
-          background: `radial-gradient(ellipse, ${data.iconBg}1a, transparent 70%)`,
-          pointerEvents: 'none',
-        }} />
-
-        {/* Top row */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', zIndex: 1 }}>
-          <motion.div
-            whileHover={{ scale: 1.08, boxShadow: `0 0 28px ${data.iconBg}55` }}
-            transition={{ duration: 0.2 }}
-            style={{
-              width: '48px', height: '48px',
-              background: `${data.iconBg}1a`,
-              borderRadius: '12px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '1.5rem',
-              border: `1px solid ${data.iconBg}40`,
-              boxShadow: `0 0 16px ${data.iconBg}20, inset 0 1px 0 ${data.iconBg}25`,
-              flexShrink: 0,
-            }}
-          >
-            {data.icon}
-          </motion.div>
-          <div style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.28)', fontWeight: 500, letterSpacing: '0.4px' }}>
-            {data.date}
-          </div>
-        </div>
-
-        {/* Main content */}
-        <div style={{ zIndex: 1 }}>
-          <div style={{
-            fontSize: '0.62rem', color: data.iconBg, textTransform: 'uppercase',
-            letterSpacing: '2.5px', marginBottom: '0.55rem', fontWeight: 800,
-          }}>
-            {data.label}
-          </div>
-          <h3 style={{
-            fontSize: '1.42rem', color: '#fff', fontWeight: 700,
-            lineHeight: 1.2, marginBottom: '0.35rem', letterSpacing: '-0.5px',
-          }}>
-            {data.title}
-          </h3>
-          <div style={{ fontSize: '0.95rem', color: 'rgba(255,255,255,0.4)', fontWeight: 300 }}>
-            {data.subtitle}
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div style={{
-          zIndex: 1, fontSize: '0.68rem', color: 'rgba(255,255,255,0.28)',
-          display: 'flex', alignItems: 'center', gap: '0.5rem',
-        }}>
-          <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: data.iconBg, opacity: 0.85 }} />
-          {data.location}
-        </div>
-
-        <AccentPattern type={data.pattern} color={data.iconBg} />
-      </div>
-    </TiltCard>
-  </motion.div>
-);
-
-// ── Section ───────────────────────────────────────────────────────────────────
-
-const AboutStats = () => (
-  <section style={{
-    width: '100%',
-    backgroundColor: '#080808',
-    padding: '130px 0',
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    position: 'relative',
-    overflow: 'hidden',
-  }}>
-    {/* ── 3D Background ── */}
-    <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
-      <Canvas camera={{ position: [0, 0, 10], fov: 72 }} gl={{ antialias: true, alpha: true }}>
-        <Suspense fallback={null}>
-          <StatsScene />
-        </Suspense>
-      </Canvas>
-    </div>
-
-    {/* Radial vignette keeps cards readable */}
-    <div style={{
-      position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
-      background: 'radial-gradient(ellipse 110% 75% at 50% 50%, transparent 25%, #080808 88%)',
-    }} />
-
-    {/* Top + bottom gradient edge fades */}
-    <div style={{
-      position: 'absolute', top: 0, left: 0, right: 0, height: '200px', zIndex: 1, pointerEvents: 'none',
-      background: 'linear-gradient(to bottom, #080808, transparent)',
-    }} />
-    <div style={{
-      position: 'absolute', bottom: 0, left: 0, right: 0, height: '200px', zIndex: 1, pointerEvents: 'none',
-      background: 'linear-gradient(to top, #080808, transparent)',
-    }} />
-
-    {/* ── Content ── */}
-    <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 4%', position: 'relative', zIndex: 2, width: '100%' }}>
-
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 35 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
-        style={{ textAlign: 'center', marginBottom: '5rem' }}
-      >
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: '0.6rem',
-          padding: '0.4rem 1.4rem',
-          border: '1px solid rgba(0,242,255,0.2)',
-          borderRadius: '100px',
-          fontSize: '0.62rem', letterSpacing: '4px',
-          textTransform: 'uppercase',
-          color: 'var(--accent-primary)',
-          background: 'rgba(0,242,255,0.05)',
-          backdropFilter: 'blur(10px)',
-          marginBottom: '1.6rem',
-          fontWeight: 700,
-        }}>
+const RevealText = ({ text, isInView, delay = 0, wordDelay = 0.08 }) => {
+  const words = text.split(' ');
+  return (
+    <span style={{ display: 'inline-block' }}>
+      {words.map((w, i) => (
+        <span key={i} style={{ display: 'inline-block', overflow: 'hidden', verticalAlign: 'top', marginRight: '0.28em' }}>
           <motion.span
-            animate={{ opacity: [0.4, 1, 0.4] }}
-            transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}
-            style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--accent-primary)', display: 'inline-block' }}
-          />
-          Track Record
-        </div>
+            initial={{ y: '110%', opacity: 0 }}
+            animate={{ y: isInView ? '0%' : '110%', opacity: isInView ? 1 : 0 }}
+            transition={{ duration: 0.9, delay: delay + i * wordDelay, ease: [0.16, 1, 0.3, 1] }}
+            style={{ display: 'inline-block' }}
+          >
+            {w}
+          </motion.span>
+        </span>
+      ))}
+    </span>
+  );
+};
 
-        <h2 style={{
-          fontSize: 'clamp(2.5rem, 5vw, 4rem)',
-          fontWeight: 800,
-          color: '#fff',
-          letterSpacing: '-2px',
-          lineHeight: 1,
-          marginBottom: '1rem',
-        }}>
-          Institutional Maturity<br />
-          <span style={{
-            background: 'linear-gradient(135deg, #ffffff 30%, var(--accent-primary) 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}>& Recognition</span>
-        </h2>
+// ═══════════════════════════════════════════════════════════════════════════
+// SECTION
+// ═══════════════════════════════════════════════════════════════════════════
 
-        <p style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.38)', fontWeight: 300, maxWidth: '480px', margin: '0 auto' }}>
-          A decade-plus of enterprise AI advisory across industries and geographies
-        </p>
+const AboutStats = () => {
+  const sectionRef = useRef(null);
+  const headerRef = useRef(null);
+  const cardsRef = useRef(null);
+  const headerInView = useInView(headerRef, { once: true, amount: 0.4 });
+  const cardsInView = useInView(cardsRef, { once: false, amount: 0.2 });
+
+  const [hoveredId, setHoveredId] = useState(null);
+  const [pileHovered, setPileHovered] = useState(false);
+  const effectiveSpread = (pileHovered || hoveredId !== null) ? 1 : 0;
+
+  const { scrollYProgress: sectionProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+  const smoothSection = useSpring(sectionProgress, { stiffness: 120, damping: 30 });
+  const headerY = useTransform(smoothSection, [0, 1], ['30px', '-60px']);
+  const watermarkX = useTransform(smoothSection, [0, 1], ['-5%', '5%']);
+  const watermarkOpacity = useTransform(smoothSection, [0, 0.3, 0.7, 1], [0, 0.022, 0.022, 0]);
+
+  return (
+    <section ref={sectionRef} style={{
+      width: '100%',
+      background: `
+        radial-gradient(ellipse at 20% 0%, rgba(18, 28, 45, 0.5) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(8, 14, 24, 0.7) 0%, transparent 50%),
+        linear-gradient(180deg, #060708 0%, #080a0d 50%, #060708 100%)
+      `,
+      padding: '80px 0 100px',
+      minHeight: '100vh',
+      display: 'flex', alignItems: 'center',
+      position: 'relative', overflow: 'hidden',
+    }}>
+
+      {/* fine-grain noise */}
+      <div style={{
+        position: 'absolute', inset: 0, opacity: 0.035, mixBlendMode: 'overlay', pointerEvents: 'none',
+        backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")`,
+      }} />
+
+      {/* architectural wide grid */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        backgroundImage: `
+          linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)
+        `,
+        backgroundSize: '120px 120px',
+      }} />
+
+      {/* soft depth glows */}
+      <div style={{
+        position: 'absolute', top: '10%', left: '-10%',
+        width: '50%', height: '60%',
+        background: 'radial-gradient(ellipse, rgba(0,242,255,0.04) 0%, transparent 65%)',
+        pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: '5%', right: '-10%',
+        width: '55%', height: '55%',
+        background: 'radial-gradient(ellipse, rgba(0,150,200,0.03) 0%, transparent 65%)',
+        pointerEvents: 'none',
+      }} />
+
+      {/* vertical architectural line rules */}
+      <div style={{
+        position: 'absolute', left: '8%', top: 0, bottom: 0, width: 1,
+        background: 'linear-gradient(180deg, transparent, rgba(255,255,255,0.04) 20%, rgba(255,255,255,0.04) 80%, transparent)',
+        pointerEvents: 'none',
+      }} />
+      <div style={{
+        position: 'absolute', right: '8%', top: 0, bottom: 0, width: 1,
+        background: 'linear-gradient(180deg, transparent, rgba(255,255,255,0.04) 20%, rgba(255,255,255,0.04) 80%, transparent)',
+        pointerEvents: 'none',
+      }} />
+
+      {/* watermark */}
+      <motion.div
+        style={{
+          position: 'absolute', top: '42%', left: 0, right: 0,
+          x: watermarkX, opacity: watermarkOpacity,
+          fontFamily: "'Playfair Display', Georgia, serif",
+          fontWeight: 900,
+          fontSize: 'clamp(8rem, 18vw, 16rem)', lineHeight: 1,
+          letterSpacing: '-8px', color: '#fff',
+          textAlign: 'center', whiteSpace: 'nowrap',
+          pointerEvents: 'none', userSelect: 'none', zIndex: 1,
+          fontStyle: 'italic',
+        }}
+      >
+        Record
       </motion.div>
 
-      {/* Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
-        {cardData.map((card, i) => (
-          <StatCard key={card.id} data={card} index={i} />
-        ))}
+      {/* edge fades */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: '160px', zIndex: 1, pointerEvents: 'none',
+        background: 'linear-gradient(to bottom, #050505, transparent)',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0, height: '160px', zIndex: 1, pointerEvents: 'none',
+        background: 'linear-gradient(to top, #050505, transparent)',
+      }} />
+
+      {/* CONTENT */}
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 5%', position: 'relative', zIndex: 2, width: '100%' }}>
+
+        <motion.div
+          ref={headerRef}
+          style={{ textAlign: 'center', marginBottom: '6rem', y: headerY }}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={headerInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 14,
+              marginBottom: '2rem',
+            }}
+          >
+            <div style={{ height: 1, width: 32, background: 'rgba(0,242,255,0.4)' }} />
+            <span style={{
+              fontSize: 10, letterSpacing: '4px', textTransform: 'uppercase',
+              color: ACCENT, fontWeight: 700,
+            }}>
+              Track Record
+            </span>
+            <div style={{ height: 1, width: 32, background: 'rgba(0,242,255,0.4)' }} />
+          </motion.div>
+
+          <h2 style={{
+            fontFamily: "'Playfair Display', Georgia, serif",
+            fontSize: 'clamp(2.2rem, 4vw, 3.4rem)',
+            fontWeight: 500,
+            color: '#fff',
+            letterSpacing: '-1.5px',
+            lineHeight: 1.05,
+            marginBottom: '1rem',
+          }}>
+            <div><RevealText text="Institutional maturity," isInView={headerInView} delay={0.15} /></div>
+            <div style={{ fontStyle: 'italic', color: 'rgba(255,255,255,0.65)' }}>
+              <RevealText text="measured in outcomes." isInView={headerInView} delay={0.4} />
+            </div>
+          </h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={headerInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            style={{
+              fontSize: 14, color: 'rgba(255,255,255,0.45)',
+              fontWeight: 400, maxWidth: '520px', margin: '0 auto',
+              lineHeight: 1.7, letterSpacing: '0.1px',
+            }}
+          >
+            A decade-plus of enterprise AI advisory — across industries, geographies, and operating models.
+          </motion.p>
+        </motion.div>
+
+        {/* Cards pile */}
+        <div
+          onMouseEnter={() => setPileHovered(true)}
+          onMouseLeave={() => setPileHovered(false)}
+          style={{
+            position: 'relative',
+            padding: '80px 40px',
+            margin: '-80px -40px',
+          }}
+        >
+          <div
+            ref={cardsRef}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '1.25rem',
+              position: 'relative',
+            }}
+            className="stats-grid"
+          >
+            {cardData.map((card, i) => (
+              <StatCard
+                key={card.id}
+                data={card}
+                index={i}
+                spreadProgress={effectiveSpread}
+                isHovered={hoveredId === card.id}
+                anyHovered={hoveredId !== null}
+                onHover={() => setHoveredId(card.id)}
+                onLeave={() => setHoveredId(null)}
+                countTrigger={cardsInView}
+              />
+            ))}
+
+            <motion.div
+              animate={{
+                opacity: effectiveSpread > 0.3 ? 0 : 1,
+                y: effectiveSpread > 0.3 ? 10 : 0,
+              }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                position: 'absolute', bottom: -80, left: '50%',
+                transform: 'translateX(-50%)',
+                display: 'flex', alignItems: 'center', gap: 16,
+                pointerEvents: 'none',
+              }}
+            >
+              <div style={{ height: 1, width: 48, background: 'rgba(0,242,255,0.25)' }} />
+              <span style={{
+                fontSize: 10, letterSpacing: '4px', textTransform: 'uppercase',
+                color: 'rgba(0,242,255,0.7)', fontWeight: 600,
+                whiteSpace: 'nowrap',
+              }}>
+                Hover to expand
+              </span>
+              <div style={{ height: 1, width: 48, background: 'rgba(0,242,255,0.25)' }} />
+            </motion.div>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
-);
+
+      <style>{`
+        @media (max-width: 960px) {
+          .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (max-width: 640px) {
+          .stats-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+    </section>
+  );
+};
 
 export default AboutStats;

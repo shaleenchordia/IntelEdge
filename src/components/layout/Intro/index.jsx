@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import logo from '../../../assets/IntelEdge.PNG';
+import logo from '../../../assets/inteledge.webp';
 
 const Intro = ({ onFinish }) => {
   const [hasScrolled, setHasScrolled] = useState(false);
@@ -97,7 +97,7 @@ const Intro = ({ onFinish }) => {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, ease: "easeOut" }}
-          style={{ width: '150px', height: 'auto', marginBottom: '4rem' }}
+          style={{ width: '250px', height: 'auto', marginBottom: '4rem' }}
         />
 
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

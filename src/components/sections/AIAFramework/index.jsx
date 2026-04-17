@@ -1,419 +1,357 @@
-import React, { useState, useCallback, useRef } from 'react';
-import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
-import Step1Icon from "../../../assets/step-1.jpg";
-import Step2Icon from "../../../assets/step-2.jpg";
-import Step3Icon from "../../../assets/step-3.png";
+import React, { useRef } from 'react';
+import { motion, useScroll, useInView } from 'framer-motion';
 
-// ── Data ──────────────────────────────────────────────────────────────────────
+// --- Custom SVGs matching the Wireframe aesthetic ---
 
-const pillars = [
-  {
-    title: "AI Strategy",
-    tagline: "Value Mapping & Roadmap",
-    description: "Before any recommendation is made, we build a clear picture of where the organisation stands and where it needs to go. Deep diagnostics, stakeholder alignment, and opportunity mapping form the foundation of everything that follows.",
-    outcome: "A practical AI roadmap — with business cases, resource requirements, and success metrics built in.",
-    icon: Step1Icon,
-    color: "#00f2ff",
-    num: "01",
-  },
-  {
-    title: "Implementation",
-    tagline: "Execution & Engineering",
-    description: "Strategy without execution is a slide deck. We handle solution design, vendor-neutral technology selection, systems integration, and performance tracking — all engineered for production environments, not demos.",
-    outcome: "AI solutions deployed into operations and performing against defined business metrics.",
-    icon: Step2Icon,
-    color: "#a855f7",
-    num: "02",
-  },
-  {
-    title: "Adoption",
-    tagline: "Sustain & Scale",
-    description: "AI only works if people use it. We focus on training, workflow integration, governance, and the cultural shift required for long-term success — turning sceptics into champions and early wins into lasting transformation.",
-    outcome: "A high-performance 'AI-first' culture where technology is naturally integrated into daily work.",
-    icon: Step3Icon,
-    color: "#00ff88",
-    num: "03",
-  },
-];
-
-// ── Left tab ──────────────────────────────────────────────────────────────────
-
-const StepTab = ({ pillar, index, isActive, onActivate }) => (
-  <div
-    onMouseEnter={() => onActivate(index)}
-    onClick={() => onActivate(index)}
-    style={{
-      display: 'flex', alignItems: 'flex-start', gap: '1.4rem',
-      padding: '1.6rem 1.4rem 1.6rem 0',
-      cursor: 'pointer', userSelect: 'none',
-      borderBottom: index < pillars.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
-    }}
-  >
-    {/* Large step number */}
-    <motion.div
-      animate={{ color: isActive ? pillar.color : 'rgba(255,255,255,0.1)' }}
-      transition={{ duration: 0.35 }}
-      style={{
-        fontSize: '2.8rem', fontWeight: 900, lineHeight: 1,
-        fontFamily: "'Cinzel', serif",
-        flexShrink: 0, minWidth: '60px',
-        letterSpacing: '-2px',
-      }}
-    >
-      {pillar.num}
-    </motion.div>
-
-    <div style={{ paddingTop: '0.25rem', flex: 1 }}>
-      {/* Tagline */}
-      <motion.div
-        animate={{ color: isActive ? pillar.color : 'rgba(255,255,255,0.28)' }}
-        transition={{ duration: 0.35 }}
-        style={{
-          fontSize: '0.6rem', fontWeight: 800,
-          letterSpacing: '3px', textTransform: 'uppercase',
-          marginBottom: '0.45rem',
-        }}
-      >
-        {pillar.tagline}
-      </motion.div>
-
-      {/* Title */}
-      <motion.div
-        animate={{ color: isActive ? '#fff' : 'rgba(255,255,255,0.32)' }}
-        transition={{ duration: 0.35 }}
-        style={{
-          fontSize: '1.25rem', fontWeight: 800,
-          letterSpacing: '-0.5px', lineHeight: 1.2,
-        }}
-      >
-        {pillar.title}
-      </motion.div>
-
-      {/* Active underline */}
-      <motion.div
-        initial={false}
-        animate={{ scaleX: isActive ? 1 : 0, opacity: isActive ? 1 : 0 }}
-        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-        style={{
-          marginTop: '0.75rem', height: '1.5px',
-          background: `linear-gradient(90deg, ${pillar.color}, transparent)`,
-          transformOrigin: 'left',
-        }}
-      />
-    </div>
-  </div>
+const StrategyIcon = () => (
+	<svg viewBox="0 0 120 120" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '100%', height: '100%' }}>
+		{/* Top Header Bar */}
+		<rect x="20" y="24" width="80" height="14" rx="7" />
+		
+		{/* Left Box with Figma-like symbol (four circles) */}
+		<rect x="20" y="48" width="36" height="36" rx="8" />
+		<circle cx="33" cy="58" r="4" />
+		<circle cx="43" cy="58" r="4" />
+		<circle cx="33" cy="68" r="4" />
+		<path d="M 43 64 A 4 4 0 0 1 43 72 A 4 4 0 0 1 39 68" />
+		
+		{/* Right lines */}
+		<line x1="64" y1="52" x2="94" y2="52" />
+		<line x1="64" y1="62" x2="88" y2="62" />
+		<line x1="64" y1="72" x2="94" y2="72" />
+		<line x1="64" y1="82" x2="84" y2="82" />
+		
+		{/* Bottom Dots & button */}
+		<circle cx="24" cy="100" r="4" />
+		<circle cx="36" cy="100" r="4" />
+		<circle cx="48" cy="100" r="4" />
+		<rect x="62" y="92" width="36" height="14" rx="6" />
+	</svg>
 );
 
-// ── Right content panel ───────────────────────────────────────────────────────
+const ImplementationIcon = () => (
+	<svg viewBox="0 0 120 120" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '100%', height: '100%' }}>
+		{/* Left Sidebar block */}
+		<rect x="22" y="24" width="28" height="76" rx="6" />
+		{/* Sidebar content */}
+		<path d="M 28 36 L 31 44 L 34 36 L 37 44 L 40 36" strokeWidth="2.5" />
+		<line x1="28" y1="52" x2="42" y2="52" strokeWidth="2.5" />
+		<line x1="28" y1="60" x2="42" y2="60" strokeWidth="2.5" />
+		<line x1="28" y1="68" x2="42" y2="68" strokeWidth="2.5" />
+		<path d="M 31 86 L 27 82 L 31 78" strokeWidth="2.5" />
+		<path d="M 39 86 L 43 82 L 39 78" strokeWidth="2.5" />
+		<line x1="33" y1="87" x2="37" y2="77" strokeWidth="2" />
 
-const ContentPanel = ({ pillar }) => {
-  const panelRef   = useRef(null);
-  const glowRef    = useRef(null);
-  const mx = useMotionValue(0.5);
-  const my = useMotionValue(0.5);
+		{/* Right grids */}
+		<rect x="58" y="24" width="40" height="30" rx="6" />
+		<rect x="58" y="60" width="16" height="16" rx="4" />
+		<rect x="82" y="60" width="16" height="16" rx="4" />
+		<rect x="58" y="84" width="16" height="16" rx="4" />
+		<rect x="82" y="84" width="16" height="16" rx="4" />
+	</svg>
+);
 
-  const handleMove = useCallback((e) => {
-    const r = panelRef.current.getBoundingClientRect();
-    const cx = (e.clientX - r.left) / r.width;
-    const cy = (e.clientY - r.top)  / r.height;
-    mx.set(cx); my.set(cy);
-    if (glowRef.current) {
-      glowRef.current.style.background = `radial-gradient(circle at ${cx * 100}% ${cy * 100}%, ${pillar.color}1a, transparent 60%)`;
-      glowRef.current.style.opacity = '1';
-    }
-  }, [pillar.color, mx, my]);
+const AdoptionIcon = () => (
+	<svg viewBox="0 0 120 120" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ width: '100%', height: '100%' }}>
+		{/* Cyclical arrows outer ring */}
+		<path d="M 36 34 A 36 36 0 0 1 96 56" strokeWidth="2.5" />
+		<path d="M 96 56 L 96 44 M 96 56 L 84 56" strokeWidth="2.5" />
 
-  const handleLeave = useCallback(() => {
-    if (glowRef.current) glowRef.current.style.opacity = '0';
-  }, []);
+		<path d="M 84 86 A 36 36 0 0 1 24 64" strokeWidth="2.5" />
+		<path d="M 24 64 L 24 76 M 24 64 L 36 64" strokeWidth="2.5" />
 
-  return (
-    <motion.div
-      ref={panelRef}
-      onMouseMove={handleMove}
-      onMouseLeave={handleLeave}
-      key={pillar.num}
-      initial={{ opacity: 0, y: 28 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -18 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      style={{
-        position: 'relative', overflow: 'hidden',
-        borderRadius: '24px',
-        border: `1px solid ${pillar.color}22`,
-        background: `linear-gradient(145deg, rgba(255,255,255,0.025) 0%, ${pillar.color}07 100%)`,
-        padding: '3.5rem',
-      }}
-    >
-      {/* Top accent line */}
-      <div style={{
-        position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
-        background: `linear-gradient(90deg, transparent, ${pillar.color}cc, transparent)`,
-      }} />
+		{/* Chat bubble inside */}
+		<rect x="42" y="44" width="36" height="28" rx="6" />
+		<path d="M 48 72 L 56 82 L 60 72" fill="transparent" />
+		{/* Lines inside chat bubble */}
+		<line x1="50" y1="54" x2="70" y2="54" />
+		<line x1="50" y1="62" x2="62" y2="62" />
+	</svg>
+);
 
-      {/* Cursor glow layer */}
-      <div
-        ref={glowRef}
-        style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none',
-          opacity: 0, transition: 'opacity 0.4s ease',
-          borderRadius: '24px',
-        }}
-      />
+const NoiseGlow = () => (
+	<div style={{
+		position: 'absolute', inset: 0, pointerEvents: 'none',
+		background: 'radial-gradient(circle at top left, rgba(255,255,255,0.12) 0%, transparent 60%)',
+		zIndex: 0
+	}}>
+		<div style={{
+			position: 'absolute', inset: 0, opacity: 0.35,
+			backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+			mixBlendMode: 'overlay'
+		}} />
+	</div>
+);
 
-      {/* Watermark number */}
-      <div style={{
-        position: 'absolute', right: '-0.05em', bottom: '-0.12em',
-        fontSize: '20rem', fontWeight: 900, lineHeight: 1,
-        color: pillar.color, opacity: 0.04,
-        fontFamily: "'Cinzel', serif",
-        pointerEvents: 'none', userSelect: 'none',
-        letterSpacing: '-10px',
-      }}>
-        {pillar.num}
-      </div>
+// --- Content Data ---
 
-      {/* ── Content ── */}
-      <div style={{ position: 'relative', zIndex: 1 }}>
+const pillars = [
+	{
+		title: "AI Strategy",
+		tagline: "Value Mapping & Roadmap",
+		description: "Before any recommendation is made, we build a clear picture of where the organisation stands and where it needs to go. Deep diagnostics, stakeholder alignment, and opportunity mapping form the foundation of everything that follows.",
+		icon: StrategyIcon,
+		num: "1",
+	},
+	{
+		title: "Implementation",
+		tagline: "Execution & Engineering",
+		description: "Strategy without execution is a slide deck. We handle solution design, vendor-neutral technology selection, systems integration, and performance tracking — all engineered for production environments, not demos.",
+		icon: ImplementationIcon,
+		num: "2",
+	},
+	{
+		title: "Adoption",
+		tagline: "Sustain & Scale",
+		description: "AI only works if people use it. We focus on training, workflow integration, governance, and the cultural shift required for long-term success — turning sceptics into champions and early wins into lasting transformation.",
+		icon: AdoptionIcon,
+		num: "3",
+	},
+];
 
-        {/* Badge row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', marginBottom: '2.2rem' }}>
-          <span style={{
-            fontSize: '0.58rem', fontWeight: 800,
-            color: pillar.color, textTransform: 'uppercase', letterSpacing: '3.5px',
-          }}>
-            {pillar.tagline}
-          </span>
-          <span style={{
-            fontSize: '0.58rem', fontWeight: 700,
-            color: `${pillar.color}80`,
-            border: `1px solid ${pillar.color}35`,
-            borderRadius: '100px', padding: '0.15rem 0.7rem',
-            letterSpacing: '1.5px',
-          }}>
-            STEP {pillar.num}
-          </span>
-        </div>
+const PillarCard = ({ pillar, index }) => {
+	const ref = useRef(null);
+	const isInView = useInView(ref, { margin: "-30% 0px -40% 0px" });
+	const isActive = isInView;
 
-        {/* Title */}
-        <h3 style={{
-          fontSize: 'clamp(2.8rem, 4.5vw, 4rem)',
-          fontWeight: 800, letterSpacing: '-3px', lineHeight: 0.95,
-          color: '#fff', margin: '0 0 1.8rem 0',
-        }}>
-          {pillar.title}
-        </h3>
+	return (
+		<div ref={ref} style={{ display: 'flex', gap: '5vw', position: 'relative', width: '100%' }}>
+			
+			{/* Timeline Circle */}
+			<div style={{ 
+				position: 'relative',
+				display: 'flex',
+				justifyContent: 'center',
+				paddingTop: '2.5rem',
+				zIndex: 2
+			}}>
+				<motion.div
+					animate={{ 
+						borderColor: isActive ? '#fff' : 'rgba(255,255,255,0.2)',
+						color: isActive ? '#fff' : 'rgba(255,255,255,0.2)',
+					}}
+					transition={{ duration: 0.4 }}
+					style={{
+						width: '45px', height: '45px',
+						borderRadius: '50%',
+						border: '1px solid rgba(255,255,255,0.2)',
+						background: '#050505',
+						display: 'flex', alignItems: 'center', justifyContent: 'center',
+						fontSize: '0.85rem',
+						fontFamily: "'Inter', sans-serif",
+					}}
+				>
+					{pillar.num}
+				</motion.div>
+			</div>
 
-        {/* Divider */}
-        <div style={{
-          width: '40px', height: '2px',
-          background: `linear-gradient(90deg, ${pillar.color}, ${pillar.color}00)`,
-          marginBottom: '1.8rem',
-          borderRadius: '2px',
-        }} />
+			{/* Card Content */}
+			<motion.div
+				animate={{
+					opacity: isActive ? 1 : 0.25,
+					borderColor: isActive ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.08)',
+					scale: isActive ? 1 : 0.98,
+				}}
+				transition={{ duration: 0.5, ease: 'easeOut' }}
+				style={{
+					flex: 1,
+					padding: '3.5rem',
+					borderRadius: '16px',
+					border: '1px solid rgba(255,255,255,0.08)',
+					background: 'linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%)',
+					display: 'flex',
+					gap: '4rem',
+					flexDirection: 'row',
+					alignItems: 'center',
+					boxShadow: isActive ? '0 20px 40px rgba(0,0,0,0.4)' : 'none',
+				}}
+			>
+				{/* Aesthetic Wireframe Box */}
+				<div style={{ 
+					width: '200px', height: '200px', 
+					borderRadius: '24px', 
+					border: `1px solid rgba(255, 255, 255, 0.08)`, 
+					overflow: 'hidden',
+					flexShrink: 0,
+					background: '#070707',
+					position: 'relative',
+					display: 'flex', alignItems: 'center', justifyContent: 'center'
+				}}>
+					<NoiseGlow />
+					<motion.div
+						animate={{ scale: isActive ? 1.05 : 1, opacity: isActive ? 1 : 0.5 }}
+						transition={{ duration: 0.7 }}
+						style={{ width: '130px', height: '130px', position: 'relative', zIndex: 1 }}
+					>
+						<pillar.icon />
+					</motion.div>
+				</div>
 
-        {/* Description */}
-        <p style={{
-          fontSize: '1rem', lineHeight: 1.8,
-          color: 'rgba(255,255,255,0.52)',
-          fontWeight: 300, margin: '0 0 2.2rem 0',
-          maxWidth: '520px',
-        }}>
-          {pillar.description}
-        </p>
-
-        {/* Outcome */}
-        <div style={{
-          display: 'flex', gap: '1rem',
-          padding: '1.2rem 1.5rem',
-          background: `${pillar.color}0d`,
-          borderLeft: `2px solid ${pillar.color}90`,
-          borderRadius: '0 12px 12px 0',
-          alignItems: 'flex-start',
-        }}>
-          <svg
-            width="16" height="16" viewBox="0 0 16 16" fill="none"
-            style={{ flexShrink: 0, marginTop: '1px' }}
-          >
-            <path d="M3 8h10M9 4l4 4-4 4" stroke={pillar.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <div>
-            <div style={{
-              fontSize: '0.58rem', fontWeight: 800,
-              color: pillar.color, textTransform: 'uppercase',
-              letterSpacing: '2px', marginBottom: '0.4rem',
-            }}>
-              Outcome
-            </div>
-            <p style={{ fontSize: '0.92rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, margin: 0 }}>
-              {pillar.outcome}
-            </p>
-          </div>
-        </div>
-
-        {/* Step image — small, bottom-right decorative */}
-        <div style={{
-          position: 'absolute', bottom: 0, right: 0,
-          width: '88px', height: '88px',
-          borderRadius: '14px 0 24px 0',
-          overflow: 'hidden',
-          border: `1px solid ${pillar.color}25`,
-          opacity: 0.55,
-        }}>
-          <img
-            src={pillar.icon}
-            alt={pillar.title}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-          <div style={{
-            position: 'absolute', inset: 0,
-            background: `linear-gradient(135deg, ${pillar.color}30, transparent 60%)`,
-          }} />
-        </div>
-      </div>
-    </motion.div>
-  );
+				{/* Text Details */}
+				<div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
+					<h3 style={{ fontSize: '2.4rem', fontWeight: 600, color: '#fff', margin: 0, letterSpacing: '-1px' }}>
+						{pillar.title}
+					</h3>
+					<p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.1rem', margin: 0, fontWeight: 500 }}>
+						{pillar.tagline}...
+					</p>
+					<p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.95rem', lineHeight: 1.6, margin: 0, marginTop: '1rem', maxWidth: '90%' }}>
+						{pillar.description}
+					</p>
+				</div>
+			</motion.div>
+		</div>
+	);
 };
 
-// ── Section ───────────────────────────────────────────────────────────────────
+// --- Animated Subtitle ---
+
+const textWords = [
+	{ text: "Most" },
+	{ text: "AI" },
+	{ text: "initiatives" },
+	{ text: "underdeliver" },
+	{ text: "not" },
+	{ text: "because" },
+	{ text: "of" },
+	{ text: "technology", highlight: true },
+	{ text: "—" },
+	{ text: "but" },
+	{ text: "because" },
+	{ text: "of" },
+	{ text: "approach.", highlight: true },
+	{ text: "The" },
+	{ text: "AIA", highlight: true },
+	{ text: "Framework", highlight: true },
+	{ text: "treats" },
+	{ text: "the" },
+	{ text: "full" },
+	{ text: "journey" },
+	{ text: "as" },
+	{ text: "a" },
+	{ text: "single," },
+	{ text: "continuous" },
+	{ text: "process." }
+];
+
+const AnimatedSubtitle = () => {
+	return (
+		<motion.div
+			style={{ 
+				fontSize: '1.2rem', 
+				maxWidth: '680px', 
+				margin: '2rem auto 0', 
+				lineHeight: 1.7,
+				display: 'flex',
+				flexWrap: 'wrap',
+				justifyContent: 'center',
+				columnGap: '0.45rem',
+				rowGap: '0.2rem'
+			}}
+			initial="hidden"
+			whileInView="visible"
+			viewport={{ once: true, margin: "-50px" }}
+			variants={{
+				visible: {
+					transition: { staggerChildren: 0.03 }
+				}
+			}}
+		>
+			{textWords.map((w, index) => (
+				<motion.span
+					key={index}
+					variants={{
+						hidden: { opacity: 0, y: 15, filter: 'blur(4px)' },
+						visible: { 
+							opacity: 1, 
+							y: 0, 
+							filter: 'blur(0px)',
+							transition: { type: "spring", stiffness: 60, damping: 12 } 
+						}
+					}}
+					whileHover={{ 
+						scale: 1.05, 
+						color: '#fff',
+						textShadow: '0 0 12px rgba(255,255,255,0.6)',
+						transition: { duration: 0.2 }
+					}}
+					style={{ 
+						display: 'inline-block', 
+						color: w.highlight ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.5)',
+						fontWeight: w.highlight ? 600 : 400,
+						cursor: 'default',
+						transformOrigin: 'center center'
+					}}
+				>
+					{w.text}
+				</motion.span>
+			))}
+		</motion.div>
+	);
+};
 
 const AIAFramework = () => {
-  const [activeIdx, setActiveIdx] = useState(0);
-  const activePillar = pillars[activeIdx];
+	const containerRef = useRef(null);
+	const { scrollYProgress } = useScroll({
+		target: containerRef,
+		offset: ["start center", "end center"]
+	});
 
-  const handleActivate = useCallback((idx) => setActiveIdx(idx), []);
+	return (
+		<section 
+			id="services" 
+			style={{ 
+				padding: '150px 5%', 
+				background: '#050505', 
+				position: 'relative' 
+			}}
+		>
+			<div style={{ textAlign: 'center', marginBottom: '8rem' }}>
+				<h2 style={{ fontSize: '4.5rem', fontWeight: 800, color: '#fff', letterSpacing: '-2px', margin: 0 }}>How it works</h2>
+				<AnimatedSubtitle />
+			</div>
 
-  return (
-    <section
-      id="services"
-      style={{
-        padding: '130px 0 180px',
-        background: '#050505',
-        position: 'relative',
-        zIndex: 10,
-      }}
-    >
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 5%' }}>
+			<div 
+				ref={containerRef}
+				style={{ 
+					maxWidth: '1000px', margin: '0 auto', 
+					position: 'relative',
+					display: 'flex', flexDirection: 'column', gap: '3rem',
+					paddingBottom: '20vh' // Gives space to scroll past the last element
+				}}
+			>
+				{/* Dim background line */}
+				<div style={{ 
+					position: 'absolute', 
+					left: '22px', 
+					top: '2.5rem', 
+					bottom: '40px', 
+					width: '1px', 
+					background: 'rgba(255,255,255,0.1)',
+					zIndex: 0
+				}} />
+				
+				{/* Bright active scroll line */}
+				<motion.div 
+					style={{ 
+						position: 'absolute', 
+						left: '22px', 
+						top: '2.5rem', 
+						bottom: '40px', 
+						width: '1px', 
+						background: '#fff',
+						scaleY: scrollYProgress,
+						transformOrigin: 'top',
+						zIndex: 1
+					}} 
+				/>
 
-        {/* ── Header ── */}
-        <div style={{ textAlign: 'center', marginBottom: '9vh' }}>
-
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-              padding: '0.35rem 1.2rem',
-              border: '1px solid rgba(0,242,255,0.2)',
-              borderRadius: '100px',
-              fontSize: '0.6rem', letterSpacing: '4px',
-              textTransform: 'uppercase',
-              color: 'var(--accent-primary)',
-              background: 'rgba(0,242,255,0.05)',
-              marginBottom: '1.5rem', fontWeight: 700,
-            }}
-          >
-            <motion.span
-              animate={{ opacity: [0.35, 1, 0.35] }}
-              transition={{ repeat: Infinity, duration: 2.6 }}
-              style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--accent-primary)', display: 'inline-block' }}
-            />
-            Our Approach
-          </motion.div>
-
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.9, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-            style={{
-              fontSize: 'clamp(2.8rem, 6vw, 4.8rem)',
-              fontWeight: 800, letterSpacing: '-3.5px',
-              lineHeight: 1, color: '#fff', display: 'block',
-              marginBottom: '1.4rem',
-            }}
-          >
-            The AIA Framework
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.9, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
-            style={{
-              maxWidth: '560px', margin: '0 auto',
-              fontSize: '1.05rem', color: 'rgba(255,255,255,0.4)',
-              lineHeight: 1.7, fontWeight: 300,
-            }}
-          >
-            Most AI initiatives underdeliver not because of technology — but because of approach.
-            The AIA Framework treats the full journey as a single, continuous process.
-          </motion.p>
-        </div>
-
-        {/* ── Two-column body ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '290px 1fr',
-            gap: '5rem',
-            alignItems: 'start',
-          }}
-        >
-          {/* Left: step tabs */}
-          <div>
-            {/* Section label */}
-            <div style={{
-              fontSize: '0.58rem', fontWeight: 800,
-              textTransform: 'uppercase', letterSpacing: '4px',
-              color: 'rgba(255,255,255,0.22)',
-              marginBottom: '1.2rem',
-            }}>
-              Process
-            </div>
-
-            {pillars.map((pillar, i) => (
-              <StepTab
-                key={i}
-                pillar={pillar}
-                index={i}
-                isActive={i === activeIdx}
-                onActivate={handleActivate}
-              />
-            ))}
-
-            {/* Hover hint */}
-            <div style={{
-              marginTop: '1.6rem',
-              fontSize: '0.62rem', color: 'rgba(255,255,255,0.18)',
-              letterSpacing: '1.5px', fontWeight: 500,
-              display: 'flex', alignItems: 'center', gap: '0.5rem',
-            }}>
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                <path d="M6 1v10M1 6l5 5 5-5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" opacity="0.5" />
-              </svg>
-              Hover to explore
-            </div>
-          </div>
-
-          {/* Right: sticky content panel */}
-          <div style={{ position: 'sticky', top: '110px' }}>
-            <AnimatePresence mode="wait">
-              <ContentPanel key={activeIdx} pillar={activePillar} />
-            </AnimatePresence>
-          </div>
-        </motion.div>
-
-      </div>
-    </section>
-  );
+				{pillars.map((pillar, i) => (
+					<PillarCard key={i} pillar={pillar} index={i} />
+				))}
+			</div>
+		</section>
+	);
 };
 
 export default AIAFramework;

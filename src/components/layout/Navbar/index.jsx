@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import logo from '../../../assets/IntelEdge.PNG';
+import logo from '../../../assets/inteledge.webp';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -39,7 +39,7 @@ const Navbar = () => {
           src={logo}
           alt="Inteledge Logo"
           style={{
-            height: scrolled ? '32px' : '45px',
+            height: scrolled ? '40px' : '60px',
             width: 'auto',
             transition: 'height 0.4s ease'
           }}
@@ -77,6 +77,14 @@ const Navbar = () => {
           <a
             key={item}
             href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
+            onClick={(e) => {
+              e.preventDefault();
+              const targetId = `#${item.toLowerCase().replace(/\s+/g, '-')}`;
+              const element = document.querySelector(targetId);
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
             className="interactive"
             style={{
               fontSize: '0.75rem',
@@ -85,8 +93,11 @@ const Navbar = () => {
               textTransform: 'uppercase',
               opacity: 0.6,
               color: 'var(--text-primary)',
+              cursor: 'pointer',
               transition: 'opacity 0.3s ease'
             }}
+            onMouseEnter={e => e.currentTarget.style.opacity = 1}
+            onMouseLeave={e => e.currentTarget.style.opacity = 0.6}
           >
             {item}
           </a>
