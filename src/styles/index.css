@@ -30,9 +30,7 @@ body {
   color: var(--text-primary);
   font-family: var(--font-main);
   overflow-x: hidden;
-  /* scroll-behavior: smooth; */
-  /* Managed by Lenis */
-  scroll-snap-type: y proximity;
+  /* Managed by Lenis — no native scroll-snap to avoid fighting smooth scroll */
 }
 
 body {
@@ -179,7 +177,6 @@ section {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  scroll-snap-align: start;
 }
 
 /* Lenis Smooth Scroll Optimization */

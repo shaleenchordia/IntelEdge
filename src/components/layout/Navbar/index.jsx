@@ -15,8 +15,9 @@ const Navbar = () => {
 
   return (
     <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.9, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
       style={{
         position: 'absolute',
         top: 0,
@@ -72,7 +73,7 @@ const Navbar = () => {
       </div>
 
       <div style={{ display: 'flex', gap: '3rem', alignItems: 'center' }}>
-        {['Home', 'About', 'Services', 'Labs', 'Use Cases', 'Insights', 'Contact'].map((item) => (
+        {['About Us', 'Services', 'Products', 'Contact'].map((item) => (
           <a
             key={item}
             href={`#${item.toLowerCase().replace(/\s+/g, '-')}`}
@@ -83,7 +84,7 @@ const Navbar = () => {
               letterSpacing: '1.5px',
               textTransform: 'uppercase',
               opacity: 0.6,
-              color: '#fff',
+              color: 'var(--text-primary)',
               transition: 'opacity 0.3s ease'
             }}
           >

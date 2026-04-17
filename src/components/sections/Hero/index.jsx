@@ -4,19 +4,9 @@ import { Canvas } from '@react-three/fiber';
 import IntelligenceCore from './IntelligenceCore';
 
 const Hero = ({ theme }) => {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-
-  const handleMouseMove = (e) => {
-    const { clientX, clientY } = e;
-    const moveX = (clientX - window.innerWidth / 2) / 60;
-    const moveY = (clientY - window.innerHeight / 2) / 60;
-    setMousePos({ x: moveX, y: moveY });
-  };
-
   return (
     <section
       id="hero"
-      onMouseMove={handleMouseMove}
       style={{ position: 'relative', overflow: 'hidden', height: '100vh', padding: 0, backgroundColor: 'var(--bg-color)' }}
     >
       {/* Cinematic 3D Layer */}
@@ -48,14 +38,8 @@ const Hero = ({ theme }) => {
         alignItems: 'center',
         padding: '0 10%',
       }}>
-        <motion.div
-          style={{
-            maxWidth: '1000px',
-            x: mousePos.x,
-            y: mousePos.y,
-            transition: { type: 'spring', stiffness: 100, damping: 30 }
-          }}
-        >
+        <div style={{ maxWidth: '1000px' }}>
+          {/* Eyebrow */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -63,116 +47,136 @@ const Hero = ({ theme }) => {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '1.5rem',
+              gap: '0.75rem',
               marginBottom: '2.5rem',
-              color: 'var(--accent-primary)'
+              flexWrap: 'wrap',
             }}
           >
-            <div style={{ width: '50px', height: '2px', background: 'var(--accent-primary)' }} />
-            <span style={{ fontSize: '0.95rem', fontWeight: 800, letterSpacing: '10px', textTransform: 'uppercase' }}>
-              Inteledge Labs
-            </span>
+            {['AI Strategy', 'Enterprise Transformation', 'Custom AI Products'].map((tag, i) => (
+              <React.Fragment key={tag}>
+                <span style={{
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  letterSpacing: '3px',
+                  textTransform: 'uppercase',
+                  color: 'var(--accent-primary)',
+                  fontFamily: "'Montserrat', sans-serif",
+                }}>{tag}</span>
+                {i < 2 && (
+                  <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.9rem' }}>·</span>
+                )}
+              </React.Fragment>
+            ))}
           </motion.div>
 
-          <h1 style={{ 
-            fontSize: 'max(4rem, 7vw)', 
-            lineHeight: 0.85, 
-            fontWeight: 900, 
+          <h1 style={{
+            fontSize: 'max(4rem, 7vw)',
+            lineHeight: 0.85,
+            fontWeight: 900,
             letterSpacing: '-8px',
             marginBottom: '3rem',
             marginLeft: '-6px',
             color: 'var(--text-primary)'
           }}>
             <motion.span
-              style={{ display: 'block', rotateX: -mousePos.y * 1.5, rotateY: mousePos.x * 1.5 }}
+              style={{ display: 'block' }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
             >
               AI That Works
             </motion.span>
             <motion.span
               className="gradient-text"
-              style={{ display: 'block', rotateX: -mousePos.y * 1.5, rotateY: mousePos.x * 1.5 }}
+              style={{ display: 'block' }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
             >
               For the Business.
             </motion.span>
           </h1>
 
-          <div style={{ position: 'relative', marginBottom: '4rem' }}>
+          <div style={{ position: 'relative', marginBottom: '3.5rem' }}>
             <motion.p
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.8 }}
+              animate={{ opacity: 1 }}
               transition={{ duration: 1.5, delay: 0.8 }}
-              style={{ 
-                fontSize: '1.25rem', 
-                maxWidth: '600px', 
-                lineHeight: 1.4,
-                fontWeight: 500,
-                color: 'var(--text-primary)',
-                letterSpacing: '-0.3px',
-                x: mousePos.x * 0.4,
-                y: mousePos.y * 0.4,
+              style={{
+                fontSize: '1.15rem',
+                maxWidth: '560px',
+                lineHeight: 1.65,
+                fontWeight: 400,
+                color: 'rgba(255,255,255,0.65)',
+                letterSpacing: '-0.1px',
                 position: 'relative',
-                zIndex: 1
+                zIndex: 1,
+                fontFamily: "'Montserrat', sans-serif",
               }}
             >
-              <span style={{ color: 'var(--accent-primary)', fontWeight: 800 }}>Inteledge Advisory & Labs</span> helps enterprises translate 
-              AI investment into <span style={{ fontWeight: 800 }}>business performance</span> — through 
-              independent strategy, structured execution, and purpose-built AI products.
+              <span style={{ color: '#fff', fontWeight: 600 }}>Inteledge Advisory &amp; Labs</span> helps enterprises
+              translate AI investment into{' '}
+              <span style={{ color: 'var(--accent-primary)', fontWeight: 600 }}>business performance</span>{' '}
+              — through independent strategy, structured execution, and purpose-built AI products.
             </motion.p>
-            {/* Animated Underline */}
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: '80px' }}
-              transition={{ delay: 2, duration: 1 }}
-              style={{ height: '2px', background: 'var(--accent-primary)', marginTop: '0.8rem' }}
-            />
           </div>
 
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2 }}
-            style={{ display: 'flex', gap: '2.5rem' }}
+            style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}
           >
+            {/* Primary CTA */}
             <motion.button
               className="interactive"
-              whileHover={{ scale: 1.05, boxShadow: '0 0 60px rgba(0, 114, 255, 0.4)' }}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
               style={{
-                background: 'var(--accent-cyan)',
-                color: '#fff',
-                padding: '24px 50px',
+                background: 'var(--accent-primary)',
+                color: '#000',
+                padding: '15px 32px',
                 borderRadius: '100px',
-                fontSize: '1.1rem',
-                fontWeight: 900,
+                fontSize: '0.85rem',
+                fontWeight: 800,
                 border: 'none',
                 cursor: 'none',
-                x: -mousePos.x * 0.2,
-                y: -mousePos.y * 0.2
+                textTransform: 'uppercase',
+                letterSpacing: '1.5px',
+                fontFamily: "'Montserrat', sans-serif",
               }}
             >
-              Explore Advisory
+              Enquiry Call
             </motion.button>
 
+            {/* Secondary CTA */}
             <motion.button
               className="interactive"
-              whileHover={{ scale: 1.05, background: 'rgba(0, 0, 0, 0.05)' }}
+              whileHover={{ scale: 1.04, color: 'var(--accent-primary)' }}
+              whileTap={{ scale: 0.97 }}
               style={{
-                padding: '24px 50px',
+                background: 'transparent',
+                color: 'rgba(255,255,255,0.7)',
+                padding: '15px 28px',
                 borderRadius: '100px',
-                fontSize: '1.1rem',
-                fontWeight: 700,
-                color: 'var(--text-primary)',
-                background: 'rgba(0,0,0,0.02)',
-                border: '1px solid rgba(0,0,0,0.1)',
-                backdropFilter: 'blur(25px)',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                border: '1px solid rgba(255,255,255,0.15)',
                 cursor: 'none',
-                x: -mousePos.x * 0.1,
-                y: -mousePos.y * 0.1
+                textTransform: 'uppercase',
+                letterSpacing: '1.5px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                backdropFilter: 'blur(10px)',
+                fontFamily: "'Montserrat', sans-serif",
               }}
             >
-              Start Building
+              View Services
+              <span style={{ fontSize: '1rem', fontWeight: 400 }}>→</span>
             </motion.button>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
 
       <motion.div
