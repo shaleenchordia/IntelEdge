@@ -11,13 +11,33 @@
   min-height: 100vh;
   background: transparent;
   overflow: visible;
-  /* Changed from hidden to allow orb to flow into next section */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin-bottom: 0;
-  /* Remove any bottom margin */
   padding-bottom: 0;
-  /* Remove bottom padding to eliminate gap */
+}
+
+/* ── Top-Left Logo ── */
+.hero-top-logo {
+  position: absolute;
+  top: 40px;
+  left: 60px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  padding: 12px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.hero-top-logo img {
+  height: 45px;
+  width: auto;
+  object-fit: contain;
 }
 
 /* ── Background Glow Blobs ── */
