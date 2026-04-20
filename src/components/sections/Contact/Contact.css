@@ -279,6 +279,65 @@
   font-style: italic;
 }
 
+.form-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.error-message {
+  color: #ff4d4d;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+  text-align: center;
+  background: rgba(255, 77, 77, 0.1);
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 77, 77, 0.2);
+}
+
+.contact-success-glass {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 60px 40px;
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.contact-success-glass h3 {
+  font-size: 2rem;
+  margin: 0;
+  color: #fff;
+}
+
+.contact-success-glass p {
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
+}
+
+.success-icon {
+  color: #00f2ff;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 10px rgba(0, 242, 255, 0.5));
+}
+
 @media (max-width: 900px) {
   .contact-container {
     grid-template-columns: 1fr;

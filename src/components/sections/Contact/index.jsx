@@ -1,8 +1,65 @@
-import React from 'react';
-import { Mail, Phone, MapPin, ArrowUpRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { Mail, Phone, MapPin, ArrowUpRight, Loader2, CheckCircle } from 'lucide-react';
+import API_BASE_URL from '../../../config/api';
 import './Contact.css';
 
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    organisation: '',
+    role: '',
+    primaryInterest: '',
+    context: ''
+  });
+  const [status, setStatus] = useState('idle'); // idle, loading, success, error
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('loading');
+    setErrorMessage('');
+
+    try {
+      const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+      const response = await fetch(`${baseUrl}/api/contact`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Something went wrong. Please try again later.');
+      }
+
+      setStatus('success');
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        organisation: '',
+        role: '',
+        interest: '',
+        context: ''
+      });
+    } catch (err) {
+      console.error('Submission error:', err);
+      setStatus('error');
+      setErrorMessage(err.message === 'Failed to fetch' 
+        ? 'Cannot connect to server. Please check your internet or retry later.' 
+        : err.message
+      );
+    }
+  };
+
   return (
     <section className="contact-section" id="contact">
       {/* Background radial gradient based on Photo 1 (Green/Cyan tint) */}
@@ -72,63 +129,131 @@ const Contact = () => {
 
         {/* Right Side: Form Block */}
         <div className="contact-right">
-          <form className="contact-form-glass" onSubmit={(e) => e.preventDefault()}>
-            
-            <div className="form-row">
-              <div className="form-group">
-                <label>First Name</label>
-                <input type="text" placeholder="Your first name" />
-              </div>
-              <div className="form-group">
-                <label>Last Name</label>
-                <input type="text" placeholder="Your last name" />
-              </div>
+          {status === 'success' ? (
+            <div className="contact-success-glass">
+              <CheckCircle size={64} className="success-icon" />
+              <h3>Message Sent!</h3>
+              <p>We've received your enquiry and will get back to you within one business day.</p>
+              <button 
+                className="form-submit-btn" 
+                onClick={() => setStatus('idle')}
+              >
+                Send Another Message
+              </button>
             </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label>Business Email</label>
-                <input type="email" placeholder="you@company.com" />
+          ) : (
+            <form className="contact-form-glass" onSubmit={handleSubmit}>
+              
+              <div className="form-row">
+                <div className="form-group">
+                  <label>First Name</label>
+                  <input 
+                    type="text" 
+                    name="firstName" 
+                    placeholder="Your first name" 
+                    required 
+                    value={formData.firstName}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Last Name</label>
+                  <input 
+                    type="text" 
+                    name="lastName" 
+                    placeholder="Your last name" 
+                    required 
+                    value={formData.lastName}
+                    onChange={handleChange}
+                  />
+                </div>
               </div>
-              <div className="form-group">
-                <label>Organisation</label>
-                <input type="text" placeholder="Company name" />
-              </div>
-            </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label>Your Role</label>
-                <select defaultValue="">
-                  <option value="" disabled hidden>CEO / COO / CXO</option>
-                  <option value="ceo">CEO / COO / CXO</option>
-                  <option value="vp">VP / Director</option>
-                  <option value="ic">Engineer / Developer</option>
-                  <option value="other">Other</option>
-                </select>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Business Email</label>
+                  <input 
+                    type="email" 
+                    name="email" 
+                    placeholder="you@company.com" 
+                    required 
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Organisation</label>
+                  <input 
+                    type="text" 
+                    name="organisation" 
+                    placeholder="Company name" 
+                    required 
+                    value={formData.organisation}
+                    onChange={handleChange}
+                  />
+                </div>
               </div>
-              <div className="form-group">
-                <label>Primary Interest</label>
-                <select defaultValue="">
-                  <option value="" disabled hidden>AI Strategy & Advisory</option>
-                  <option value="strategy">AI Strategy & Advisory</option>
-                  <option value="dev">Custom AI Development</option>
-                  <option value="auto">Process Automation</option>
-                  <option value="other">Other</option>
-                </select>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Your Role</label>
+                  <select 
+                    name="role" 
+                    required 
+                    value={formData.role}
+                    onChange={handleChange}
+                  >
+                    <option value="" disabled>CEO / COO / CXO</option>
+                    <option value="ceo">CEO / COO / CXO</option>
+                    <option value="vp">VP / Director</option>
+                    <option value="ic">Engineer / Developer</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Primary Interest</label>
+                  <select 
+                    name="primaryInterest" 
+                    required 
+                    value={formData.primaryInterest}
+                    onChange={handleChange}
+                  >
+                    <option value="" disabled>AI Strategy & Advisory</option>
+                    <option value="strategy">AI Strategy & Advisory</option>
+                    <option value="dev">Custom AI Development</option>
+                    <option value="auto">Process Automation</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
               </div>
-            </div>
 
-            <div className="form-group full-width">
-              <label>Brief Context <span>(optional)</span></label>
-              <textarea placeholder="What are you trying to solve? A few sentences helps us prepare for a more focused conversation."></textarea>
-            </div>
+              <div className="form-group full-width">
+                <label>Brief Context <span>(optional)</span></label>
+                <textarea 
+                  name="context" 
+                  placeholder="What are you trying to solve? A few sentences helps us prepare for a more focused conversation."
+                  value={formData.context}
+                  onChange={handleChange}
+                ></textarea>
+              </div>
 
-            <button type="submit" className="form-submit-btn">
-              Book Enquiry Call
-            </button>
-            <p className="form-disclaimer">We respond to all enquiries within one business day.</p>
-          </form>
+              {status === 'error' && (
+                <p className="error-message">{errorMessage}</p>
+              )}
+
+              <button type="submit" className="form-submit-btn" disabled={status === 'loading'}>
+                {status === 'loading' ? (
+                  <>
+                    <Loader2 className="animate-spin" size={18} style={{ marginRight: '8px' }} />
+                    Processing...
+                  </>
+                ) : (
+                  'Book Enquiry Call'
+                )}
+              </button>
+              <p className="form-disclaimer">We respond to all enquiries within one business day.</p>
+            </form>
+          )}
         </div>
         
       </div>
