@@ -271,7 +271,7 @@ const TeamAccordion = React.forwardRef((props, ref) => {
         </button>
       </div>
 
-      <div className="team-accordion">
+      <div className="team-accordion" onMouseLeave={() => setActiveIndex(null)}>
         {teamData.map((item, index) => {
           const isActive = activeIndex === index;
           
@@ -279,7 +279,7 @@ const TeamAccordion = React.forwardRef((props, ref) => {
             <motion.div 
               key={item.id}
               className="team-row"
-              onClick={() => setActiveIndex(isActive ? null : index)}
+              onMouseEnter={() => setActiveIndex(index)}
               initial={false}
               animate={{ height: isActive ? 'auto' : 120 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}

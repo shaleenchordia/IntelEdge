@@ -6,6 +6,10 @@
   position: relative;
   overflow: visible;
   font-family: var(--font-main);
+  background-image: 
+    linear-gradient(rgba(232, 74, 58, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232, 74, 58, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
 }
 
 .team-glow {
@@ -70,7 +74,7 @@
 .team-row {
   border-bottom: 1px solid rgba(232, 74, 58, 0.12);
   overflow: hidden;
-  cursor: pointer;
+  cursor: default;
   background: transparent;
   transition: background 0.3s ease;
 }
@@ -97,7 +101,8 @@
   font-weight: 300;
   color: rgba(232, 74, 58, 0.18);
   letter-spacing: -5px;
-  margin-top: -10px; /* Slight adjustment to align properly */
+  margin-top: -10px;
+  /* Slight adjustment to align properly */
   padding-left: 10px;
 }
 
@@ -135,7 +140,7 @@
   margin-top: 10px;
   display: flex;
   justify-content: flex-end;
-  color: rgba(232, 74, 58, 0.7);
+  color: rgba(71, 18, 10, 0.8);
 }
 
 /* Responsiveness */
@@ -143,6 +148,7 @@
   .team-row-inner {
     grid-template-columns: 35% 1fr 40px;
   }
+
   .team-number {
     font-size: 120px;
   }
@@ -155,11 +161,13 @@
     position: relative;
     padding: 20px 0;
   }
+
   .team-icon {
     position: absolute;
     top: 30px;
     right: 0;
   }
+
   .team-number {
     font-size: 100px;
   }
@@ -192,7 +200,8 @@
   object-fit: cover;
   mix-blend-mode: screen;
   /* Exact same filter as the Hero orb */
-  filter: hue-rotate(15deg) saturate(200%) brightness(1.1) contrast(1.05);
+  filter: hue-rotate(110deg) saturate(180%) brightness(1.2) contrast(0.9) blur(30px);
+  opacity: 0.45;
   border-radius: 50%;
   pointer-events: none;
 }
