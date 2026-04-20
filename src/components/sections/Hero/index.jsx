@@ -50,20 +50,20 @@ const LogoStrip = () => {
           overflow: hidden;
           position: relative;
           padding: 2rem 0;
-          margin-top: 4rem;
-          opacity: 0.8;
+          margin-top: 0.5rem; /* Further decreased to move up */
+          opacity: 1;
           z-index: 10;
+          background: #fff;
+          -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 15%, black 85%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, black 15%, black 85%, transparent 100%);
         }
-        .hero-logo-mask {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(90deg, #000 0%, transparent 15%, transparent 85%, #000 100%);
-          z-index: 2;
-          pointer-events: none;
+        .hero-trusted-slider-wrap {
+          margin-bottom: 8rem; /* Added margin to push away from About section */
+          position: relative;
+          z-index: 10;
         }
       `}</style>
 
-      <div className="hero-logo-mask" />
 
       <div
         className={`logo-track${paused ? ' paused' : ''}`}
@@ -86,9 +86,9 @@ const LogoStrip = () => {
                 style={{
                   height: '38px', width: 'auto', display: 'block',
                   filter: isHovered
-                    ? 'brightness(1.15) saturate(1.1) drop-shadow(0 0 10px rgba(0,242,255,0.3))'
-                    : 'grayscale(1) invert(1) brightness(1.2)',
-                  opacity: isHovered ? 1 : 0.4,
+                    ? 'drop-shadow(0 4px 12px rgba(0,0,0,0.15))'
+                    : 'none',
+                  opacity: isHovered ? 1 : 0.8,
                   transform: isHovered ? 'scale(1.1)' : 'scale(1)',
                   transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
                 }}
@@ -587,7 +587,7 @@ const Hero = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.9 }}
       >
-        <p className="hero-trusted-label" style={{ textAlign: 'center', opacity: 0.4, letterSpacing: '2px', textTransform: 'uppercase', fontSize: '10px', fontWeight: 700 }}>
+        <p className="hero-trusted-label" style={{ textAlign: 'center', opacity: 0.8, letterSpacing: '2px', textTransform: 'uppercase', fontSize: '10px', fontWeight: 700, color: '#fff', marginBottom: '0.5rem' }}>
           Trusted by Industry Leaders
         </p>
         <LogoStrip />
