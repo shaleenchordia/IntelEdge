@@ -12,6 +12,7 @@ import CustomCursor from './components/common/CustomCursor';
 import ScrollBall from './components/common/ScrollBall';
 import Global3DLayer from './components/common/Global3DLayer';
 import Intro from './components/layout/Intro';
+import FloatingContact from './components/common/FloatingContact';
 
 // Sections
 import Hero from './components/sections/Hero';
@@ -121,7 +122,8 @@ const App = () => {
 
             <div style={{ position: 'relative', zIndex: 10 }}>
               <CustomCursor theme={theme} />
-              {/* <Navbar theme={theme} /> */}
+              <FloatingContact />
+              <Navbar theme={theme} />
 
               <main style={{ position: 'relative', background: 'transparent' }}>
                 <Hero /> {/* HOME — Web3 Hero */}

@@ -227,7 +227,7 @@ const SplitHero = () => {
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '32vh', zIndex: 10, pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 30 }} transition={{ duration: 1, delay: 1.3, ease }}
           style={{ fontFamily: "'Playfair Display', serif", fontWeight: 900, fontSize: 'clamp(3rem, 8vw, 7rem)', lineHeight: 0.95, color: '#fff', margin: 0, letterSpacing: '-2px', textTransform: 'uppercase', textShadow: '0 2px 20px rgba(0,0,0,0.4)', whiteSpace: 'nowrap' }}>
-          LABS<span style={{ fontWeight: 300, opacity: 0.6, margin: '0 0.3em' }}>/</span>ADVISORY
+          ADVISORY<span style={{ fontWeight: 300, opacity: 0.6, margin: '0 0.3em' }}>/</span>LABS
         </motion.h1>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 12 }} transition={{ duration: 1, delay: 1.55, ease }}
           style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 500, fontSize: 'clamp(1.1rem, 2.2vw, 1.9rem)', color: '#f5c08a', marginTop: '0.3em', letterSpacing: '0.5px' }}>
@@ -291,7 +291,7 @@ const ServiceCard = ({ service, index, isInView }) => {
             border: '1px solid rgba(232,74,58,0.2)',
             borderRadius: 18, padding: '1.6rem 1.7rem',
             backdropFilter: 'blur(20px)',
-            boxShadow: '0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)',
+            boxShadow: '0 45px 90px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05)',
             transformStyle: 'preserve-3d',
             height: '100%',
             display: 'flex', flexDirection: 'column',
@@ -314,12 +314,12 @@ const ServiceCard = ({ service, index, isInView }) => {
               </motion.div>
               <h3 style={{
                 fontFamily: "'Playfair Display', serif",
-                fontSize: 21, fontWeight: 700, color: '#fff',
-                margin: 0, letterSpacing: '-0.5px', lineHeight: 1.15,
+                fontSize: 26, fontWeight: 700, color: '#fff',
+                margin: 0, letterSpacing: '-0.5px', lineHeight: 1.1,
               }}>
                 {S.title}
               </h3>
-              <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)', marginTop: 5, fontStyle: 'italic' }}>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginTop: 8, fontStyle: 'italic' }}>
                 {S.tag}
               </div>
             </div>
@@ -327,7 +327,7 @@ const ServiceCard = ({ service, index, isInView }) => {
               animate={{ rotate: [0, 6, 0, -6, 0] }}
               transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: index * 0.4 }}
               style={{
-                width: 42, height: 42, borderRadius: 11, flexShrink: 0, marginLeft: 10,
+                width: 52, height: 52, borderRadius: 14, flexShrink: 0, marginLeft: 16,
                 background: 'linear-gradient(135deg, rgba(232,74,58,0.25), rgba(139,22,22,0.15))',
                 border: '1px solid rgba(232,74,58,0.35)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -335,11 +335,11 @@ const ServiceCard = ({ service, index, isInView }) => {
                 transform: 'translateZ(40px)',
               }}
             >
-              <S.Icon size={18} color="#ff6b52" strokeWidth={1.5} />
+              <S.Icon size={24} color="#ff6b52" strokeWidth={1.5} />
             </motion.div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: '1.1rem', transform: 'translateZ(20px)', flex: 1 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: '2rem', transform: 'translateZ(20px)', flex: 1 }}>
             {S.points.map((pt, i) => (
               <motion.div
                 key={i}
@@ -350,15 +350,15 @@ const ServiceCard = ({ service, index, isInView }) => {
                   filter: isInView ? 'blur(0px)' : 'blur(4px)',
                 }}
                 transition={{ duration: 0.5, delay: baseDelay + 0.25 + i * 0.08, ease }}
-                style={{ display: 'flex', alignItems: 'center', gap: 10 }}
+                style={{ display: 'flex', alignItems: 'center', gap: 14 }}
               >
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: isInView ? 1 : 0 }}
                   transition={{ duration: 0.35, delay: baseDelay + 0.3 + i * 0.08, type: 'spring' }}
-                  style={{ width: 5, height: 5, borderRadius: '50%', background: '#ff6b52', flexShrink: 0, boxShadow: '0 0 8px rgba(255,107,82,0.6)' }}
+                  style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff6b52', flexShrink: 0, boxShadow: '0 0 8px rgba(255,107,82,0.6)' }}
                 />
-                <span style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.8)', lineHeight: 1.35 }}>{pt}</span>
+                <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.4 }}>{pt}</span>
               </motion.div>
             ))}
           </div>
@@ -367,12 +367,12 @@ const ServiceCard = ({ service, index, isInView }) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 10 }}
             transition={{ duration: 0.6, delay: baseDelay + 0.9, ease }}
-            style={{ borderTop: '1px solid rgba(232,74,58,0.2)', paddingTop: '0.9rem', transform: 'translateZ(15px)' }}
+            style={{ borderTop: '1px solid rgba(232,74,58,0.2)', paddingTop: '1.2rem', transform: 'translateZ(15px)' }}
           >
-            <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '2.5px', color: 'rgba(232,74,58,0.7)', textTransform: 'uppercase', marginBottom: 6 }}>
+            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '3px', color: 'rgba(232,74,58,0.7)', textTransform: 'uppercase', marginBottom: 10 }}>
               Outcome
             </div>
-            <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 13.5, color: 'rgba(255,255,255,0.9)', margin: 0, fontStyle: 'italic', lineHeight: 1.45 }}>
+            <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 16, color: 'rgba(255,255,255,0.9)', margin: 0, fontStyle: 'italic', lineHeight: 1.5 }}>
               {S.outcome}
             </p>
           </motion.div>
@@ -431,41 +431,41 @@ const AdvisorySection = () => {
       </motion.div>
 
       {/* section header */}
-      <div style={{ position: 'relative', zIndex: 2, padding: '3rem 6% 1rem', maxWidth: 1400, margin: '0 auto' }}>
+      <div style={{ position: 'relative', zIndex: 2, padding: '5rem 6% 2rem', maxWidth: 1600, margin: '0 auto' }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 20 }}
           transition={{ duration: 0.8, delay: 0.1, ease }}
-          style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: '1rem' }}
+          style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: '1.5rem' }}
         >
           <motion.div
             animate={{ scaleX: isInView ? 1 : 0 }}
             transition={{ duration: 1, delay: 0.2, ease }}
-            style={{ height: 1, width: 60, background: '#e84a3a', transformOrigin: 'left' }}
+            style={{ height: 1, width: 80, background: '#e84a3a', transformOrigin: 'left' }}
           />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <motion.div animate={{ scale: [1, 1.5, 1], opacity: [0.6, 1, 0.6] }}
               transition={{ duration: 2, repeat: Infinity }}
-              style={{ width: 6, height: 6, borderRadius: '50%', background: '#e84a3a' }} />
-            <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '4px', color: '#e84a3a', textTransform: 'uppercase' }}>
+              style={{ width: 8, height: 8, borderRadius: '50%', background: '#e84a3a' }} />
+            <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: '5px', color: '#e84a3a', textTransform: 'uppercase' }}>
               02 · Inteledge Advisory
             </span>
           </div>
         </motion.div>
       </div>
 
-      {/* Heading block — compact, heading + description inline */}
+      {/* Heading block — increased size */}
       <div style={{
         position: 'relative', zIndex: 2,
-        maxWidth: 1400, margin: '0 auto', padding: '0 6% 2rem',
-        display: 'grid', gridTemplateColumns: '1.4fr 1fr',
-        gap: '3rem', alignItems: 'center',
+        maxWidth: 1600, margin: '0 auto', padding: '0 6% 4rem',
+        display: 'grid', gridTemplateColumns: '1.6fr 1fr',
+        gap: '4rem', alignItems: 'center',
       }} className="adv-heading-grid">
         <div>
           <h2 style={{
             fontFamily: "'Playfair Display', serif", fontWeight: 900,
-            fontSize: 'clamp(1.8rem, 3vw, 3rem)', lineHeight: 1.1,
-            letterSpacing: '-1.5px', color: '#fff', margin: 0,
+            fontSize: 'clamp(2.5rem, 4.2vw, 4.5rem)', lineHeight: 1.05,
+            letterSpacing: '-2px', color: '#fff', margin: 0,
           }}>
             <SplitText text="Independent." isInView={isInView} delay={0.3} />{' '}
             <SplitText text="Vendor-Neutral." isInView={isInView} delay={0.5} />{' '}
@@ -479,18 +479,18 @@ const AdvisorySection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 20 }}
           transition={{ duration: 0.9, delay: 1.1, ease }}
-          style={{ fontSize: 13.5, lineHeight: 1.65, color: 'rgba(255,255,255,0.55)', margin: 0 }}
+          style={{ fontSize: 16, lineHeight: 1.7, color: 'rgba(255,255,255,0.6)', margin: 0, maxWidth: 500 }}
         >
           Strategic advisory that doesn&apos;t stop at the slide deck. We move from boardroom decisions to working systems — without vendor bias or execution gaps.
         </motion.p>
       </div>
 
-      {/* Three cards grid — all shown simultaneously */}
+      {/* Three cards grid — increased gap and size */}
       <div style={{
         position: 'relative', zIndex: 2,
-        maxWidth: 1400, margin: '0 auto', padding: '0 6%',
+        maxWidth: 1600, margin: '0 auto', padding: '0 6%',
         display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: '1.5rem', alignItems: 'stretch',
+        gap: '2.5rem', alignItems: 'stretch',
       }} className="adv-cards-grid">
         {SERVICES.map((service, i) => (
           <ServiceCard key={i} service={service} index={i} isInView={isInView} />

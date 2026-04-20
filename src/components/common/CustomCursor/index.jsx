@@ -3,7 +3,7 @@ import { motion, useSpring } from 'framer-motion';
 
 const CustomCursor = ({ theme }) => {
   const [isHovering, setIsHovering] = useState(false);
-  const springConfig = { damping: 25, stiffness: 200 };
+  const springConfig = { damping: 15, stiffness: 1000, mass: 0.1 };
   const cursorX = useSpring(0, springConfig);
   const cursorY = useSpring(0, springConfig);
 
@@ -15,28 +15,19 @@ const CustomCursor = ({ theme }) => {
 
   useEffect(() => {
     const handleMouseMove = (e) => {
-      // Use requestAnimationFrame for smoother updates and less React churn
-      requestAnimationFrame(() => {
-        cursorX.set(e.clientX - 10);
-        cursorY.set(e.clientY - 10);
-      });
+      cursorX.set(e.clientX - 10);
+      cursorY.set(e.clientY - 10);
     };
 
     const handleMouseOver = (e) => {
-      try {
-        if (e.target && typeof e.target.closest === 'function') {
-          if (e.target.closest('button, a, .interactive')) {
-            setIsHovering(true);
-          } else {
-            setIsHovering(false);
-          }
-        }
-      } catch (err) {
-        // Silently fail to avoid crashing the whole app
-      }
+      const target = e.target;
+      if (!target || typeof target.closest !== 'function') return;
+      
+      const isInteractive = target.closest('button, a, .interactive, [role="button"]');
+      setIsHovering(!!isInteractive);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('mouseover', handleMouseOver);
 
     return () => {
@@ -54,13 +45,13 @@ const CustomCursor = ({ theme }) => {
         background: accentColor,
         borderRadius: '50%',
         pointerEvents: 'none',
-        zIndex: 9999,
+        zIndex: 100000, // Ensure it's above everything
         mixBlendMode: 'difference',
         x: cursorX,
         y: cursorY,
-        scale: isHovering ? 3 : 1,
+        scale: isHovering ? 2.5 : 1,
         boxShadow: `0 0 20px ${accentColor}`,
-        transition: 'scale 0.3s ease, background 0.5s ease'
+        transition: 'scale 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.5s ease'
       }}
     />
   );

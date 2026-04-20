@@ -1,6 +1,6 @@
 .nav-capsule-wrapper {
   position: fixed;
-  top: 30px;
+  top: 20px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 9999;
@@ -8,7 +8,7 @@
   align-items: center;
   background: #18181A;
   border-radius: 100px;
-  padding: 8px 8px 8px 8px;
+  padding: 8px 28px 8px 8px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08); /* faint border for dark mode pop */
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -17,11 +17,12 @@
 }
 
 .nav-capsule-scrolled {
-  top: 20px;
-  background: rgba(24, 24, 26, 0.85); /* Frost mode when scrolling */
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  top: 15px;
+  background: rgba(10, 10, 12, 0.5); /* Deep translucent when scrolling */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .nav-logo-circle {
@@ -33,7 +34,7 @@
   align-items: center;
   justify-content: center;
   color: #000;
-  margin-right: 32px;
+  margin-right: 28px;
   flex-shrink: 0;
   transition: transform 0.3s ease;
 }
@@ -44,9 +45,8 @@
 
 .nav-links-center {
   display: flex;
-  gap: 40px;
+  gap: 32px;
   align-items: center;
-  margin-right: 32px;
 }
 
 .nav-capsule-link {

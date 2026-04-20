@@ -192,7 +192,7 @@
   grid-template-columns: 1fr 1fr;
   align-items: center;
   min-height: calc(100vh - 100px);
-  padding: 60px 80px 80px;
+  padding: 0px 80px 100px;
   gap: 40px;
 }
 
@@ -260,34 +260,58 @@
   max-width: 520px;
 }
 
-/* Primary CTA */
-.hero-cta-primary {
+.hero-ctas {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+/* Base CTA Styles (Shared) */
+.hero-cta-primary, .hero-cta-secondary {
   display: inline-flex;
   align-items: center;
   gap: 12px;
   padding: 16px 32px;
   border-radius: 16px;
-  background: rgba(0, 132, 255, 0.8);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-  border: none;
   color: #ffffff;
   font-family: 'Inter', sans-serif;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow:
-    inset 0px 4px 4px 0px rgba(255, 255, 255, 0.35),
-    0 8px 24px rgba(0, 132, 255, 0.3);
   width: fit-content;
 }
 
-.hero-cta-primary:hover {
+.hero-cta-primary {
+  background: rgba(0, 132, 255, 0.8);
+  border: none;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  box-shadow:
+    inset 0px 4px 4px 0px rgba(255, 255, 255, 0.35),
+    0 8px 24px rgba(0, 132, 255, 0.3);
+}
+
+.hero-cta-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.hero-cta-primary:hover, .hero-cta-secondary:hover {
   transform: scale(1.02);
+}
+
+.hero-cta-primary:hover {
   box-shadow:
     inset 0px 4px 4px 0px rgba(255, 255, 255, 0.35),
     0 12px 36px rgba(0, 132, 255, 0.4);
+}
+
+.hero-cta-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .hero-cta-icon {

@@ -23,18 +23,13 @@ const Navbar = () => {
 
       {/* Center Links (Mapped to requested mockup text for exact replica, or site routes) */}
       <div className="nav-links-center">
-        <a href="#services" className="nav-capsule-link">Work</a>
-        <a href="#about" className="nav-capsule-link">About</a>
-        <a href="#contact" className="nav-capsule-link">Contact</a>
+        <a href="#services" className="nav-capsule-link">Services</a>
+        <a href="#products" className="nav-capsule-link">Products</a>
+        <a href="#about" className="nav-capsule-link">About Us</a>
+        <a href="#contact" className="nav-capsule-link">Contact Us</a>
       </div>
 
-      {/* Right Button (Email string as styled button) */}
-      <button 
-        className="nav-contact-btn"
-        onClick={() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })}
-      >
-        hello@inteledge.com
-      </button>
+
 
     </nav>
   );

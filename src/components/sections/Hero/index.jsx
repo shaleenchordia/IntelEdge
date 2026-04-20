@@ -421,30 +421,7 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* ── Liquid Glass Navbar ── */}
-      <nav className="hero-glass-nav">
-        <motion.div
-          className="hero-glass-nav-inner"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <span className="hero-glass-logo">Inteledge</span>
 
-          <div className="hero-glass-links">
-            {['Home', 'Features', 'Company', 'Pricing'].map((link) => (
-              <a key={link} className="hero-glass-link" href="#">
-                {link}
-              </a>
-            ))}
-          </div>
-
-          <button className="hero-glass-signup">
-            Sign Up
-            <ArrowIcon />
-          </button>
-        </motion.div>
-      </nav>
 
       {/* ── Hero Content ── */}
       <div className="hero-content-grid">
@@ -486,19 +463,36 @@ const Hero = () => {
             Inteledge Advisory & Labs helps enterprises translate AI investment into business performance — through independent strategy, structured execution, and purpose-built AI products.
           </motion.p>
 
-          {/* Primary CTA */}
-          <motion.button
-            className="hero-cta-primary"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.65 }}
-            whileHover={{ scale: 1.02 }}
-          >
-            Get Started Now
-            <span className="hero-cta-icon">
-              <ArrowIcon />
-            </span>
-          </motion.button>
+          {/* CTA Buttons */}
+          <div className="hero-ctas">
+            <motion.button
+              className="hero-cta-primary"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.65 }}
+              whileHover={{ scale: 1.02 }}
+              onClick={() => document.getElementById('products').scrollIntoView({ behavior: 'smooth' })}
+            >
+              Explore Products
+              <span className="hero-cta-icon">
+                <ArrowIcon />
+              </span>
+            </motion.button>
+            
+            <motion.button
+              className="hero-cta-secondary"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.75 }}
+              whileHover={{ scale: 1.02 }}
+              onClick={() => document.getElementById('services').scrollIntoView({ behavior: 'smooth' })}
+            >
+              Explore Services
+              <span className="hero-cta-icon">
+                <ArrowIcon />
+              </span>
+            </motion.button>
+          </div>
         </div>
 
         {/* Right side — orb occupies this space via absolute positioning */}
