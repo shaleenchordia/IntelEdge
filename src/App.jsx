@@ -128,8 +128,7 @@ const App = () => {
                 <About /> {/* NEW ABOUT SECTION */}
                 <GapsSection /> {/* NEW GAPS SECTION */}
                 <AIAFramework /> {/* AIA FRAMEWORK SECTION */}
-                <LabsAdvisoryHero /> {/* LABS & ADVISORY */}
-                <TeamAccordion ref={servicesRef} /> {/* RESTORED TEAM ACCORDION */}
+                <LabsAdvisoryHero /> {/* LABS & ADVISORY + TRAINING & PROGRAMS */}
                 <ProductsSlider theme={theme} /> {/* PRODUCTS SLIDER */}
                 <Testimonials />
                 <Contact />

@@ -15,7 +15,7 @@
   transform: translate(-50%, -50%);
   width: 60vw;
   height: 60vw;
-  background: radial-gradient(circle, rgba(0, 132, 255, 0.08) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(232, 74, 58, 0.12) 0%, transparent 70%);
   filter: blur(120px);
   z-index: 0;
   pointer-events: none;
@@ -55,19 +55,20 @@
 }
 
 .team-get-in-touch:hover {
-  background: #fff;
-  color: #000;
+  background: #e84a3a;
+  color: #fff;
+  border-color: #e84a3a;
 }
 
 .team-accordion {
   position: relative;
   z-index: 1;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  border-top: 1px solid rgba(232, 74, 58, 0.25);
+  border-bottom: 1px solid rgba(232, 74, 58, 0.25);
 }
 
 .team-row {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(232, 74, 58, 0.12);
   overflow: hidden;
   cursor: pointer;
   background: transparent;
@@ -75,7 +76,7 @@
 }
 
 .team-row:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(232, 74, 58, 0.06);
 }
 
 .team-row:last-child {
@@ -94,7 +95,7 @@
   font-size: 200px;
   line-height: 0.7;
   font-weight: 300;
-  color: #fff;
+  color: rgba(232, 74, 58, 0.18);
   letter-spacing: -5px;
   margin-top: -10px; /* Slight adjustment to align properly */
   padding-left: 10px;
@@ -134,7 +135,7 @@
   margin-top: 10px;
   display: flex;
   justify-content: flex-end;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(232, 74, 58, 0.7);
 }
 
 /* Responsiveness */
@@ -191,7 +192,7 @@
   object-fit: cover;
   mix-blend-mode: screen;
   /* Exact same filter as the Hero orb */
-  filter: hue-rotate(-55deg) saturate(250%) brightness(1.2) contrast(1.1);
+  filter: hue-rotate(15deg) saturate(200%) brightness(1.1) contrast(1.05);
   border-radius: 50%;
   pointer-events: none;
 }

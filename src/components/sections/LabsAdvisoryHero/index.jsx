@@ -1,6 +1,7 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { motion, useInView, useScroll, useTransform, useSpring, AnimatePresence, useMotionValue } from 'framer-motion';
+import React, { useRef, useState, useCallback } from 'react';
+import { motion, useInView, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
 import { Compass, RefreshCw, Zap, ArrowUpRight } from 'lucide-react';
+import TeamAccordion from '../Team';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // DATA
@@ -239,33 +240,12 @@ const SplitHero = () => {
 
 
 // ═══════════════════════════════════════════════════════════════════════════
-// SECTION 2 — ADVISORY (cinematic)
+// Single Service Card (used in the 3-card grid)
 // ═══════════════════════════════════════════════════════════════════════════
 
-const AdvisorySection = () => {
-  const sectionRef = useRef(null);
+const ServiceCard = ({ service, index, isInView }) => {
   const cardRef = useRef(null);
-  const isInView = useInView(sectionRef, { once: true, amount: 0.15 });
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start end', 'end start'],
-  });
-  const smooth = useSpring(scrollYProgress, springConfig);
-  const bgY = useTransform(smooth, [0, 1], ['-15%', '15%']);
-  const bgScale = useTransform(smooth, [0, 0.5, 1], [1.1, 1, 1.1]);
-  const contentY = useTransform(smooth, [0, 1], ['10%', '-15%']);
-  const watermarkX = useTransform(smooth, [0, 1], ['-25%', '25%']);
-  const watermarkOpacity = useTransform(smooth, [0, 0.3, 0.7, 1], [0, 0.1, 0.1, 0]);
-
-  const [activeService, setActiveService] = useState(0);
   const [cardTilt, setCardTilt] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    if (!isInView) return;
-    const id = setInterval(() => setActiveService(p => (p + 1) % 3), 5500);
-    return () => clearInterval(id);
-  }, [isInView]);
 
   const onCardMove = useCallback((e) => {
     const r = cardRef.current?.getBoundingClientRect();
@@ -276,11 +256,154 @@ const AdvisorySection = () => {
   }, []);
   const onCardLeave = useCallback(() => setCardTilt({ x: 0, y: 0 }), []);
 
-  const S = SERVICES[activeService];
+  const S = service;
+  const baseDelay = 0.4 + index * 0.18;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40, rotateY: -8 }}
+      animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 40, rotateY: isInView ? 0 : -8 }}
+      transition={{ duration: 1.0, delay: baseDelay, ease }}
+      style={{ perspective: 1400 }}
+    >
+      <motion.div
+        ref={cardRef}
+        onMouseMove={onCardMove}
+        onMouseLeave={onCardLeave}
+        animate={{ rotateX: cardTilt.x, rotateY: cardTilt.y }}
+        transition={{ type: 'spring', stiffness: 250, damping: 28 }}
+        style={{ transformStyle: 'preserve-3d', position: 'relative', height: '100%' }}
+      >
+        <motion.div
+          animate={{ opacity: [0.25, 0.45, 0.25] }}
+          transition={{ duration: 4, repeat: Infinity, delay: index * 0.6 }}
+          style={{
+            position: 'absolute', inset: -20,
+            background: 'radial-gradient(ellipse, rgba(232,74,58,0.22) 0%, transparent 70%)',
+            filter: 'blur(30px)', pointerEvents: 'none',
+          }}
+        />
+
+        <div
+          style={{
+            position: 'relative',
+            background: 'linear-gradient(145deg, rgba(30,8,8,0.5), rgba(12,3,3,0.4))',
+            border: '1px solid rgba(232,74,58,0.2)',
+            borderRadius: 18, padding: '1.6rem 1.7rem',
+            backdropFilter: 'blur(20px)',
+            boxShadow: '0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)',
+            transformStyle: 'preserve-3d',
+            height: '100%',
+            display: 'flex', flexDirection: 'column',
+          }}
+        >
+          <div style={{
+            position: 'absolute', top: 14, right: 14, width: 22, height: 22,
+            borderTop: '1.5px solid rgba(232,74,58,0.5)', borderRight: '1.5px solid rgba(232,74,58,0.5)', pointerEvents: 'none'
+          }} />
+
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.1rem', transform: 'translateZ(30px)' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : -6 }}
+                transition={{ duration: 0.5, delay: baseDelay + 0.15, ease }}
+                style={{ fontSize: 9, fontWeight: 800, letterSpacing: '3px', color: 'rgba(232,74,58,0.8)', marginBottom: 8, textTransform: 'uppercase' }}
+              >
+                {S.num}
+              </motion.div>
+              <h3 style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: 21, fontWeight: 700, color: '#fff',
+                margin: 0, letterSpacing: '-0.5px', lineHeight: 1.15,
+              }}>
+                {S.title}
+              </h3>
+              <div style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)', marginTop: 5, fontStyle: 'italic' }}>
+                {S.tag}
+              </div>
+            </div>
+            <motion.div
+              animate={{ rotate: [0, 6, 0, -6, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: index * 0.4 }}
+              style={{
+                width: 42, height: 42, borderRadius: 11, flexShrink: 0, marginLeft: 10,
+                background: 'linear-gradient(135deg, rgba(232,74,58,0.25), rgba(139,22,22,0.15))',
+                border: '1px solid rgba(232,74,58,0.35)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: '0 10px 30px rgba(232,74,58,0.25)',
+                transform: 'translateZ(40px)',
+              }}
+            >
+              <S.Icon size={18} color="#ff6b52" strokeWidth={1.5} />
+            </motion.div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: '1.1rem', transform: 'translateZ(20px)', flex: 1 }}>
+            {S.points.map((pt, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: 20, filter: 'blur(4px)' }}
+                animate={{
+                  opacity: isInView ? 1 : 0,
+                  x: isInView ? 0 : 20,
+                  filter: isInView ? 'blur(0px)' : 'blur(4px)',
+                }}
+                transition={{ duration: 0.5, delay: baseDelay + 0.25 + i * 0.08, ease }}
+                style={{ display: 'flex', alignItems: 'center', gap: 10 }}
+              >
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: isInView ? 1 : 0 }}
+                  transition={{ duration: 0.35, delay: baseDelay + 0.3 + i * 0.08, type: 'spring' }}
+                  style={{ width: 5, height: 5, borderRadius: '50%', background: '#ff6b52', flexShrink: 0, boxShadow: '0 0 8px rgba(255,107,82,0.6)' }}
+                />
+                <span style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.8)', lineHeight: 1.35 }}>{pt}</span>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 10 }}
+            transition={{ duration: 0.6, delay: baseDelay + 0.9, ease }}
+            style={{ borderTop: '1px solid rgba(232,74,58,0.2)', paddingTop: '0.9rem', transform: 'translateZ(15px)' }}
+          >
+            <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: '2.5px', color: 'rgba(232,74,58,0.7)', textTransform: 'uppercase', marginBottom: 6 }}>
+              Outcome
+            </div>
+            <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 13.5, color: 'rgba(255,255,255,0.9)', margin: 0, fontStyle: 'italic', lineHeight: 1.45 }}>
+              {S.outcome}
+            </p>
+          </motion.div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SECTION 2 — ADVISORY (cinematic) — all three cards shown simultaneously
+// ═══════════════════════════════════════════════════════════════════════════
+
+const AdvisorySection = () => {
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, amount: 0.15 });
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+  const smooth = useSpring(scrollYProgress, springConfig);
+  const bgY = useTransform(smooth, [0, 1], ['-15%', '15%']);
+  const bgScale = useTransform(smooth, [0, 0.5, 1], [1.1, 1, 1.1]);
+  const watermarkX = useTransform(smooth, [0, 1], ['-25%', '25%']);
+  const watermarkOpacity = useTransform(smooth, [0, 0.3, 0.7, 1], [0, 0.1, 0.1, 0]);
 
   return (
     <section ref={sectionRef} id="advisory"
-      style={{ position: 'relative', width: '100%', minHeight: '110vh', background: 'transparent', overflow: 'hidden', fontFamily: "'Inter', sans-serif" }}
+      style={{ position: 'relative', width: '100%', background: 'transparent', overflow: 'hidden', fontFamily: "'Inter', sans-serif", paddingBottom: '5rem' }}
     >
       <motion.div style={{ position: 'absolute', inset: '-10% 0', y: bgY, scale: bgScale, pointerEvents: 'none' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(46,10,7,0.2) 0%, rgba(24,6,6,0.1) 60%, transparent 100%)' }} />
@@ -296,11 +419,11 @@ const AdvisorySection = () => {
       {/* scroll-linked watermark */}
       <motion.div
         style={{
-          position: 'absolute', top: '30%', left: 0, right: 0,
+          position: 'absolute', top: '35%', left: 0, right: 0,
           x: watermarkX, opacity: watermarkOpacity,
           fontFamily: "'Playfair Display', serif", fontWeight: 900,
-          fontSize: 'clamp(12rem, 28vw, 28rem)', lineHeight: 1,
-          letterSpacing: '-10px', color: '#fff',
+          fontSize: 'clamp(6rem, 14vw, 14rem)', lineHeight: 1,
+          letterSpacing: '-6px', color: '#fff',
           textAlign: 'center', whiteSpace: 'nowrap', pointerEvents: 'none', userSelect: 'none',
         }}
       >
@@ -308,12 +431,12 @@ const AdvisorySection = () => {
       </motion.div>
 
       {/* section header */}
-      <div style={{ position: 'relative', zIndex: 2, padding: '7rem 6% 2rem', maxWidth: 1400, margin: '0 auto' }}>
+      <div style={{ position: 'relative', zIndex: 2, padding: '3rem 6% 1rem', maxWidth: 1400, margin: '0 auto' }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 20 }}
           transition={{ duration: 0.8, delay: 0.1, ease }}
-          style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: '2.5rem' }}
+          style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: '1rem' }}
         >
           <motion.div
             animate={{ scaleX: isInView ? 1 : 0 }}
@@ -331,217 +454,56 @@ const AdvisorySection = () => {
         </motion.div>
       </div>
 
-      <motion.div style={{ y: contentY }}>
-        <div style={{
-          position: 'relative', zIndex: 2,
-          maxWidth: 1400, margin: '0 auto', padding: '0 6% 8rem',
-          display: 'grid', gridTemplateColumns: '1fr 1fr',
-          gap: '5rem', alignItems: 'center',
-        }} className="adv-grid">
-
-          {/* LEFT */}
-          <div>
-            <h2 style={{
-              fontFamily: "'Playfair Display', serif", fontWeight: 900,
-              fontSize: 'clamp(2.6rem, 5.2vw, 5.2rem)', lineHeight: 1.0,
-              letterSpacing: '-3px', color: '#fff', margin: 0,
-            }}>
-              <div><SplitText text="Independent." isInView={isInView} delay={0.3} /></div>
-              <div><SplitText text="Vendor-Neutral." isInView={isInView} delay={0.5} /></div>
-              <div style={{ color: '#e84a3a' }}><SplitText text="Execution-Focused." isInView={isInView} delay={0.7} /></div>
-            </h2>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 20 }}
-              transition={{ duration: 0.9, delay: 1.1, ease }}
-              style={{ marginTop: '2rem', fontSize: 15, lineHeight: 1.8, color: 'rgba(255,255,255,0.5)', maxWidth: 460 }}
-            >
-              Strategic advisory that doesn&apos;t stop at the slide deck. We move from boardroom decisions to working systems — without vendor bias or execution gaps.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 10 }}
-              transition={{ duration: 0.8, delay: 1.25, ease }}
-              style={{ display: 'flex', gap: 8, marginTop: '2.8rem', flexWrap: 'wrap' }}
-            >
-              {SERVICES.map((s, i) => (
-                <motion.button
-                  key={i}
-                  onClick={() => setActiveService(i)}
-                  whileHover={{ y: -3 }}
-                  style={{
-                    position: 'relative', padding: '11px 22px', borderRadius: 100,
-                    fontSize: 11, fontWeight: 800, letterSpacing: '2px',
-                    background: activeService === i ? 'rgba(232,74,58,0.2)' : 'transparent',
-                    color: activeService === i ? '#fff' : 'rgba(255,255,255,0.35)',
-                    border: `1px solid ${activeService === i ? 'rgba(232,74,58,0.6)' : 'rgba(255,255,255,0.1)'}`,
-                    cursor: 'pointer',
-                    transition: 'color 0.3s, border-color 0.3s, background 0.3s',
-                    boxShadow: activeService === i ? '0 0 24px rgba(232,74,58,0.35)' : 'none',
-                  }}
-                >
-                  0{i + 1}
-                </motion.button>
-              ))}
-            </motion.div>
-          </div>
-
-          {/* RIGHT — 3D tilt card */}
-          <motion.div
-            initial={{ opacity: 0, x: 40, rotateY: -10 }}
-            animate={{ opacity: isInView ? 1 : 0, x: isInView ? 0 : 40, rotateY: isInView ? 0 : -10 }}
-            transition={{ duration: 1.1, delay: 0.5, ease }}
-            style={{ perspective: 1400 }}
-          >
-            <motion.div
-              ref={cardRef}
-              onMouseMove={onCardMove}
-              onMouseLeave={onCardLeave}
-              animate={{ rotateX: cardTilt.x, rotateY: cardTilt.y }}
-              transition={{ type: 'spring', stiffness: 250, damping: 28 }}
-              style={{ transformStyle: 'preserve-3d', position: 'relative' }}
-            >
-              <motion.div
-                animate={{ opacity: [0.3, 0.5, 0.3] }}
-                transition={{ duration: 4, repeat: Infinity }}
-                style={{
-                  position: 'absolute', inset: -20,
-                  background: 'radial-gradient(ellipse, rgba(232,74,58,0.25) 0%, transparent 70%)',
-                  filter: 'blur(30px)', pointerEvents: 'none',
-                }}
-              />
-
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeService}
-                  initial={{ opacity: 0, x: 30, filter: 'blur(8px)' }}
-                  animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-                  exit={{ opacity: 0, x: -25, filter: 'blur(6px)' }}
-                  transition={{ duration: 0.5, ease }}
-                  style={{
-                    position: 'relative',
-                    background: 'linear-gradient(145deg, rgba(30,8,8,0.5), rgba(12,3,3,0.4))',
-                    border: '1px solid rgba(232,74,58,0.2)',
-                    borderRadius: 20, padding: '2.4rem 2.6rem',
-                    backdropFilter: 'blur(20px)',
-                    boxShadow: '0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)',
-                    transformStyle: 'preserve-3d',
-                  }}
-                >
-                  <div style={{
-                    position: 'absolute', top: 16, right: 16, width: 28, height: 28,
-                    borderTop: '1.5px solid rgba(232,74,58,0.5)', borderRight: '1.5px solid rgba(232,74,58,0.5)', pointerEvents: 'none'
-                  }} />
-
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.6rem', transform: 'translateZ(30px)' }}>
-                    <div>
-                      <motion.div
-                        initial={{ opacity: 0, y: -6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: 0.1 }}
-                        style={{ fontSize: 10, fontWeight: 800, letterSpacing: '3.5px', color: 'rgba(232,74,58,0.8)', marginBottom: 10, textTransform: 'uppercase' }}
-                      >
-                        {S.num}
-                      </motion.div>
-                      <h3 style={{
-                        fontFamily: "'Playfair Display', serif",
-                        fontSize: 30, fontWeight: 700, color: '#fff',
-                        margin: 0, letterSpacing: '-0.6px', lineHeight: 1.1,
-                      }}>
-                        {S.title}
-                      </h3>
-                      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', marginTop: 6, fontStyle: 'italic' }}>
-                        {S.tag}
-                      </div>
-                    </div>
-                    <motion.div
-                      animate={{ rotate: [0, 6, 0, -6, 0] }}
-                      transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                      style={{
-                        width: 62, height: 62, borderRadius: 16, flexShrink: 0,
-                        background: 'linear-gradient(135deg, rgba(232,74,58,0.25), rgba(139,22,22,0.15))',
-                        border: '1px solid rgba(232,74,58,0.35)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        boxShadow: '0 10px 30px rgba(232,74,58,0.25)',
-                        transform: 'translateZ(40px)',
-                      }}
-                    >
-                      <S.Icon size={26} color="#ff6b52" strokeWidth={1.5} />
-                    </motion.div>
-                  </div>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: '1.8rem', transform: 'translateZ(20px)' }}>
-                    {S.points.map((pt, i) => (
-                      <motion.div
-                        key={`${activeService}-${i}`}
-                        initial={{ opacity: 0, x: 20, filter: 'blur(4px)' }}
-                        animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-                        transition={{ duration: 0.45, delay: 0.15 + i * 0.08, ease }}
-                        style={{ display: 'flex', alignItems: 'center', gap: 14 }}
-                      >
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ duration: 0.3, delay: 0.2 + i * 0.08, type: 'spring' }}
-                          style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff6b52', flexShrink: 0, boxShadow: '0 0 8px rgba(255,107,82,0.6)' }}
-                        />
-                        <span style={{ fontSize: 14.5, color: 'rgba(255,255,255,0.8)', lineHeight: 1.4 }}>{pt}</span>
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.7 }}
-                    style={{ borderTop: '1px solid rgba(232,74,58,0.2)', paddingTop: '1.3rem', transform: 'translateZ(15px)' }}
-                  >
-                    <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '3px', color: 'rgba(232,74,58,0.7)', textTransform: 'uppercase', marginBottom: 8 }}>
-                      Outcome
-                    </div>
-                    <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 18, color: 'rgba(255,255,255,0.9)', margin: 0, fontStyle: 'italic', lineHeight: 1.5 }}>
-                      {S.outcome}
-                    </p>
-                  </motion.div>
-                </motion.div>
-              </AnimatePresence>
-            </motion.div>
-
-            {/* timed progress bar */}
-            <div style={{ display: 'flex', gap: 6, marginTop: '1.6rem', justifyContent: 'center' }}>
-              {SERVICES.map((_, i) => (
-                <motion.button
-                  key={i}
-                  onClick={() => setActiveService(i)}
-                  animate={{
-                    width: activeService === i ? 40 : 6,
-                    background: activeService === i ? '#e84a3a' : 'rgba(255,255,255,0.15)',
-                  }}
-                  transition={{ duration: 0.5, ease }}
-                  whileHover={{ background: 'rgba(232,74,58,0.7)' }}
-                  style={{ height: 4, borderRadius: 2, border: 'none', cursor: 'pointer', padding: 0, overflow: 'hidden', position: 'relative' }}
-                >
-                  {activeService === i && (
-                    <motion.div
-                      key={`prog-${activeService}`}
-                      initial={{ width: 0 }}
-                      animate={{ width: '100%' }}
-                      transition={{ duration: 5.5, ease: 'linear' }}
-                      style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.4)' }}
-                    />
-                  )}
-                </motion.button>
-              ))}
-            </div>
-          </motion.div>
+      {/* Heading block — compact, heading + description inline */}
+      <div style={{
+        position: 'relative', zIndex: 2,
+        maxWidth: 1400, margin: '0 auto', padding: '0 6% 2rem',
+        display: 'grid', gridTemplateColumns: '1.4fr 1fr',
+        gap: '3rem', alignItems: 'center',
+      }} className="adv-heading-grid">
+        <div>
+          <h2 style={{
+            fontFamily: "'Playfair Display', serif", fontWeight: 900,
+            fontSize: 'clamp(1.8rem, 3vw, 3rem)', lineHeight: 1.1,
+            letterSpacing: '-1.5px', color: '#fff', margin: 0,
+          }}>
+            <SplitText text="Independent." isInView={isInView} delay={0.3} />{' '}
+            <SplitText text="Vendor-Neutral." isInView={isInView} delay={0.5} />{' '}
+            <span style={{ color: '#e84a3a' }}>
+              <SplitText text="Execution-Focused." isInView={isInView} delay={0.7} />
+            </span>
+          </h2>
         </div>
-      </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 20 }}
+          transition={{ duration: 0.9, delay: 1.1, ease }}
+          style={{ fontSize: 13.5, lineHeight: 1.65, color: 'rgba(255,255,255,0.55)', margin: 0 }}
+        >
+          Strategic advisory that doesn&apos;t stop at the slide deck. We move from boardroom decisions to working systems — without vendor bias or execution gaps.
+        </motion.p>
+      </div>
+
+      {/* Three cards grid — all shown simultaneously */}
+      <div style={{
+        position: 'relative', zIndex: 2,
+        maxWidth: 1400, margin: '0 auto', padding: '0 6%',
+        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '1.5rem', alignItems: 'stretch',
+      }} className="adv-cards-grid">
+        {SERVICES.map((service, i) => (
+          <ServiceCard key={i} service={service} index={i} isInView={isInView} />
+        ))}
+      </div>
 
       <style>{`
+        @media (max-width: 1100px) {
+          .adv-cards-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 1.5rem !important; }
+        }
         @media (max-width: 900px) {
-          .adv-grid { grid-template-columns: 1fr !important; gap: 3rem !important; }
+          .adv-heading-grid { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
+          .adv-cards-grid { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
         }
       `}</style>
     </section>
@@ -868,6 +830,7 @@ const LabsAdvisoryPage = () => {
 
       <SplitHero />
       <AdvisorySection />
+      <TeamAccordion />
       <LabsSection />
     </div>
   );
