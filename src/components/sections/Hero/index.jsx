@@ -6,8 +6,104 @@ import './Hero.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
+/* ─── Logo Assets ─── */
+import WiproLogo     from '../../../assets/wipro.png';
+import HCLLogo       from '../../../assets/hcl.png';
+import TataAigLogo   from '../../../assets/tataaig.png';
+import AccentureLogo from '../../../assets/accenture.png';
+import PwcLogo       from '../../../assets/pwc.jpeg';
+import UiPathLogo    from '../../../assets/uipath.png';
+import IciciLogo     from '../../../assets/icici.png';
+import BajajLogo     from '../../../assets/bajaj.png';
+import DlfLogo       from '../../../assets/dlf.png';
+import SiemensLogo   from '../../../assets/siemens.png';
+
+const logoMeta = [
+  { src: WiproLogo,     name: 'Wipro' },
+  { src: HCLLogo,       name: 'HCL' },
+  { src: TataAigLogo,   name: 'Tata AIG' },
+  { src: AccentureLogo, name: 'Accenture' },
+  { src: PwcLogo,       name: 'PwC' },
+  { src: UiPathLogo,    name: 'UiPath' },
+  { src: IciciLogo,     name: 'ICICI' },
+  { src: BajajLogo,     name: 'Bajaj' },
+  { src: DlfLogo,       name: 'DLF' },
+  { src: SiemensLogo,   name: 'Siemens' },
+];
+
+const LogoStrip = () => {
+  const displayLogos = [...logoMeta, ...logoMeta, ...logoMeta];
+  const [paused, setPaused]         = useState(false);
+  const [hoveredIdx, setHoveredIdx] = useState(null);
+
+  return (
+    <div className="hero-logo-strip-outer">
+      <style>{`
+        @keyframes logoScroll {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-33.33%); }
+        }
+        .logo-track { animation: logoScroll 50s linear infinite; }
+        .logo-track.paused { animation-play-state: paused; }
+        .hero-logo-strip-outer {
+          width: 100%;
+          overflow: hidden;
+          position: relative;
+          padding: 2rem 0;
+          margin-top: 4rem;
+          opacity: 0.8;
+          z-index: 10;
+        }
+        .hero-logo-mask {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, #000 0%, transparent 15%, transparent 85%, #000 100%);
+          z-index: 2;
+          pointer-events: none;
+        }
+      `}</style>
+
+      <div className="hero-logo-mask" />
+
+      <div
+        className={`logo-track${paused ? ' paused' : ''}`}
+        style={{ display: 'flex', alignItems: 'center', width: 'max-content' }}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
+        {displayLogos.map((logo, index) => {
+          const isHovered = hoveredIdx === index;
+          return (
+            <div
+              key={index}
+              style={{ paddingRight: '120px', position: 'relative' }}
+              onMouseEnter={() => setHoveredIdx(index)}
+              onMouseLeave={() => setHoveredIdx(null)}
+            >
+              <img
+                src={logo.src}
+                alt={logo.name}
+                style={{
+                  height: '38px', width: 'auto', display: 'block',
+                  filter: isHovered
+                    ? 'brightness(1.15) saturate(1.1) drop-shadow(0 0 10px rgba(0,242,255,0.3))'
+                    : 'grayscale(1) invert(1) brightness(1.2)',
+                  opacity: isHovered ? 1 : 0.4,
+                  transform: isHovered ? 'scale(1.1)' : 'scale(1)',
+                  transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                }}
+              />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 /* ── Arrow Icon ── */
 const ArrowIcon = () => (
+
   <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
@@ -499,19 +595,17 @@ const Hero = () => {
         <div className="hero-right" />
       </div>
 
-      {/* ── Trusted Logos ── */}
+      {/* ── Trusted Logos (Dynamic Slider) ── */}
       <motion.div
-        className="hero-trusted"
-        initial={{ opacity: 0, y: 20 }}
+        className="hero-trusted-slider-wrap"
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.8 }}
+        transition={{ duration: 0.8, delay: 0.9 }}
       >
-        <p className="hero-trusted-label">Trusted by top-tier product companies</p>
-        <div className="hero-trusted-logos">
-          {['Vercel', 'Stripe', 'Linear', 'Notion', 'Figma'].map((name) => (
-            <span key={name} className="hero-trusted-logo">{name}</span>
-          ))}
-        </div>
+        <p className="hero-trusted-label" style={{ textAlign: 'center', opacity: 0.4, letterSpacing: '2px', textTransform: 'uppercase', fontSize: '10px', fontWeight: 700 }}>
+          Trusted by Industry Leaders
+        </p>
+        <LogoStrip />
       </motion.div>
     </section>
   );

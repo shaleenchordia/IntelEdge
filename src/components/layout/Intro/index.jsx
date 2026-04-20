@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import logo from '../../../assets/intel.PNG';
+import logo from '../../../assets/IntelEdge.png';
 
 const Intro = ({ onFinish }) => {
   const [hasScrolled, setHasScrolled] = useState(false);
