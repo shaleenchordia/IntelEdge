@@ -39,16 +39,17 @@ const SERVICES = [
   {
     num: 'SERVICE 03',
     Icon: Zap,
-    title: 'AI Strategy & Implementation',
-    tag: 'Roadmap to Working Solution',
+    title: 'Training & Programs',
+    tag: 'Capability Building',
     points: [
-      'Implementation-ready roadmap',
-      'Pilot design & deployment',
-      'Systems integration oversight',
-      'Vendor accountability',
-      'Scaling & performance optimization',
+      'AI Leadership Blueprint',
+      'Enterprise Intelligence Acceleration (AAA)',
+      'Digital Transformation for Managers',
+      'No-Code AI Builder Program',
+      'The AI Productivity Stack',
+      'BYOB — Build Your Own Bot'
     ],
-    outcome: 'Strategy that moves to a working solution',
+    outcome: 'An empowered workforce capable of scaling AI',
   },
 ];
 
@@ -129,56 +130,59 @@ const SplitHero = () => {
   const isInView = useInView(ref, { once: true, amount: 0.15 });
   const [hovered, setHovered] = useState(null);
 
-  const labsW = hovered === 'labs' ? '58%' : hovered === 'advisory' ? '42%' : '50%';
   const advW = hovered === 'advisory' ? '58%' : hovered === 'labs' ? '42%' : '50%';
+  const labsW = hovered === 'labs' ? '58%' : hovered === 'advisory' ? '42%' : '50%';
 
   return (
     <section ref={ref} style={{ position: 'relative', width: '100%', height: '100vh', background: 'transparent', overflow: 'hidden', fontFamily: "'Inter', sans-serif" }}>
+      {/* Left Text: Advisory */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : -10 }} transition={{ duration: 0.8, delay: 1.8, ease }}
-        style={{ position: 'absolute', top: 32, left: 42, zIndex: 30, color: '#fff', fontSize: 11, lineHeight: 1.4, fontWeight: 600, letterSpacing: '0.5px', pointerEvents: 'none' }}>
-        INTELEDGE<br />LABS<br />DIVISION
-      </motion.div>
-
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : -10 }} transition={{ duration: 0.8, delay: 1.8, ease }}
-        style={{ position: 'absolute', top: 32, right: 42, zIndex: 30, color: '#fff', textAlign: 'right', pointerEvents: 'none' }}>
+        style={{ position: 'absolute', top: 32, left: 42, zIndex: 30, color: '#fff', fontSize: 13, lineHeight: 1.4, fontWeight: 700, letterSpacing: '0.5px', pointerEvents: 'none', textTransform: 'uppercase' }}>
         <div style={{ opacity: 0.5, fontSize: 9, marginBottom: 4, letterSpacing: '1.5px' }}>EXPLORE</div>
-        <div style={{ fontWeight: 700, fontSize: 13 }}>Advisory Services</div>
+        Inteledge<br />Advisory<br />Services
       </motion.div>
 
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: isInView ? 1 : 0 }} transition={{ duration: 0.8, delay: 2.0, ease }}
-        style={{ position: 'absolute', bottom: 36, left: 42, zIndex: 30, color: '#fff', fontSize: 13, fontWeight: 600, pointerEvents: 'none' }}>
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.5)', paddingTop: 6, width: 26 }}>01</div>
-        <div style={{ opacity: 0.5, marginTop: 2 }}>03</div>
+      {/* Right Text: Labs */}
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : -10 }} transition={{ duration: 0.8, delay: 1.8, ease }}
+        style={{ position: 'absolute', top: 32, right: 42, zIndex: 30, color: '#fff', textAlign: 'right', pointerEvents: 'none', fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+        <div style={{ opacity: 0.5, fontSize: 9, marginBottom: 4, letterSpacing: '1.5px' }}>EXPLORE</div>
+        Inteledge<br />Labs<br />Division
       </motion.div>
 
+      {/* Scroll Down Indicator */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: isInView ? 1 : 0 }} transition={{ duration: 0.8, delay: 2.3, ease }}
         style={{ position: 'absolute', bottom: 36, right: 42, zIndex: 30, color: 'rgba(255,255,255,0.85)', fontSize: 11, textAlign: 'right', letterSpacing: '2px', fontWeight: 600 }}>
         <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}>SCROLL ↓</motion.div>
       </motion.div>
 
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '68vh', overflow: 'hidden' }}>
+        {/* Left Side: Advisory */}
         <motion.div
           initial={{ x: '-101%', width: '50%' }}
-          animate={{ x: isInView ? 0 : '-101%', width: labsW, zIndex: hovered === 'labs' ? 3 : 1 }}
-          transition={{ x: { duration: 1.3, ease }, width: { duration: 0.7, ease } }}
-          onMouseEnter={() => setHovered('labs')} onMouseLeave={() => setHovered(null)}
-          style={{ position: 'absolute', left: 0, top: 0, bottom: 0, overflow: 'hidden', cursor: 'pointer' }}>
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #1a1e24 0%, #0f1318 50%, #080a0d 100%)' }} />
-          <div style={{ position: 'absolute', inset: 0, opacity: 0.35, backgroundImage: `linear-gradient(rgba(120,160,200,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(120,160,200,0.08) 1px, transparent 1px), radial-gradient(circle at 25% 30%, rgba(100,180,220,0.1) 0%, transparent 40%), radial-gradient(circle at 75% 70%, rgba(80,140,200,0.08) 0%, transparent 45%)`, backgroundSize: '48px 48px, 48px 48px, 100% 100%, 100% 100%' }} />
-          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 50%, transparent 20%, rgba(0,0,0,0.6) 100%)' }} />
-        </motion.div>
-
-        <motion.div
-          initial={{ x: '101%', width: '50%' }}
-          animate={{ x: isInView ? 0 : '101%', width: advW, zIndex: hovered === 'advisory' ? 3 : 1 }}
+          animate={{ x: isInView ? 0 : '-101%', width: advW, zIndex: hovered === 'advisory' ? 3 : 1 }}
           transition={{ x: { duration: 1.3, ease }, width: { duration: 0.7, ease } }}
           onMouseEnter={() => setHovered('advisory')} onMouseLeave={() => setHovered(null)}
-          style={{ position: 'absolute', right: 0, top: 0, bottom: 0, overflow: 'hidden', cursor: 'pointer' }}>
+          onClick={() => document.getElementById('advisory')?.scrollIntoView({ behavior: 'smooth' })}
+          style={{ position: 'absolute', left: 0, top: 0, bottom: 0, overflow: 'hidden', cursor: 'pointer' }}>
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #8b3a2e 0%, #5e1f17 55%, #2e0a07 100%)' }} />
           <div style={{ position: 'absolute', inset: 0, opacity: 0.6, background: 'radial-gradient(ellipse at 30% 35%, rgba(210,110,70,0.35) 0%, transparent 55%)' }} />
           <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 50%, transparent 20%, rgba(0,0,0,0.5) 100%)' }} />
         </motion.div>
 
+        {/* Right Side: Labs */}
+        <motion.div
+          initial={{ x: '101%', width: '50%' }}
+          animate={{ x: isInView ? 0 : '101%', width: labsW, zIndex: hovered === 'labs' ? 3 : 1 }}
+          transition={{ x: { duration: 1.3, ease }, width: { duration: 0.7, ease } }}
+          onMouseEnter={() => setHovered('labs')} onMouseLeave={() => setHovered(null)}
+          onClick={() => document.getElementById('labs')?.scrollIntoView({ behavior: 'smooth' })}
+          style={{ position: 'absolute', right: 0, top: 0, bottom: 0, overflow: 'hidden', cursor: 'pointer' }}>
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #1a1e24 0%, #0f1318 50%, #080a0d 100%)' }} />
+          <div style={{ position: 'absolute', inset: 0, opacity: 0.35, backgroundImage: `linear-gradient(rgba(120,160,200,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(120,160,200,0.08) 1px, transparent 1px), radial-gradient(circle at 25% 30%, rgba(100,180,220,0.1) 0%, transparent 40%), radial-gradient(circle at 75% 70%, rgba(80,140,200,0.08) 0%, transparent 45%)`, backgroundSize: '48px 48px, 48px 48px, 100% 100%, 100% 100%' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 50%, transparent 20%, rgba(0,0,0,0.6) 100%)' }} />
+        </motion.div>
+
+        {/* Brain Graphic (Centered) */}
         <motion.div
           initial={{ opacity: 0, scale: 0.92, y: 30 }}
           animate={{ opacity: isInView ? 1 : 0, scale: isInView ? 1 : 0.92, y: isInView ? 0 : 30 }}
@@ -186,30 +190,31 @@ const SplitHero = () => {
           style={{ position: 'absolute', left: '50%', bottom: 0, transform: 'translateX(-50%)', height: '92%', width: 'clamp(200px, 28%, 340px)', zIndex: 5, pointerEvents: 'none' }}>
           <svg viewBox="0 0 300 700" preserveAspectRatio="xMidYMax meet" style={{ width: '100%', height: '100%' }}>
             <defs>
-              <linearGradient id="coldGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#4a5560" /><stop offset="50%" stopColor="#2a3038" /><stop offset="100%" stopColor="#0e1115" />
-              </linearGradient>
               <linearGradient id="warmGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#e8a870" /><stop offset="30%" stopColor="#c56838" /><stop offset="70%" stopColor="#8b2e1e" /><stop offset="100%" stopColor="#3d0f08" />
+              </linearGradient>
+              <linearGradient id="coldGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#4a5560" /><stop offset="50%" stopColor="#2a3038" /><stop offset="100%" stopColor="#0e1115" />
               </linearGradient>
               <clipPath id="leftHalf"><rect x="0" y="0" width="150" height="700" /></clipPath>
               <clipPath id="rightHalf"><rect x="150" y="0" width="150" height="700" /></clipPath>
             </defs>
+            {/* Left side is now warm (Advisory) */}
             <g clipPath="url(#leftHalf)">
-              <rect x="140" y="20" width="20" height="280" fill="url(#coldGrad)" />
-              <ellipse cx="150" cy="30" rx="28" ry="18" fill="url(#coldGrad)" />
-              <path d="M 150 300 Q 60 320, 50 480 Q 50 640, 150 680 Z" fill="url(#coldGrad)" />
-              {[80, 120, 160, 200, 240, 280].map((y, i) => (<line key={i} x1="143" y1={y} x2="157" y2={y} stroke="rgba(180,200,220,0.35)" strokeWidth="0.8" />))}
-              <circle cx="110" cy="480" r="32" fill="rgba(0,0,0,0.55)" stroke="rgba(0,0,0,0.6)" strokeWidth="2" />
-            </g>
-            <g clipPath="url(#rightHalf)">
               <rect x="140" y="20" width="20" height="280" fill="url(#warmGrad)" />
               <ellipse cx="150" cy="30" rx="28" ry="18" fill="url(#warmGrad)" />
-              <path d="M 150 300 Q 250 315, 255 470 Q 255 645, 150 680 Z" fill="url(#warmGrad)" />
+              <path d="M 150 300 Q 60 320, 50 480 Q 50 640, 150 680 Z" fill="url(#warmGrad)" />
+              {[80, 120, 160, 200, 240, 280].map((y, i) => (<line key={i} x1="143" y1={y} x2="157" y2={y} stroke="rgba(255,220,180,0.4)" strokeWidth="0.8" />))}
+            </g>
+            {/* Right side is now cold (Labs) */}
+            <g clipPath="url(#rightHalf)">
+              <rect x="140" y="20" width="20" height="280" fill="url(#coldGrad)" />
+              <ellipse cx="150" cy="30" rx="28" ry="18" fill="url(#coldGrad)" />
+              <path d="M 150 300 Q 250 315, 255 470 Q 255 645, 150 680 Z" fill="url(#coldGrad)" />
               <rect x="172" y="440" width="52" height="18" rx="3" fill="rgba(245,230,180,0.9)" />
               <rect x="172" y="490" width="52" height="18" rx="3" fill="rgba(40,20,15,0.8)" />
               {[540, 570, 600].map((y, i) => (<circle key={i} cx={200 + i * 12} cy={y} r="5" fill="rgba(220,180,140,0.85)" />))}
-              {[80, 120, 160, 200, 240, 280].map((y, i) => (<line key={i} x1="143" y1={y} x2="157" y2={y} stroke="rgba(255,220,180,0.4)" strokeWidth="0.8" />))}
+              {[80, 120, 160, 200, 240, 280].map((y, i) => (<line key={i} x1="143" y1={y} x2="157" y2={y} stroke="rgba(180,200,220,0.35)" strokeWidth="0.8" />))}
             </g>
             <line x1="150" y1="15" x2="150" y2="685" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
           </svg>
@@ -220,8 +225,8 @@ const SplitHero = () => {
       </div>
 
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '32vh', display: 'flex' }}>
-        <motion.div initial={{ y: '101%' }} animate={{ y: isInView ? 0 : '101%', width: labsW }} transition={{ y: { duration: 1.1, delay: 0.4, ease }, width: { duration: 0.7, ease } }} style={{ background: '#0a0a0a', height: '100%' }} />
-        <motion.div initial={{ y: '101%' }} animate={{ y: isInView ? 0 : '101%', width: advW }} transition={{ y: { duration: 1.1, delay: 0.4, ease }, width: { duration: 0.7, ease } }} style={{ background: '#a82417', height: '100%', flex: 1 }} />
+        <motion.div initial={{ y: '101%' }} animate={{ y: isInView ? 0 : '101%', width: advW }} transition={{ y: { duration: 1.1, delay: 0.4, ease }, width: { duration: 0.7, ease } }} style={{ background: '#a82417', height: '100%' }} />
+        <motion.div initial={{ y: '101%' }} animate={{ y: isInView ? 0 : '101%', width: labsW }} transition={{ y: { duration: 1.1, delay: 0.4, ease }, width: { duration: 0.7, ease } }} style={{ background: '#0a0a0a', height: '100%', flex: 1 }} />
       </div>
 
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '32vh', zIndex: 10, pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
@@ -448,7 +453,7 @@ const AdvisorySection = () => {
               transition={{ duration: 2, repeat: Infinity }}
               style={{ width: 8, height: 8, borderRadius: '50%', background: '#e84a3a' }} />
             <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: '5px', color: '#e84a3a', textTransform: 'uppercase' }}>
-              02 · Inteledge Advisory
+              Inteledge Advisory
             </span>
           </div>
         </motion.div>
@@ -616,7 +621,7 @@ const LabsSection = () => {
               transition={{ duration: 2, repeat: Infinity }}
               style={{ width: 6, height: 6, borderRadius: '50%', background: '#00c0ee' }} />
             <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '4px', color: '#00c0ee', textTransform: 'uppercase' }}>
-              03 · Inteledge Labs
+              Inteledge Labs
             </span>
           </div>
         </motion.div>
@@ -669,6 +674,7 @@ const LabsSection = () => {
                   border: 'none', cursor: 'pointer', textTransform: 'uppercase',
                   display: 'inline-flex', alignItems: 'center', gap: 10,
                 }}
+                onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 View Products <ArrowUpRight size={14} strokeWidth={2.5} />
               </MagneticButton>
@@ -682,6 +688,7 @@ const LabsSection = () => {
                   cursor: 'pointer', textTransform: 'uppercase',
                   transition: 'border-color 0.3s, color 0.3s, background 0.3s',
                 }}
+                onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 Enquiry Call
               </MagneticButton>
@@ -820,7 +827,7 @@ const LabsSection = () => {
 
 const LabsAdvisoryPage = () => {
   return (
-    <div style={{ background: 'transparent', minHeight: '100vh' }}>
+    <div id="services" style={{ background: 'transparent', minHeight: '100vh' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;700;900&family=Inter:wght@400;500;600;700;800&family=Dancing+Script:wght@500;700&display=swap');
         * { box-sizing: border-box; }

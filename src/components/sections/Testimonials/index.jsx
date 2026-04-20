@@ -4,24 +4,33 @@ import './Testimonials.css'
 const testimonials = [
   {
     id: 1,
-    quote: "This changed everything for me.",
-    author: "Sarah Chen",
-    role: "Designer at Figma",
-    avatar: "https://images.unsplash.com/photo-1701615004837-40d8573b6652?q=80&w=1480&auto=format&fit=crop&ixlib=rb-4.1.0",
+    quote: "Anurag didn’t just deliver a workshop—he helped us rethink how we approach AI-led transformation at scale. The clarity on aligning automation, analytics, and business outcomes was exceptional. Our entire team walked away with a clear roadmap, not just concepts.",
+    author: "Innaci Dass",
+    role: "Chief Human Resource Officer, RIDA Group",
   },
   {
     id: 2,
-    quote: "Simply brilliant. Nothing else compares.",
-    author: "Marcus Johnson",
-    role: "Engineer at Vercel",
-    avatar: "https://plus.unsplash.com/premium_photo-1671656349218-5218444643d8?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0",
+    quote: "What stood out was the ability to translate complex AI concepts into practical, deployable strategies. The sessions were deeply relevant to our business context, and we’ve already started identifying automation and AI use cases across operations.",
+    author: "Neha Kapoor",
+    role: "VP – Strategy & Innovation, Axis Bank",
   },
   {
     id: 3,
-    quote: "The attention to detail is unmatched.",
-    author: "Elena Rodriguez",
-    role: "Founder at Craft",
-    avatar: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0",
+    quote: "Anurag brings a rare combination of strategic thinking and hands-on execution. He helped us bridge the gap between leadership vision and on-ground implementation of AI and automation initiatives.",
+    author: "Purnima Parashar",
+    role: "Head – Talent and Leadership, Siemens",
+  },
+  {
+    id: 4,
+    quote: "The engagement was one of the most impactful learning experiences for our executive cohort. The blend of real-world case studies, frameworks, and hands-on exposure to AI tools made it immediately applicable.",
+    author: "Prof. Shalini Verma",
+    role: "Program Director, IIM Sambalpur",
+  },
+  {
+    id: 5,
+    quote: "We were able to move from ‘AI curiosity’ to actually building working solutions within days. The structured approach and practical frameworks provided by Anurag significantly accelerated our innovation cycle.",
+    author: "Anurag Maheshwari",
+    role: "Head, Learning and Development, TATA AIA",
   },
 ]
 
@@ -51,14 +60,14 @@ export function Testimonials() {
     const timer = setInterval(() => {
       handleSelect((activeIndex + 1) % testimonials.length)
     }, 5000)
-    
+
     return () => clearInterval(timer)
   }, [activeIndex, handleSelect])
 
   return (
-    <section className="testimonials-section">
+    <section className="testimonials-section" id="testimonials">
       <div className="testimonials-container">
-        
+
         {/* Quote Container */}
         <div className="testimonial-quote-container">
           <span className="quote-mark left">"</span>
@@ -94,15 +103,6 @@ export function Testimonials() {
                   onMouseLeave={() => setHoveredIndex(null)}
                   className={`testimonial-btn ${isActive ? "active" : ""} ${showName ? "show-name" : ""}`}
                 >
-                  {/* Avatar with smooth ring animation */}
-                  <div className="testimonial-avatar-wrapper">
-                    <img
-                      src={testimonial.avatar || "/placeholder.svg"}
-                      alt={testimonial.author}
-                      className="testimonial-avatar"
-                    />
-                  </div>
-
                   <div
                     className={`testimonial-name-container ${showName ? "show" : ""}`}
                   >
@@ -112,6 +112,7 @@ export function Testimonials() {
                       </span>
                     </div>
                   </div>
+                  {!showName && <div className="testimonial-dot" />}
                 </button>
               )
             })}

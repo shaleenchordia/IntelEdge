@@ -299,7 +299,7 @@ const AIAFramework = () => {
 
   return (
     <section
-      id="services"
+      id="framework"
       style={{
         padding: '150px 5%',
         background: 'transparent',

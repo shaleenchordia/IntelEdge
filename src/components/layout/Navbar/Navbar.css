@@ -18,7 +18,17 @@
 
 .nav-capsule-scrolled {
   top: 15px;
-  background: rgba(10, 10, 12, 0.5); /* Deep translucent when scrolling */
+  background: rgba(10, 10, 12, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  opacity: 0.2;
+}
+
+.nav-capsule-scrolled:hover {
+  opacity: 1;
+  background: rgba(10, 10, 12, 0.6);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);

@@ -269,7 +269,7 @@ const ProductsSlider = ({ id }) => {
                           lineHeight: 1.4,
                           fontWeight: 300,
                         }}>
-                          <div style={{ marginTop: '8px', opacity: 0.6 }}>
+                          <div style={{ marginTop: '4px', opacity: 0.6 }}>
                             <svg width="5" height="5" viewBox="0 0 5 5" fill="none"><circle cx="2.5" cy="2.5" r="2.5" fill="white" /></svg>
                           </div>
                           {pt}
@@ -291,6 +291,7 @@ const ProductsSlider = ({ id }) => {
                       transition: 'all 0.3s ease',
                       marginTop: 'auto'
                     }}
+                      onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                       onMouseOver={(e) => {
                         e.currentTarget.style.background = '#fff';
                         e.currentTarget.style.color = '#000';

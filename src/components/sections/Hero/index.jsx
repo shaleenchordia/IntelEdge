@@ -522,22 +522,7 @@ const Hero = () => {
       {/* ── Hero Content ── */}
       <div className="hero-content-grid">
         <div className="hero-left">
-          {/* Social Proof Badge */}
-          <motion.div
-            className="hero-social-proof"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <div className="hero-stars">
-              {[...Array(5)].map((_, i) => (
-                <StarIcon key={i} />
-              ))}
-            </div>
-            <span className="hero-social-proof-text">
-              Rated <strong>4.9/5</strong> by 2700+ customers
-            </span>
-          </motion.div>
+
 
           {/* Headline */}
           <motion.h1
@@ -567,9 +552,9 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.65 }}
               whileHover={{ scale: 1.02 }}
-              onClick={() => document.getElementById('products').scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => document.getElementById('services').scrollIntoView({ behavior: 'smooth' })}
             >
-              Explore Products
+              Explore Services
               <span className="hero-cta-icon">
                 <ArrowIcon />
               </span>
@@ -581,9 +566,9 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.75 }}
               whileHover={{ scale: 1.02 }}
-              onClick={() => document.getElementById('services').scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => document.getElementById('products').scrollIntoView({ behavior: 'smooth' })}
             >
-              Explore Services
+              Explore Products
               <span className="hero-cta-icon">
                 <ArrowIcon />
               </span>

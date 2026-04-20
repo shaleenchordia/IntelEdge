@@ -70,7 +70,7 @@
   gap: 8px;
   padding: 12px 24px;
   border-radius: 100px;
-  background: var(--accent-primary, #00f2ff);
+  background: #e84a3a;
   color: #000;
   font-weight: 700;
   font-size: 0.85rem;
@@ -95,7 +95,7 @@
 
 .footer-cta-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 242, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(232, 74, 58, 0.3);
 }
 
 .footer-cta-button:hover::before {
@@ -259,14 +259,14 @@
   bottom: -15px;
   right: -20px;
   padding: 8px 16px;
-  background: #ffb3f0; /* Pink like the picture */
+  background: #0077b6; /* Darker Blue */
   color: #000;
   font-size: 0.8rem;
   font-weight: 700;
   border-radius: 12px;
   z-index: 10;
   pointer-events: none;
-  box-shadow: 0 4px 15px rgba(255, 179, 240, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3);
 }
 
 .footer-follow-tag::before {
@@ -278,7 +278,7 @@
   height: 0;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
-  border-bottom: 8px solid #ffb3f0;
+  border-bottom: 8px solid #0077b6;
   transform: rotate(-15deg);
 }
 

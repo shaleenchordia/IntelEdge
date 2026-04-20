@@ -23,9 +23,10 @@ const Navbar = () => {
 
       {/* Center Links (Mapped to requested mockup text for exact replica, or site routes) */}
       <div className="nav-links-center">
+        <a href="#about" className="nav-capsule-link">About Us</a>
         <a href="#services" className="nav-capsule-link">Services</a>
         <a href="#products" className="nav-capsule-link">Products</a>
-        <a href="#about" className="nav-capsule-link">About Us</a>
+        <a href="#testimonials" className="nav-capsule-link">Testimonials</a>
         <a href="#contact" className="nav-capsule-link">Contact Us</a>
       </div>
 

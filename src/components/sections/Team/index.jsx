@@ -148,60 +148,60 @@ const VideoBurst = ({ progress }) => {
 const teamData = [
   {
     id: '01',
-    title: 'Strategic Leadership',
+    title: 'AI Leadership Blueprint',
     content: (
       <>
-        <h4 style={{ color: '#fff', fontSize: '1.2rem', marginBottom: '0.5rem' }}>AI Leadership Blueprint</h4>
-        <p>For CXOs, Business Unit Heads, and Transformation Sponsors. Covers AI roadmap design, strategy governance, decision impact, risk management, and scaling AI programs across the enterprise. 📊</p>
+        <h4 style={{ color: '#fff', fontSize: '1.2rem', marginBottom: '0.5rem' }}></h4>
+        <p>For CXOs, Business Unit Heads, and Transformation Sponsors. Covers AI roadmap design, strategy governance, decision impact, risk management, and scaling AI programs across the enterprise. </p>
       </>
     )
   },
   {
     id: '02',
-    title: 'Enterprise Intelligence',
+    title: 'Enterprise Intelligence Acceleration (AAA)',
     content: (
       <>
-        <h4 style={{ color: '#fff', fontSize: '1.2rem', marginBottom: '0.5rem' }}>Enterprise Intelligence Acceleration (AAA)</h4>
-        <p>For Directors, Senior Managers, and Automation CoE Leaders. Builds a cross-functional AI, Analytics & Automation strategy and aligns initiatives with measurable business KPIs. 🔄</p>
+        <h4 style={{ color: '#fff', fontSize: '1.2rem', marginBottom: '0.5rem' }}></h4>
+        <p>For Directors, Senior Managers, and Automation CoE Leaders. Builds a cross-functional AI, Analytics & Automation strategy and aligns initiatives with measurable business KPIs. </p>
       </>
     )
   },
   {
     id: '03',
-    title: 'Digital Transformation',
+    title: 'Digital Transformation for Managers',
     content: (
       <>
         <h4 style={{ color: '#fff', fontSize: '1.2rem', marginBottom: '0.5rem' }}>Digital Transformation for Managers</h4>
-        <p>For Senior, Mid, and Functional Managers. Equips participants to lead or facilitate digital transformation programs, with real-world examples across critical business functions. 🛠️</p>
+        <p>For Senior, Mid, and Functional Managers. Equips participants to lead or facilitate digital transformation programs, with real-world examples across critical business functions.</p>
       </>
     )
   },
   {
     id: '04',
-    title: 'Technical Builders',
+    title: 'No-Code AI Builder Program',
     content: (
       <>
-        <h4 style={{ color: '#fff', fontSize: '1.2rem', marginBottom: '0.5rem' }}>No-Code AI Builder Program</h4>
-        <p>For Technical Teams, Automation Developers, and AI Engineers. Participants build production-ready AI bots, deploy internal copilots, and create reusable agent templates. ⚡</p>
+        <h4 style={{ color: '#fff', fontSize: '1.2rem', marginBottom: '0.5rem' }}></h4>
+        <p>For Technical Teams, Automation Developers, and AI Engineers. Participants build production-ready AI bots, deploy internal copilots, and create reusable agent templates.</p>
       </>
     )
   },
   {
     id: '05',
-    title: 'Business Productivity',
+    title: 'The AI Productivity Stack',
     content: (
       <>
-        <h4 style={{ color: '#fff', fontSize: '1.2rem', marginBottom: '0.5rem' }}>The AI Productivity Stack</h4>
-        <p>For non-technical professionals in Sales, Operations, and Finance. Hands-on exercises with 30+ Gen AI tools to build citizen developer capability and reduce manual operational work. 🤖</p>
+        <h4 style={{ color: '#fff', fontSize: '1.2rem', marginBottom: '0.5rem' }}></h4>
+        <p>For non-technical professionals in Sales, Operations, and Finance. Hands-on exercises with 30+ Gen AI tools to build citizen developer capability and reduce manual operational work.</p>
       </>
     )
   },
   {
     id: '06',
-    title: 'Hands-On Workshop',
+    title: 'BYOB — Build Your Own Bot',
     content: (
       <>
-        <h4 style={{ color: '#fff', fontSize: '1.2rem', marginBottom: '0.5rem' }}>BYOB — Build Your Own Bot</h4>
+        <h4 style={{ color: '#fff', fontSize: '1.2rem', marginBottom: '0.5rem' }}></h4>
         <p>For Individual Contributors, Analysts, and Early Career Professionals. A practical AI literacy workshop with 30+ tools, bots, and agents — building real automation capability from day one.</p>
       </>
     )
@@ -250,7 +250,7 @@ const TeamAccordion = React.forwardRef((props, ref) => {
   });
 
   return (
-    <section className="team-container" id="services" ref={ref}>
+    <section className="team-container" id="team" ref={ref}>
       <VideoBurst progress={smoothProgress} />
       
       {/* Red/Orange glow from the image */}
@@ -258,17 +258,22 @@ const TeamAccordion = React.forwardRef((props, ref) => {
 
       <div className="team-header">
         <div style={{ flex: 1 }}>
-          <h2 className="team-headline" style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', marginBottom: '1rem' }}>
+          <h2 className="team-headline" style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', marginBottom: '1rem', textTransform: 'uppercase' }}>
             Training & Programs
           </h2>
           <h3 style={{ color: '#fff', fontSize: '1.5rem', marginBottom: '1rem', fontWeight: 600 }}>Flagship Transformation Programs</h3>
-          <p style={{ color: 'rgba(255,255,255,0.7)', maxWidth: '600px', fontSize: '1.1rem', lineHeight: 1.6 }}>
+          <p style={{ color: 'rgba(255,255,255,0.7)', maxWidth: '600px', fontSize: '1.1rem', lineHeight: 1.6, marginBottom: '2rem' }}>
             Delivered by a 2-Time TEDx Speaker with 14+ years of enterprise experience — designed for CXOs, senior managers, functional teams, and early-career professionals across the full AI readiness spectrum.
           </p>
+          <a 
+            href="#contact"
+            className="team-get-in-touch" 
+            aria-label="Get in touch"
+            style={{ textDecoration: 'none' }}
+          >
+            GET IN TOUCH <ArrowUpRight size={14} />
+          </a>
         </div>
-        <button className="team-get-in-touch" aria-label="Get in touch">
-          GET IN TOUCH <ArrowUpRight size={14} />
-        </button>
       </div>
 
       <div className="team-accordion" onMouseLeave={() => setActiveIndex(null)}>

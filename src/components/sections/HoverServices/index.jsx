@@ -49,7 +49,7 @@ const servicesData = [
 
 const HoverServices = ({ theme }) => {
   return (
-    <section className="hover-services-section" id="services">
+    <section className="hover-services-section" id="hover-services">
       <div className="hs-header">
         <span style={{ color: 'var(--accent-primary)', letterSpacing: '6px', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.8rem' }}>
           Consulting Services
