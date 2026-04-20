@@ -5,7 +5,7 @@ import { motion, useScroll, useTransform, useSpring, AnimatePresence } from 'fra
 // Layout & Common Components
 import Navbar from './components/layout/Navbar';
 import CustomCursor from './components/common/CustomCursor';
-import ScrollBall from './components/common/ScrollBall';
+import ScrollRail from './components/common/ScrollBall';
 import Global3DLayer from './components/common/Global3DLayer';
 import Intro from './components/layout/Intro';
 import Footer from './components/layout/Footer';
@@ -23,6 +23,7 @@ import Contact from './components/sections/Contact';
 import LabsAdvisoryPage from './components/sections/LabsAdvisoryHero';
 import ProductsSlider from './components/sections/Products';
 import Testimonials from './components/sections/Testimonials';
+import Team from './components/sections/Team';
 import logo from './assets/inteledge.webp';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -53,6 +54,8 @@ const ScrollSection = ({ children, zIndex, noExit = false }) => {
         // negative margin pulls each section up so they *overlap* — the new section
         // slides on top of the previous one like stacked cards
         marginTop: zIndex > 1 ? '-6px' : 0,
+        scrollSnapAlign: 'start',
+        scrollSnapStop: 'always',
       }}
     >
       {noExit ? (
@@ -122,6 +125,19 @@ const LabsAdvisoryIntro = () => (
 // App
 // ─────────────────────────────────────────────────────────────────────────────
 
+const SECTIONS = [
+  { id: 'hero',         label: 'Home' },
+  { id: 'who-we-are',   label: 'About' },
+  { id: 'about-stats',  label: 'Stats' },
+  { id: 'partners',     label: 'Partners' },
+  { id: 'services',     label: 'Framework' },
+  { id: 'labs',         label: 'Labs' },
+  { id: 'products',     label: 'Products' },
+  { id: 'team',         label: 'Team' },
+  { id: 'testimonials', label: 'Testimonials' },
+  { id: 'contact',      label: 'Contact' },
+];
+
 const App = () => {
   const [theme, setTheme] = useState('cyan');
   const [showIntro, setShowIntro] = useState(true);
@@ -157,8 +173,21 @@ const App = () => {
   return (
     <div
       className={`app-container theme-${theme}`}
-      style={{ background: '#050505', color: '#fff', minHeight: '100vh', overflow: showIntro ? 'hidden' : 'auto' }}
+      style={{ 
+        background: '#050505', 
+        color: '#fff', 
+        minHeight: '100vh', 
+        overflow: showIntro ? 'hidden' : 'auto',
+      }}
     >
+      <style>
+        {`
+          html {
+            scroll-snap-type: y mandatory;
+            scroll-padding-top: 0px;
+          }
+        `}
+      </style>
       <AnimatePresence mode="wait">
         {showIntro ? (
           <Intro
@@ -182,6 +211,7 @@ const App = () => {
             <div style={{ position: 'relative', zIndex: 10 }}>
               <CustomCursor theme={theme} />
               <Navbar theme={theme} />
+              <ScrollRail sections={SECTIONS} />
 
               <main style={{ position: 'relative', background: '#050505' }}>
                 {/*
@@ -189,7 +219,7 @@ const App = () => {
                   noExit on sections that already manage their own scroll animation.
                 */}
                 <ScrollSection zIndex={1}>
-                  <Hero theme={theme} />
+                  <div id="hero"><Hero theme={theme} /></div>
                 </ScrollSection>
 
                 <ScrollSection zIndex={2} noExit>
@@ -198,7 +228,7 @@ const App = () => {
                 </ScrollSection>
 
                 <ScrollSection zIndex={3}>
-                  <AboutStats />
+                  <div id="about-stats"><AboutStats /></div>
                 </ScrollSection>
 
                 <ScrollSection zIndex={4}>
@@ -214,7 +244,7 @@ const App = () => {
                 </ScrollSection>
 
                 <ScrollSection zIndex={7} noExit>
-                  <LabsAdvisoryPage />
+                  <div id="labs"><LabsAdvisoryPage /></div>
                 </ScrollSection>
 
 
@@ -228,6 +258,10 @@ const App = () => {
                 </ScrollSection>
 
                 <ScrollSection zIndex={11}>
+                  <Team id="team" />
+                </ScrollSection>
+
+                <ScrollSection zIndex={12}>
                   <Testimonials id="testimonials" />
                 </ScrollSection>
 

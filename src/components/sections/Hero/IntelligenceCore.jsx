@@ -1,266 +1,376 @@
-import React, { useRef, useMemo } from 'react';
-import { useFrame } from '@react-three/fiber';
-import { PerspectiveCamera } from '@react-three/drei';
+import React, { useRef, useMemo, useEffect } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
-// ── Single bubble orb ─────────────────────────────────────────────────────────
-// Layered spheres: core glow → inner body → surface → rim glow (back-face) → outer halo → specular dot
+/* ═══════════════════════════════════════════════════════════════════════
+   INTELLIGENCE CORE  —  cut-crystal cube + gradient prism light rays
+═══════════════════════════════════════════════════════════════════════ */
 
-function GlowOrb({ position, radius, color, speed, phase }) {
+/* ─────────────────────────────────────────
+   ENVIRONMENT MAP (tiny procedural cubemap so transmission has reflections)
+───────────────────────────────────────── */
+
+function ProceduralEnvironment() {
+  const { scene } = useThree();
+
+  useEffect(() => {
+    // Build a simple gradient env as equirectangular
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+
+    // Sky gradient — dark top, horizon warm, bottom deep
+    const grad = ctx.createLinearGradient(0, 0, 0, 256);
+    grad.addColorStop(0.0, '#1a1428');
+    grad.addColorStop(0.4, '#2a2238');
+    grad.addColorStop(0.5, '#4a3a40');
+    grad.addColorStop(0.55, '#5a4438');
+    grad.addColorStop(0.7, '#1a1222');
+    grad.addColorStop(1.0, '#08060c');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 512, 256);
+
+    // Add colored "suns" so reflections pick up tints
+    ctx.globalCompositeOperation = 'lighter';
+    const suns = [
+      { x: 80, y: 90, r: 60, color: 'rgba(255, 190, 100, 0.8)' },   // warm
+      { x: 200, y: 100, r: 50, color: 'rgba(255, 140, 60, 0.7)' },    // orange
+      { x: 360, y: 110, r: 55, color: 'rgba(100, 160, 255, 0.8)' },   // cool blue
+      { x: 460, y: 95, r: 45, color: 'rgba(180, 220, 255, 0.7)' },   // cyan
+    ];
+    suns.forEach(s => {
+      const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r);
+      g.addColorStop(0, s.color);
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(s.x - s.r, s.y - s.r, s.r * 2, s.r * 2);
+    });
+
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.mapping = THREE.EquirectangularReflectionMapping;
+    tex.colorSpace = THREE.SRGBColorSpace;
+
+    scene.environment = tex;
+
+    return () => {
+      tex.dispose();
+      scene.environment = null;
+    };
+  }, [scene]);
+
+  return null;
+}
+
+/* ─────────────────────────────────────────
+   CRYSTAL CUBE — outer glass + nested inner glass + chrome edges
+───────────────────────────────────────── */
+
+function CrystalCube({ mouseRef }) {
   const groupRef = useRef();
 
   useFrame(({ clock }) => {
     if (!groupRef.current) return;
     const t = clock.getElapsedTime();
-    // Float on Y axis
-    groupRef.current.position.y = position[1] + Math.sin(t * speed * 0.42 + phase) * 0.36;
-    // Breathe (subtle scale pulse)
-    const breathe = 1 + Math.sin(t * speed * 0.88 + phase) * 0.022;
-    groupRef.current.scale.setScalar(breathe);
-    // Slow drift rotation
-    groupRef.current.rotation.y = t * speed * 0.038;
-    groupRef.current.rotation.x = t * speed * 0.022;
+    // slow deliberate rotation — cinematic pace
+    groupRef.current.rotation.y = t * 0.14 + mouseRef.current.x * 0.15;
+    groupRef.current.rotation.x = Math.sin(t * 0.18) * 0.12 + mouseRef.current.y * 0.08;
+    groupRef.current.rotation.z = Math.sin(t * 0.11) * 0.04;
+    // float
+    groupRef.current.position.y = Math.sin(t * 0.35) * 0.1;
   });
 
+  // pre-build edge geometries
+  const outerEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(2.2, 2.2, 2.2)), []);
+  const innerEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(1.3, 1.3, 1.3)), []);
+  const coreEdges = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(0.6, 0.6, 0.6)), []);
+
   return (
-    <group ref={groupRef} position={position}>
-      {/* 1 — Core: tight bright centre */}
-      <mesh>
-        <sphereGeometry args={[radius * 0.28, 32, 32]} />
-        <meshBasicMaterial
-          color={color} transparent opacity={0.7}
-          blending={THREE.AdditiveBlending} depthWrite={false}
+    <group ref={groupRef}>
+      {/* ── OUTER CUBE — big glass shell ── */}
+      <mesh renderOrder={1}>
+        <boxGeometry args={[2.2, 2.2, 2.2]} />
+        <meshPhysicalMaterial
+          transmission={1.0}
+          thickness={0.8}
+          roughness={0.02}
+          ior={1.5}
+          metalness={0}
+          clearcoat={1}
+          clearcoatRoughness={0.03}
+          envMapIntensity={1.5}
+          transparent
+          attenuationColor="#d8e4ff"
+          attenuationDistance={6}
+          side={THREE.DoubleSide}
+          depthWrite={false}
         />
       </mesh>
+      <lineSegments geometry={outerEdges} renderOrder={3}>
+        <lineBasicMaterial color="#ffffff" transparent opacity={0.7} />
+      </lineSegments>
 
-      {/* 2 — Inner atmosphere */}
-      <mesh>
-        <sphereGeometry args={[radius * 0.60, 40, 40]} />
-        <meshBasicMaterial
-          color={color} transparent opacity={0.22}
-          blending={THREE.AdditiveBlending} depthWrite={false}
-        />
-      </mesh>
+      {/* ── INNER CUBE — rotated 45° so its corners poke toward outer faces ── */}
+      <group rotation={[Math.PI / 4, Math.PI / 4, 0]}>
+        <mesh renderOrder={2}>
+          <boxGeometry args={[1.3, 1.3, 1.3]} />
+          <meshPhysicalMaterial
+            transmission={1.0}
+            thickness={0.6}
+            roughness={0.03}
+            ior={1.55}
+            metalness={0}
+            clearcoat={1}
+            clearcoatRoughness={0.04}
+            envMapIntensity={1.8}
+            transparent
+            attenuationColor="#c8d8ff"
+            attenuationDistance={4}
+            side={THREE.DoubleSide}
+            depthWrite={false}
+          />
+        </mesh>
+        <lineSegments geometry={innerEdges} renderOrder={4}>
+          <lineBasicMaterial color="#ffffff" transparent opacity={0.85} />
+        </lineSegments>
+      </group>
 
-      {/* 3 — Bubble surface (nearly transparent) */}
-      <mesh>
-        <sphereGeometry args={[radius, 64, 64]} />
-        <meshBasicMaterial
-          color={color} transparent opacity={0.055}
-          blending={THREE.AdditiveBlending} depthWrite={false}
-        />
-      </mesh>
-
-      {/* 4 — Rim glow: back-face trick — bright only at silhouette edges */}
-      <mesh>
-        <sphereGeometry args={[radius * 1.04, 48, 48]} />
-        <meshBasicMaterial
-          color={color} transparent opacity={0.28}
-          side={THREE.BackSide}
-          blending={THREE.AdditiveBlending} depthWrite={false}
-        />
-      </mesh>
-
-      {/* 5 — Outer halo: large, very faint */}
-      <mesh>
-        <sphereGeometry args={[radius * 1.90, 24, 24]} />
-        <meshBasicMaterial
-          color={color} transparent opacity={0.045}
-          blending={THREE.AdditiveBlending} depthWrite={false}
-        />
-      </mesh>
-
-      {/* 6 — Specular highlight: white dot for glass sheen */}
-      <mesh position={[radius * 0.38, radius * 0.44, radius * 0.72]}>
-        <sphereGeometry args={[radius * 0.09, 16, 16]} />
-        <meshBasicMaterial
-          color="#ffffff" transparent opacity={0.80}
-          blending={THREE.AdditiveBlending} depthWrite={false}
-        />
-      </mesh>
-
-      {/* 7 — Secondary smaller specular (realism) */}
-      <mesh position={[radius * -0.22, radius * 0.52, radius * 0.80]}>
-        <sphereGeometry args={[radius * 0.04, 12, 12]} />
-        <meshBasicMaterial
-          color="#ffffff" transparent opacity={0.50}
-          blending={THREE.AdditiveBlending} depthWrite={false}
-        />
-      </mesh>
-
-      {/* 8 — Subsurface warmth: significantly richer orange internal volume */}
-      <mesh>
-        <sphereGeometry args={[radius * 0.65, 32, 32]} />
-        <meshBasicMaterial
-          color="#ff7700" transparent opacity={0.32}
-          blending={THREE.AdditiveBlending} depthWrite={false}
-        />
-      </mesh>
-
-      {/* 9 — Orange Rim: sharp edge highlight for that 'orangeious' punch */}
-      <mesh>
-        <sphereGeometry args={[radius * 1.05, 48, 48]} />
-        <meshBasicMaterial
-          color="#ff4400" transparent opacity={0.45}
-          side={THREE.BackSide}
-          blending={THREE.AdditiveBlending} depthWrite={false}
-        />
-      </mesh>
+      {/* ── INNERMOST TINY CORE — small visible speck through all layers ── */}
+      <group rotation={[Math.PI / 6, -Math.PI / 4, Math.PI / 8]}>
+        <mesh renderOrder={3}>
+          <boxGeometry args={[0.6, 0.6, 0.6]} />
+          <meshPhysicalMaterial
+            transmission={0.9}
+            thickness={0.4}
+            roughness={0.04}
+            ior={1.6}
+            metalness={0}
+            clearcoat={1}
+            envMapIntensity={2.0}
+            transparent
+            attenuationColor="#a8c0ff"
+            attenuationDistance={2}
+            depthWrite={false}
+          />
+        </mesh>
+        <lineSegments geometry={coreEdges} renderOrder={5}>
+          <lineBasicMaterial color="#ffffff" transparent opacity={1} />
+        </lineSegments>
+      </group>
     </group>
   );
 }
 
-// ── Ambient particle cloud ────────────────────────────────────────────────────
+/* ─────────────────────────────────────────
+   PRISM BEAMS — shader-based, soft gradient fade from center outward
+   These are the rainbow light rays visible in the reference.
+───────────────────────────────────────── */
 
-function Particles() {
-  const ref = useRef();
-  const COUNT = 340;
+const beamVertexShader = /* glsl */ `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
 
-  const { positions, phases } = useMemo(() => {
-    const positions = new Float32Array(COUNT * 3);
-    const phases    = new Float32Array(COUNT);
-    for (let i = 0; i < COUNT; i++) {
-      positions[i * 3]     = (Math.random() - 0.45) * 11;
-      positions[i * 3 + 1] = (Math.random() - 0.5)  * 8;
-      positions[i * 3 + 2] = (Math.random() - 0.5)  * 6 - 2;
-      phases[i] = Math.random() * Math.PI * 2;
-    }
-    return { positions, phases };
-  }, []);
+const beamFragmentShader = /* glsl */ `
+  varying vec2 vUv;
+  uniform vec3 uColor;
+  uniform float uIntensity;
+  uniform float uTime;
+  uniform float uPulse;
 
-  const baseY = useMemo(() => {
-    const arr = new Float32Array(COUNT);
-    for (let i = 0; i < COUNT; i++) arr[i] = positions[i * 3 + 1];
-    return arr;
-  }, [positions]);
+  void main() {
+    // vUv.x = 0 at root (center), 1 at tip (far end)
+    // vUv.y = 0..1 across beam width
+
+    // Fade along length: bright at center, fades to 0 at tip
+    float lengthFade = 1.0 - vUv.x;
+    lengthFade = pow(lengthFade, 1.8);
+
+    // Fade along width: bright at center line, 0 at edges
+    float widthDist = abs(vUv.y - 0.5) * 2.0;
+    float widthFade = 1.0 - widthDist;
+    widthFade = pow(widthFade, 2.5);
+
+    // Gentle shimmer along the beam
+    float shimmer = 0.85 + 0.15 * sin(vUv.x * 8.0 - uTime * 1.5 + uPulse);
+
+    float alpha = lengthFade * widthFade * uIntensity * shimmer;
+    
+    // Slight color brightening at the bright end
+    vec3 color = uColor + vec3(lengthFade * 0.3);
+    
+    gl_FragColor = vec4(color, alpha);
+  }
+`;
+
+function PrismBeam({ angle, color, length, width, intensity, pulseOffset = 0 }) {
+  const meshRef = useRef();
+  const materialRef = useRef();
+
+  // beam points OUTWARD from center along the angle
+  const [posX, posY, rotZ] = useMemo(() => {
+    const mid = length / 2;
+    return [Math.cos(angle) * mid, Math.sin(angle) * mid, angle];
+  }, [angle, length]);
 
   useFrame(({ clock }) => {
-    if (!ref.current) return;
-    const t   = clock.getElapsedTime();
-    const pos = ref.current.geometry.attributes.position;
-    for (let i = 0; i < COUNT; i++) {
-      pos.setY(i, baseY[i] + Math.sin(t * 0.28 + phases[i]) * 0.14);
+    if (materialRef.current) {
+      materialRef.current.uniforms.uTime.value = clock.getElapsedTime();
     }
-    pos.needsUpdate = true;
   });
 
   return (
-    <points ref={ref}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions.slice(), 3]} />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.026} color="#88ddff"
-        transparent opacity={0.45}
+    <mesh ref={meshRef} position={[posX, posY, -2.5]} rotation={[0, 0, rotZ]}>
+      <planeGeometry args={[length, width, 1, 1]} />
+      <shaderMaterial
+        ref={materialRef}
+        vertexShader={beamVertexShader}
+        fragmentShader={beamFragmentShader}
+        uniforms={{
+          uColor: { value: new THREE.Color(color) },
+          uIntensity: { value: intensity },
+          uTime: { value: 0 },
+          uPulse: { value: pulseOffset },
+        }}
+        transparent
         blending={THREE.AdditiveBlending}
-        depthWrite={false} sizeAttenuation
+        depthWrite={false}
+        side={THREE.DoubleSide}
       />
-    </points>
+    </mesh>
   );
 }
 
-// ── Energy filaments between orbs ─────────────────────────────────────────────
+function PrismBeams() {
+  // carefully placed beams matching the reference composition
+  const beams = useMemo(() => [
+    // Right side — warm amber group
+    { angle: Math.PI * 0.14, color: '#ffb457', length: 22, width: 1.6, intensity: 0.85, pulseOffset: 0.0 },
+    { angle: Math.PI * 0.08, color: '#ff8a3c', length: 18, width: 1.1, intensity: 0.7, pulseOffset: 0.5 },
+    { angle: Math.PI * 0.20, color: '#ffcc7a', length: 16, width: 0.9, intensity: 0.65, pulseOffset: 1.0 },
 
-function Filaments() {
-  const orbs = [
-    [0.5,  0.2,  0.0],
-    [-1.0, -1.0, -1.5],
-    [2.0,  -0.5, -2.0],
-    [-0.2,  1.8, -1.2],
-  ];
+    // Left side — cool blue group  
+    { angle: Math.PI * 0.92, color: '#4a90ff', length: 24, width: 1.8, intensity: 0.85, pulseOffset: 1.5 },
+    { angle: Math.PI * 0.85, color: '#6eb4ff', length: 18, width: 1.0, intensity: 0.65, pulseOffset: 2.0 },
+    { angle: Math.PI * 0.98, color: '#3a6cdd', length: 20, width: 1.3, intensity: 0.7, pulseOffset: 2.5 },
 
-  const geo = useMemo(() => {
-    const pts = [];
-    for (let i = 0; i < orbs.length; i++) {
-      for (let j = i + 1; j < orbs.length; j++) {
-        const dx = orbs[i][0] - orbs[j][0];
-        const dy = orbs[i][1] - orbs[j][1];
-        const dz = orbs[i][2] - orbs[j][2];
-        if (Math.sqrt(dx * dx + dy * dy + dz * dz) < 3.2) {
-          pts.push(new THREE.Vector3(...orbs[i]));
-          pts.push(new THREE.Vector3(...orbs[j]));
-        }
-      }
-    }
-    return new THREE.BufferGeometry().setFromPoints(pts);
+    // Subtle bottom-right deep blue
+    { angle: -Math.PI * 0.18, color: '#3a66cc', length: 16, width: 1.0, intensity: 0.55, pulseOffset: 3.0 },
+
+    // Subtle bottom-left
+    { angle: -Math.PI * 0.82, color: '#4a7acc', length: 14, width: 0.9, intensity: 0.5, pulseOffset: 3.5 },
+
+    // Top center — soft white highlight
+    { angle: Math.PI * 0.5, color: '#c8d8ff', length: 14, width: 0.7, intensity: 0.6, pulseOffset: 4.0 },
+  ], []);
+
+  return (
+    <group>
+      {beams.map((b, i) => (
+        <PrismBeam key={i} {...b} />
+      ))}
+    </group>
+  );
+}
+
+/* ─────────────────────────────────────────
+   SUBTLE CONNECTING CURVE — thin hairline arc behind (like reference)
+───────────────────────────────────────── */
+
+function ConnectingArc() {
+  const geometry = useMemo(() => {
+    const curve = new THREE.EllipseCurve(
+      0, 0,
+      2.6, 2.6,
+      Math.PI * -0.15, Math.PI * 0.55,
+      false, 0
+    );
+    const points = curve.getPoints(80);
+    const geo = new THREE.BufferGeometry().setFromPoints(points);
+    return geo;
   }, []);
 
   return (
-    <lineSegments geometry={geo}>
-      <lineBasicMaterial
-        color="#00f2ff" transparent opacity={0.07}
-        blending={THREE.AdditiveBlending} depthWrite={false}
-      />
-    </lineSegments>
+    <line geometry={geometry} position={[0.3, 0, -1]}>
+      <lineBasicMaterial color="#ffffff" transparent opacity={0.18} />
+    </line>
   );
 }
 
-// ── Scene ─────────────────────────────────────────────────────────────────────
+/* ─────────────────────────────────────────
+   LIGHTING
+───────────────────────────────────────── */
 
-const IntelligenceCore = () => {
-  const masterRef = useRef();
+function SceneLights() {
+  return (
+    <>
+      <ambientLight intensity={0.2} color="#1a2040" />
 
-  useFrame(({ pointer }) => {
-    if (!masterRef.current) return;
-    masterRef.current.rotation.x = THREE.MathUtils.lerp(
-      masterRef.current.rotation.x, pointer.y * -0.09, 0.032
-    );
-    masterRef.current.rotation.y = THREE.MathUtils.lerp(
-      masterRef.current.rotation.y, pointer.x *  0.09, 0.032
-    );
+      {/* Warm amber key — upper-right (makes right side of cube pick up warm tints) */}
+      <pointLight position={[5, 4, 3]} intensity={2.2} color="#ffb070" distance={14} decay={1.6} />
+
+      {/* Cool blue fill — upper-left */}
+      <pointLight position={[-5, 3, 3]} intensity={2.0} color="#5088ff" distance={14} decay={1.6} />
+
+      {/* Orange rim — below-back */}
+      <pointLight position={[2, -4, -3]} intensity={1.4} color="#ff6a3c" distance={10} decay={1.8} />
+
+      {/* Cool rim — back */}
+      <pointLight position={[-2, 2, -4]} intensity={1.2} color="#6aa0ff" distance={10} decay={1.8} />
+
+      {/* Direct front fill so edges catch specular */}
+      <directionalLight position={[0, 2, 5]} intensity={0.5} color="#ffffff" />
+
+      {/* Top subtle key */}
+      <directionalLight position={[0, 5, 1]} intensity={0.4} color="#d8d0e8" />
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────
+   CAMERA RIG
+───────────────────────────────────────── */
+
+function CameraRig({ mouseRef }) {
+  const { camera } = useThree();
+  useFrame(() => {
+    const targetX = mouseRef.current.x * 0.4;
+    const targetY = -mouseRef.current.y * 0.25;
+    camera.position.x += (targetX - camera.position.x) * 0.03;
+    camera.position.y += (targetY - camera.position.y) * 0.03;
+    camera.lookAt(0, 0, 0);
   });
+  return null;
+}
+
+/* ─────────────────────────────────────────
+   MAIN EXPORT
+───────────────────────────────────────── */
+
+const IntelligenceCore = ({ theme, isLight }) => {
+  const mouseRef = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handler = (e) => {
+      mouseRef.current.x = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseRef.current.y = (e.clientY / window.innerHeight - 0.5) * 2;
+    };
+    window.addEventListener('mousemove', handler);
+    return () => window.removeEventListener('mousemove', handler);
+  }, []);
 
   return (
     <>
-      <PerspectiveCamera makeDefault position={[0, 0.4, 8]} fov={55} />
-
-      {/* Subtle deep-space background bloom */}
-      <mesh position={[1, 0, -5]}>
-        <sphereGeometry args={[7, 20, 20]} />
-        <meshBasicMaterial
-          color="#001020" transparent opacity={0.18}
-          blending={THREE.AdditiveBlending} depthWrite={false}
-        />
-      </mesh>
-
-      <group ref={masterRef} position={[1.2, 0, 0]}>
-
-        {/* ── Main cyan orb (hero) ── */}
-        <GlowOrb
-          position={[0.5, 0.2, 0.0]}
-          radius={1.80} color="#00f2ff"
-          speed={0.55} phase={0.0}
-        />
-
-        {/* ── Purple secondary ── */}
-        <GlowOrb
-          position={[-1.0, -1.0, -1.5]}
-          radius={1.25} color="#a855f7"
-          speed={0.75} phase={2.1}
-        />
-
-        {/* ── Green tertiary ── */}
-        <GlowOrb
-          position={[2.0, -0.5, -2.0]}
-          radius={0.95} color="#00ff88"
-          speed={0.90} phase={4.2}
-        />
-
-        {/* ── Small accent orbs ── */}
-        <GlowOrb
-          position={[-0.2, 1.8, -1.2]}
-          radius={0.46} color="#ffffff"
-          speed={1.30} phase={1.0}
-        />
-        <GlowOrb
-          position={[2.8, 0.8, -1.0]}
-          radius={0.40} color="#00f2ff"
-          speed={1.20} phase={3.5}
-        />
-
-        <Filaments />
-        <Particles />
-      </group>
+      <fog attach="fog" args={['#02030a', 9, 26]} />
+      <ProceduralEnvironment />
+      <SceneLights />
+      <PrismBeams />
+      <ConnectingArc />
+      <CrystalCube mouseRef={mouseRef} />
+      <CameraRig mouseRef={mouseRef} />
     </>
   );
 };
