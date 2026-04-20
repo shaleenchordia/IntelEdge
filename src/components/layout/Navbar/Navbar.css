@@ -1,0 +1,99 @@
+.nav-capsule-wrapper {
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  background: #18181A;
+  border-radius: 100px;
+  padding: 8px 8px 8px 8px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08); /* faint border for dark mode pop */
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  width: max-content;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.nav-capsule-scrolled {
+  top: 20px;
+  background: rgba(24, 24, 26, 0.85); /* Frost mode when scrolling */
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.nav-logo-circle {
+  width: 44px;
+  height: 44px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  margin-right: 32px;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.nav-logo-circle:hover {
+  transform: rotate(15deg) scale(1.05);
+}
+
+.nav-links-center {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  margin-right: 32px;
+}
+
+.nav-capsule-link {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  letter-spacing: 0.2px;
+}
+
+.nav-capsule-link:hover {
+  color: #ffffff;
+}
+
+.nav-contact-btn {
+  background: #ffffff;
+  color: #000000;
+  padding: 12px 28px;
+  border-radius: 100px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.nav-contact-btn:hover {
+  transform: scale(1.03);
+  background: #f4f4f5;
+}
+
+@media (max-width: 800px) {
+  .nav-capsule-wrapper {
+    width: 90%;
+    justify-content: space-between;
+    padding: 6px;
+  }
+  .nav-logo-circle {
+    margin-right: 16px;
+  }
+  .nav-links-center {
+    display: none;
+  }
+  .nav-contact-btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+}

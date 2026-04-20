@@ -1,17 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=fustat@700&display=swap');
 
 :root {
-  --bg-color: #050505;
-  --bg-accent: #0a0a0a;
+  --bg-color: #000000;
+  --bg-accent: #050505;
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.6);
-  --accent-primary: var(--dynamic-accent, #00f2ff);
-  --accent-glow: var(--dynamic-glow, rgba(0, 242, 255, 0.15));
-  --accent-cyan: #00f2ff;
-  --accent-magenta: #ff00f2;
+  --accent-primary: #0084ff;
+  --accent-glow: rgba(0, 132, 255, 0.2);
+  --accent-blue: rgba(0, 132, 255, 0.8);
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
   --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-brand: 'Fustat', sans-serif;
 
   --cursor-size: 20px;
 }
@@ -65,7 +66,7 @@ button {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  background: linear-gradient(135deg, #ffffff 20%, var(--accent-primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

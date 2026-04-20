@@ -3,9 +3,9 @@ import * as THREE from 'three';
 
 // ─── Config ──────────────────────────────────────────────────────────────────
 const CITIES = [
-  { name: 'Delhi',     lat: 28.61, lon: 77.21 },
-  { name: 'Mumbai',    lat: 19.07, lon: 72.88 },
-  { name: 'Pune',      lat: 18.52, lon: 73.86 },
+  { name: 'Delhi', lat: 28.61, lon: 77.21 },
+  { name: 'Mumbai', lat: 19.07, lon: 72.88 },
+  { name: 'Pune', lat: 18.52, lon: 73.86 },
   { name: 'Bengaluru', lat: 12.97, lon: 77.59 },
 ];
 
@@ -13,8 +13,8 @@ const CITIES = [
 // Standard spherical coords (no lon+180 offset):
 //   theta = lon°  →  lon 77° gives z > 0 (facing camera) by default.
 const latLonTo3D = (lat, lon, r = 1) => {
-  const phi   = (90 - lat) * (Math.PI / 180);  // polar from Y-up
-  const theta =       lon  * (Math.PI / 180);  // azimuth from X
+  const phi = (90 - lat) * (Math.PI / 180);  // polar from Y-up
+  const theta = lon * (Math.PI / 180);  // azimuth from X
   return new THREE.Vector3(
     r * Math.sin(phi) * Math.cos(theta),
     r * Math.cos(phi),
@@ -25,17 +25,17 @@ const latLonTo3D = (lat, lon, r = 1) => {
 // ─── Component ───────────────────────────────────────────────────────────────
 const IndiaPresenceGlobe = ({ theme }) => {
   const containerRef = useRef();
-  const canvasRef    = useRef();
-  const [labels, setLabels]         = useState([]);
+  const canvasRef = useRef();
+  const [labels, setLabels] = useState([]);
   const [canvasSize, setCanvasSize] = useState({ w: 0, h: 0 });
 
   const isLabs = theme?.mode === 'labs';
-  const hex    = isLabs ? 0xff00f2 : 0x00f2ff;
-  const css    = isLabs ? '#ff00f2' : '#00f2ff';
+  const hex = isLabs ? 0xff00f2 : 0x00f2ff;
+  const css = isLabs ? '#ff00f2' : '#00f2ff';
 
   useEffect(() => {
     const container = containerRef.current;
-    const canvas    = canvasRef.current;
+    const canvas = canvasRef.current;
     if (!container || !canvas) return;
 
     const W = container.clientWidth;
@@ -49,7 +49,7 @@ const IndiaPresenceGlobe = ({ theme }) => {
     renderer.setClearColor(0x000000, 0);
 
     // ── Scene & Camera ────────────────────────────────────────────────
-    const scene  = new THREE.Scene();
+    const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(42, W / H, 0.1, 1000);
     camera.position.z = 3.2;
 
@@ -73,18 +73,18 @@ const IndiaPresenceGlobe = ({ theme }) => {
 
     // 18 000 clustered in the India bounding box (tapered triangle)
     for (let i = 0; i < 18000; i++) {
-      const lat    = 8  + Math.random() * 29;           // 8°N – 37°N
+      const lat = 8 + Math.random() * 29;           // 8°N – 37°N
       const spread = (lat - 8) / 29;                    // 0 = south tip, 1 = north
       const minLon = 68.5 + (1 - spread) * 6;           // narrow south
       const maxLon = 97.5 - (1 - spread) * 6;
-      const lon    = minLon + Math.random() * (maxLon - minLon);
+      const lon = minLon + Math.random() * (maxLon - minLon);
       const v = latLonTo3D(lat, lon, 1.004);
       pts.push(v.x, v.y, v.z);
     }
 
     // 3 000 sparse worldwide background
     for (let i = 0; i < 3000; i++) {
-      const phi   = Math.acos(2 * Math.random() - 1);
+      const phi = Math.acos(2 * Math.random() - 1);
       const theta = 2 * Math.PI * Math.random();
       pts.push(
         1.004 * Math.sin(phi) * Math.cos(theta),
@@ -96,12 +96,12 @@ const IndiaPresenceGlobe = ({ theme }) => {
     const ptGeo = new THREE.BufferGeometry();
     ptGeo.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
     globe.add(new THREE.Points(ptGeo, new THREE.PointsMaterial({
-      color:       new THREE.Color(hex),
-      size:        0.0055,
+      color: new THREE.Color(hex),
+      size: 0.0055,
       transparent: true,
-      opacity:     0.85,
-      blending:    THREE.AdditiveBlending,
-      depthWrite:  false,
+      opacity: 0.85,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
       sizeAttenuation: true,
     })));
 
@@ -109,17 +109,17 @@ const IndiaPresenceGlobe = ({ theme }) => {
     globe.add(new THREE.Mesh(
       new THREE.SphereGeometry(1.035, 36, 36),
       new THREE.MeshBasicMaterial({
-        color:       new THREE.Color(hex),
-        wireframe:   true,
+        color: new THREE.Color(hex),
+        wireframe: true,
         transparent: true,
-        opacity:     0.04,
-        blending:    THREE.AdditiveBlending,
+        opacity: 0.04,
+        blending: THREE.AdditiveBlending,
       }),
     ));
 
     // ── City dots ─────────────────────────────────────────────────────
     const cityMeshes = CITIES.map(city => {
-      const pos  = latLonTo3D(city.lat, city.lon, 1.02);
+      const pos = latLonTo3D(city.lat, city.lon, 1.02);
       const mesh = new THREE.Mesh(
         new THREE.SphereGeometry(0.018, 12, 12),
         new THREE.MeshBasicMaterial({ color: new THREE.Color(hex) }),
@@ -153,7 +153,7 @@ const IndiaPresenceGlobe = ({ theme }) => {
       const scanY = Math.sin(t * 1.2) * 1.5;
       beam.position.y = scanY;
       beam.material.opacity = 0.5 + Math.sin(t * 5) * 0.2; // pulse
-      
+
       renderer.render(scene, camera);
 
       // ── Project city dots → 2D screen coords ─────────────────────
@@ -166,8 +166,8 @@ const IndiaPresenceGlobe = ({ theme }) => {
         const isFacing = world.dot(camDir) > 0;
 
         const proj = world.clone().project(camera);
-        const x    =  ( proj.x * 0.5 + 0.5) * W;
-        const y    = (-proj.y * 0.5 + 0.5) * H;
+        const x = (proj.x * 0.5 + 0.5) * W;
+        const y = (-proj.y * 0.5 + 0.5) * H;
 
         return { name: city.name, lat: city.lat, lon: city.lon, x, y, visible: isFacing };
       });
@@ -201,10 +201,10 @@ const IndiaPresenceGlobe = ({ theme }) => {
   // ── Label offset directions ──────────────────────────────────────────
   // Give each city a fixed radial direction so they never collide.
   const LABEL_DIR = {
-    'Delhi':     { dx:  90, dy: -45 },   // top-right
-    'Mumbai':    { dx: -90, dy:  10 },   // mid-left
-    'Pune':      { dx: -90, dy:  50 },   // lower-left
-    'Bengaluru': { dx:  90, dy:  55 },   // lower-right
+    'Delhi': { dx: 90, dy: -45 },   // top-right
+    'Mumbai': { dx: -90, dy: 10 },   // mid-left
+    'Pune': { dx: -90, dy: 50 },   // lower-left
+    'Bengaluru': { dx: 90, dy: 55 },   // lower-right
   };
 
   return (
@@ -227,7 +227,7 @@ const IndiaPresenceGlobe = ({ theme }) => {
             >
               <line
                 x1={lbl.x} y1={lbl.y}
-                x2={lx}    y2={ly}
+                x2={lx} y2={ly}
                 stroke={css} strokeWidth={1} strokeOpacity={0.55}
               />
               {/* Accent dot at the globe surface */}
@@ -236,26 +236,26 @@ const IndiaPresenceGlobe = ({ theme }) => {
 
             {/* Label chip */}
             <div style={{
-              position:  'absolute',
-              left:      `${lx}px`,
-              top:       `${ly}px`,
+              position: 'absolute',
+              left: `${lx}px`,
+              top: `${ly}px`,
               transform: 'translate(-50%, -50%)',
               pointerEvents: 'none',
               zIndex: 10,
             }}>
               <div style={{
-                color:       '#fff',
-                background:  'rgba(0,2,8,0.92)',
-                border:      `1px solid ${css}`,
-                padding:     '6px 13px',
-                borderRadius:'2px',
-                fontSize:    '10px',
-                fontWeight:  900,
+                color: '#fff',
+                background: 'rgba(0,2,8,0.92)',
+                border: `1px solid ${css}`,
+                padding: '6px 13px',
+                borderRadius: '2px',
+                fontSize: '10px',
+                fontWeight: 900,
                 letterSpacing: '1.4px',
-                whiteSpace:  'nowrap',
-                textTransform:'uppercase',
-                boxShadow:   `0 0 18px ${css}60`,
-                fontFamily:  "'Orbitron', sans-serif",
+                whiteSpace: 'nowrap',
+                textTransform: 'uppercase',
+                boxShadow: `0 0 18px ${css}60`,
+                fontFamily: "'Orbitron', sans-serif",
               }}>
                 {lbl.name}
               </div>

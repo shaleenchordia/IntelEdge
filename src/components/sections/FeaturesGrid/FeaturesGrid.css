@@ -1,0 +1,182 @@
+.services-section {
+  position: relative;
+  background: transparent;
+  color: #fff;
+  min-height: 100vh;
+  padding: 100px 5%;
+  font-family: var(--font-main);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.services-background-orbs {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.services-background-orbs::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(0, 132, 255, 0.12) 0%, transparent 70%);
+  filter: blur(100px);
+}
+
+.services-container {
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Header */
+.services-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 60px;
+  gap: 40px;
+}
+
+.services-header-left {
+  max-width: 600px;
+}
+
+.services-title {
+  font-family: var(--font-brand);
+  font-size: clamp(3rem, 5vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: -2px;
+  margin: 0 0 24px 0;
+  line-height: 1.05;
+  color: #ffffff;
+}
+
+.services-description {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Bento Layout */
+.services-bento {
+  display: flex;
+  gap: 24px;
+  min-height: 440px;
+}
+
+.s-col-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.s-col-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.s-col-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Flex Ratios */
+.flex-2 {
+  flex: 2;
+}
+
+.flex-3 {
+  flex: 3;
+}
+
+.flex-4 {
+  flex: 4;
+}
+
+/* Cards Base */
+.s-card {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-sizing: border-box;
+}
+
+/* Photo-Accurate Frosted Glass */
+.footer-style-card {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 20px;
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0px 4px 4px 0px rgba(255, 255, 255, 0.02),
+    0 20px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 5;
+  /* Ensure cards are above the bursting bubbles */
+}
+
+.s-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  margin-bottom: auto;
+  /* Pushes text to the bottom naturally using flex */
+}
+
+.s-card-content {
+  margin-top: 32px;
+}
+
+.s-card-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  margin: 0 0 16px 0;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.s-card-text {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .services-bento {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .services-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 30px;
+  }
+}

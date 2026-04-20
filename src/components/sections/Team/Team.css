@@ -1,0 +1,204 @@
+.team-container {
+  background: transparent;
+  color: #fff;
+  min-height: 100vh;
+  padding: 100px 5%;
+  position: relative;
+  overflow: visible;
+  font-family: var(--font-main);
+}
+
+.team-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60vw;
+  height: 60vw;
+  background: radial-gradient(circle, rgba(0, 132, 255, 0.08) 0%, transparent 70%);
+  filter: blur(120px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.team-header {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 80px;
+}
+
+.team-headline {
+  font-family: var(--font-brand);
+  font-size: clamp(3rem, 5vw, 4.5rem);
+  line-height: 1.05;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -2px;
+  max-width: 900px;
+  margin-bottom: 40px;
+}
+
+.team-get-in-touch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 100px;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #fff;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.team-get-in-touch:hover {
+  background: #fff;
+  color: #000;
+}
+
+.team-accordion {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.team-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.3s ease;
+}
+
+.team-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.team-row:last-child {
+  border-bottom: none;
+}
+
+.team-row-inner {
+  display: grid;
+  grid-template-columns: 40% 1fr 50px;
+  gap: 20px;
+  padding: 40px 0;
+  align-items: flex-start;
+}
+
+.team-number {
+  font-size: 200px;
+  line-height: 0.7;
+  font-weight: 300;
+  color: #fff;
+  letter-spacing: -5px;
+  margin-top: -10px; /* Slight adjustment to align properly */
+  padding-left: 10px;
+}
+
+.team-content {
+  padding-top: 10px;
+}
+
+.team-title {
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.team-details {
+  margin-top: 30px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  max-width: 500px;
+}
+
+.team-details ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0 0;
+}
+
+.team-details li {
+  margin-bottom: 8px;
+}
+
+.team-icon {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Responsiveness */
+@media (max-width: 900px) {
+  .team-row-inner {
+    grid-template-columns: 35% 1fr 40px;
+  }
+  .team-number {
+    font-size: 120px;
+  }
+}
+
+@media (max-width: 600px) {
+  .team-row-inner {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 20px 0;
+  }
+  .team-icon {
+    position: absolute;
+    top: 30px;
+    right: 0;
+  }
+  .team-number {
+    font-size: 100px;
+  }
+}
+
+/* ── Video Burst Effect ── */
+.video-burst-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.burst-video-wrapper {
+  position: absolute;
+  width: 350px;
+  height: 350px;
+  margin-top: -175px;
+  margin-left: -175px;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.burst-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: screen;
+  /* Exact same filter as the Hero orb */
+  filter: hue-rotate(-55deg) saturate(250%) brightness(1.2) contrast(1.1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Inner wrapper — rAF handles float/rotate/pulse */
+.burst-orb-inner {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}

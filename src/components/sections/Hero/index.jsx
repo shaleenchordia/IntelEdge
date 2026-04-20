@@ -1,216 +1,523 @@
-import React, { Suspense, useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Canvas } from '@react-three/fiber';
-import IntelligenceCore from './IntelligenceCore';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import './Hero.css';
 
-const Hero = ({ theme }) => {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+gsap.registerPlugin(ScrollTrigger);
 
-  const handleMouseMove = (e) => {
-    const { clientX, clientY } = e;
-    const moveX = (clientX - window.innerWidth / 2) / 60;
-    const moveY = (clientY - window.innerHeight / 2) / 60;
-    setMousePos({ x: moveX, y: moveY });
-  };
+/* ── Arrow Icon ── */
+const ArrowIcon = () => (
+  <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M3 7H11M11 7L7.5 3.5M11 7L7.5 10.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+/* ── Star Icon ── */
+const StarIcon = () => (
+  <svg className="hero-star" width="14" height="14" viewBox="0 0 24 24" fill="#FF801E" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+  </svg>
+);
+
+/* ═══════════════════════════════════════════
+   PARTICLE EXPLOSION SYSTEM
+   ═══════════════════════════════════════════ */
+const PARTICLE_COUNT = 60;
+const PARTICLE_COLORS = [
+  'rgba(180, 230, 255, 0.6)',
+  'rgba(210, 240, 255, 0.5)',
+  'rgba(150, 210, 255, 0.55)',
+  'rgba(230, 250, 255, 0.65)',
+  'rgba(0, 242, 255, 0.4)',
+  'rgba(100, 200, 255, 0.5)',
+];
+
+const ParticleSystem = ({ active, origin, targetRef, onComplete, phase: initialPhase = 'explode' }) => {
+  const canvasRef = useRef(null);
+  const particlesRef = useRef([]);
+  const animFrameRef = useRef(null);
+  const phaseRef = useRef(initialPhase); // 'explode' | 'drift' | 'implode'
+  const explodeTimerRef = useRef(0); // Separate timer just for explode→drift transition
+  const timerRef = useRef(0);        // General animation timer
+  const prevPhaseRef = useRef(initialPhase);
+  const isMouseDown = useRef(false);
+
+  // Sync internal phase with prop AND handle re-burst/re-implode
+  useEffect(() => {
+    const newPhase = initialPhase;
+    const oldPhase = prevPhaseRef.current;
+
+    if (newPhase === oldPhase) return; // No change, skip
+
+    if (newPhase === 'explode') {
+      // Switching TO explode — give every particle fresh burst velocities
+      phaseRef.current = 'explode';
+      explodeTimerRef.current = 0; // Reset the explode→drift countdown
+
+      particlesRef.current.forEach(p => {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 6 + Math.random() * 12;
+        p.vx = Math.cos(angle) * speed * 1.5;
+        p.vy = Math.sin(angle) * speed * 0.8;
+        p.alpha = 1;
+        // Keep their current position so the burst radiates from wherever they are
+      });
+    } else {
+      // Switching to 'implode' or 'drift'
+      phaseRef.current = newPhase;
+    }
+
+    prevPhaseRef.current = newPhase;
+  }, [initialPhase]);
+
+  useEffect(() => {
+    if (!active || !canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    phaseRef.current = 'explode';
+    explodeTimerRef.current = 0;
+    timerRef.current = 0;
+
+    particlesRef.current = Array.from({ length: PARTICLE_COUNT }, () => {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 6 + Math.random() * 12;
+      const size = 1 + Math.random() * 7;
+      return {
+        x: origin.x,
+        y: origin.y,
+        vx: Math.cos(angle) * speed * 1.5,
+        vy: Math.sin(angle) * speed * 0.8,
+        size,
+        baseSize: size,
+        color: PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)],
+        alpha: 1,
+        originX: origin.x,
+        originY: origin.y,
+        friction: 0.95 + Math.random() * 0.03,
+        pulse: Math.random() * Math.PI * 2,
+      };
+    });
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      timerRef.current++;
+      const phase = phaseRef.current;
+
+      // Only auto-transition explode→drift using the dedicated counter
+      if (phase === 'explode') {
+        explodeTimerRef.current++;
+        if (explodeTimerRef.current > 70) {
+          phaseRef.current = 'drift';
+        }
+      }
+
+      let allReturned = true;
+
+      particlesRef.current.forEach((p) => {
+        if (phaseRef.current === 'explode') {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vx *= p.friction;
+          p.vy *= p.friction;
+          p.vy += 0.01;
+        } else if (phaseRef.current === 'drift') {
+          const centerX = window.innerWidth / 2;
+          const pushForce = 0.15;
+          if (p.x < centerX) p.vx -= pushForce;
+          else p.vx += pushForce;
+
+          p.vx *= 0.98;
+          p.vy *= 0.98;
+          p.x += p.vx + Math.sin(timerRef.current * 0.02 + p.pulse) * 0.4;
+          p.y += p.vy + Math.cos(timerRef.current * 0.015 + p.pulse) * 0.4;
+        } else if (phaseRef.current === 'implode') {
+          let tx = p.originX;
+          let ty = p.originY;
+          if (targetRef?.current) {
+            const rect = targetRef.current.getBoundingClientRect();
+            tx = rect.left + rect.width / 2;
+            ty = rect.top + rect.height / 2;
+          }
+
+          const dx = tx - p.x;
+          const dy = ty - p.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          // Visible spiral vortex: balanced pull + orbit
+          const pullStrength = 0.012;            // Stronger pull to tighten the spiral
+          const spiralStrength = 0.08;           // Strong orbit for visible rotation
+          const perpX = -dy / (dist + 1);
+          const perpY = dx / (dist + 1);
+
+          // Combine pull + orbit forces — cap orbit distance so far particles don't spin wildly
+          let newVx = dx * pullStrength + perpX * spiralStrength * Math.min(dist, 150);
+          let newVy = dy * pullStrength + perpY * spiralStrength * Math.min(dist, 150);
+
+          // Cap maximum speed
+          const maxSpeed = 5;
+          const speed = Math.sqrt(newVx * newVx + newVy * newVy);
+          if (speed > maxSpeed) {
+            newVx = (newVx / speed) * maxSpeed;
+            newVy = (newVy / speed) * maxSpeed;
+          }
+
+          p.vx = newVx;
+          p.vy = newVy;
+          p.x += p.vx;
+          p.y += p.vy;
+
+          // Full brightness while spiraling
+          p.alpha = Math.min(1, Math.max(0.4, 1.2 - dist / 500));
+
+          // Fade only when very close to center
+          if (dist < 15) {
+            p.alpha *= dist / 15;
+          }
+
+          if (dist > 5) allReturned = false;
+        }
+
+        // Size: shrink particles during implode for a tighter convergence look
+        const implodeSizeFactor = phaseRef.current === 'implode' ? 0.7 : 1;
+        p.size = Math.max(0.1, (p.baseSize + Math.sin(timerRef.current * 0.05 + p.pulse) * 2.5) * implodeSizeFactor);
+
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = p.size * 3;
+        ctx.fill();
+        ctx.restore();
+      });
+
+      animFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    animFrameRef.current = requestAnimationFrame(animate);
+
+    const handleMouseMove = (e) => {
+      if (phaseRef.current !== 'drift' && phaseRef.current !== 'explode') return;
+      particlesRef.current.forEach((p) => {
+        const dx = e.clientX - p.x;
+        const dy = e.clientY - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < 200) {
+          const force = (200 - dist) / 200;
+          if (isMouseDown.current) {
+            // Magnetic Attract
+            p.vx += (dx / dist) * force * 1.5;
+            p.vy += (dy / dist) * force * 1.5;
+          } else {
+            // Repel
+            p.vx -= (dx / dist) * force * 0.8;
+            p.vy -= (dy / dist) * force * 0.8;
+          }
+        }
+      });
+    };
+
+    const handleMouseDown = () => (isMouseDown.current = true);
+    const handleMouseUp = () => (isMouseDown.current = false);
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    // Fade out the particles later, when we are deep into the 4th page
+    const fadeOutTween = gsap.to(canvas, {
+      opacity: 0,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '#services',
+        start: 'top top', // Start fading only when 4th page hits the top of screen
+        end: 'bottom top',   // Fully faded out by the time we leave the 4th page
+        scrub: true,
+      }
+    });
+
+    return () => {
+      cancelAnimationFrame(animFrameRef.current);
+      fadeOutTween.kill();
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [active, origin, onComplete]);
+
+  if (!active) return null;
 
   return (
-    <section
-      id="hero"
-      onMouseMove={handleMouseMove}
-      style={{ position: 'relative', overflow: 'hidden', height: '100vh', padding: 0, backgroundColor: 'var(--bg-color)' }}
-    >
-      {/* Cinematic 3D Layer */}
-      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1 }}>
-        <Canvas gl={{ antialias: true, alpha: true }}>
-          <Suspense fallback={null}>
-            <IntelligenceCore theme={theme} isLight={true} />
-          </Suspense>
-        </Canvas>
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 1, // Visible but behind text (text is usually z-index 10 or 100)
+        pointerEvents: 'none',
+      }}
+    />
+  );
+};
+
+/* ═══════════════════════════════════════════
+   HERO COMPONENT
+   ═══════════════════════════════════════════ */
+const Hero = () => {
+  const orbRef = useRef(null);
+  const innerOrbRef = useRef(null);
+  const sectionRef = useRef(null);
+  const [exploded, setExploded] = useState(false);
+  const [particleOrigin, setParticleOrigin] = useState({ x: 0, y: 0 });
+  const [particlePhase, setParticlePhase] = useState('explode');
+  const hasExplodedRef = useRef(false);
+
+  useEffect(() => {
+    if (!orbRef.current || !innerOrbRef.current || !sectionRef.current) return;
+
+    // 1. Scroll-based horizontal movement (right to left) using ScrollTrigger
+    const ctx = gsap.context(() => {
+      // Move left as you scroll down the first two sections
+      gsap.to(orbRef.current, {
+        x: '-30vw',
+        ease: 'none',
+        scrollTrigger: {
+          trigger: 'body',
+          start: 'top top',
+          end: '+=1050vh', // Gradual movement over 1.5 screen heights
+          scrub: 1,
+        },
+      });
+
+      // 1) Orb fade — SHORT range, fully gone before burst point
+      gsap.to(orbRef.current, {
+        scale: 0,
+        opacity: 0,
+        ease: 'power2.in',
+        scrollTrigger: {
+          trigger: '#gaps',
+          start: 'top 70%',
+          end: 'top 30%',   // Orb only reappears in a narrow late window
+          scrub: 1,
+        },
+      });
+
+      // 2) Particle logic — LONG range for full explode/implode/reset cycle
+      ScrollTrigger.create({
+        trigger: '#gaps',
+        start: 'top 90%',
+        end: 'top -150%',
+        scrub: 1,
+        onUpdate: (self) => {
+          const { progress } = self;
+
+          if (progress > 0.45) {
+            // Past the burst point — ensure explosion is active
+            if (!hasExplodedRef.current) {
+              hasExplodedRef.current = true;
+              if (orbRef.current) {
+                const rect = orbRef.current.getBoundingClientRect();
+                setParticleOrigin({
+                  x: rect.left + rect.width / 2,
+                  y: rect.top + rect.height / 2,
+                });
+                setExploded(true);
+              }
+            }
+            setParticlePhase('explode');
+          } else if (progress > 0.15 && progress <= 0.45 && hasExplodedRef.current) {
+            // Between start and burst point, scrolled back — implode
+            setParticlePhase('implode');
+          } else if (progress <= 0.15 && hasExplodedRef.current) {
+            // Orb is becoming visible again — full reset
+            hasExplodedRef.current = false;
+            setExploded(false);
+            setParticlePhase('explode'); // Reset for next time
+          }
+        }
+      });
+    });
+
+    // 2. Mouse Follow for cursor-based movement (applied to inner orb only)
+    const handleMouseMove = (e) => {
+      if (!innerOrbRef.current) return;
+
+      // Get mouse position relative to viewport
+      const mouseX = e.clientX / window.innerWidth;
+      const mouseY = e.clientY / window.innerHeight;
+
+      // Move inner orb (responsive to cursor)
+      const innerX = (mouseX - 0.5) * 120;
+      const innerY = (mouseY - 0.5) * 180;
+
+      gsap.to(innerOrbRef.current, {
+        x: innerX,
+        y: innerY,
+        duration: 1.0,
+        ease: 'power1.out',
+        overwrite: 'auto',
+      });
+    };
+
+    // Add listeners
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      ctx.revert();
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
+
+  const handleOrbClick = useCallback((e) => {
+    // Removed explosion effect - orb no longer bursts on click
+  }, []);
+
+  const handleParticlesComplete = useCallback(() => {
+    // We can reset the explosion state here if we want to allow it to explode again,
+    // but usually scroll scrub will handle reset via onUpdate.
+  }, []);
+
+  return (
+    <section className="hero-liquid" id="hero" ref={sectionRef}>
+      {/* Background Particles Burst */}
+      <ParticleSystem
+        active={exploded}
+        origin={particleOrigin}
+        targetRef={orbRef}
+        phase={particlePhase}
+        onComplete={handleParticlesComplete}
+      />
+
+      {/* ── Background Glow ── */}
+      <div className="hero-glow-wrapper">
+        <div className="hero-glow-blob-1" />
+        <div className="hero-glow-blob-2" />
       </div>
 
-      {/* Grid Overlay - Optimized for Light Mode */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        zIndex: 2,
-        backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px)',
-        backgroundSize: '120px 120px',
-        maskImage: 'radial-gradient(circle at 35% 50%, black 20%, transparent 70%)',
-        pointerEvents: 'none'
-      }} />
-
-      <div style={{
-        position: 'relative',
-        zIndex: 10,
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0 10%',
-      }}>
-        <motion.div
-          style={{
-            maxWidth: '1000px',
-            x: mousePos.x,
-            y: mousePos.y,
-            transition: { type: 'spring', stiffness: 100, damping: 30 }
-          }}
+      {/* ── Scroll-Linked Orb Wrapper ── */}
+      <div className="hero-orb-container" ref={orbRef}>
+        {/* ── Mouse-Follow Inner Container ── */}
+        <div
+          className="hero-orb-inner"
+          ref={innerOrbRef}
+          onClick={handleOrbClick}
+          style={{ cursor: 'default', pointerEvents: 'auto' }}
         >
+          <video
+            className="hero-orb-video"
+            src="https://future.co/images/homepage/glassy-orb/orb-purple.webm"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+        </div>
+      </div>
+
+      {/* ── Liquid Glass Navbar ── */}
+      <nav className="hero-glass-nav">
+        <motion.div
+          className="hero-glass-nav-inner"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <span className="hero-glass-logo">Inteledge</span>
+
+          <div className="hero-glass-links">
+            {['Home', 'Features', 'Company', 'Pricing'].map((link) => (
+              <a key={link} className="hero-glass-link" href="#">
+                {link}
+              </a>
+            ))}
+          </div>
+
+          <button className="hero-glass-signup">
+            Sign Up
+            <ArrowIcon />
+          </button>
+        </motion.div>
+      </nav>
+
+      {/* ── Hero Content ── */}
+      <div className="hero-content-grid">
+        <div className="hero-left">
+          {/* Social Proof Badge */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '1.5rem',
-              marginBottom: '2.5rem',
-              color: 'var(--accent-primary)'
-            }}
+            className="hero-social-proof"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <div style={{ width: '50px', height: '2px', background: 'var(--accent-primary)' }} />
-            <span style={{ fontSize: '0.95rem', fontWeight: 800, letterSpacing: '10px', textTransform: 'uppercase' }}>
-              Inteledge Labs
+            <div className="hero-stars">
+              {[...Array(5)].map((_, i) => (
+                <StarIcon key={i} />
+              ))}
+            </div>
+            <span className="hero-social-proof-text">
+              Rated <strong>4.9/5</strong> by 2700+ customers
             </span>
           </motion.div>
 
-          <h1 style={{ 
-            fontSize: 'max(4rem, 7vw)', 
-            lineHeight: 0.85, 
-            fontWeight: 900, 
-            letterSpacing: '-8px',
-            marginBottom: '3rem',
-            marginLeft: '-6px',
-            color: 'var(--text-primary)'
-          }}>
-            <motion.span
-              style={{ display: 'block', rotateX: -mousePos.y * 1.5, rotateY: mousePos.x * 1.5 }}
-            >
-              AI That Works
-            </motion.span>
-            <motion.span
-              className="gradient-text"
-              style={{ display: 'block', rotateX: -mousePos.y * 1.5, rotateY: mousePos.x * 1.5 }}
-            >
-              For the Business.
-            </motion.span>
-          </h1>
-
-          <div style={{ position: 'relative', marginBottom: '4rem' }}>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.8 }}
-              transition={{ duration: 1.5, delay: 0.8 }}
-              style={{ 
-                fontSize: '1.25rem', 
-                maxWidth: '600px', 
-                lineHeight: 1.4,
-                fontWeight: 500,
-                color: 'var(--text-primary)',
-                letterSpacing: '-0.3px',
-                x: mousePos.x * 0.4,
-                y: mousePos.y * 0.4,
-                position: 'relative',
-                zIndex: 1
-              }}
-            >
-              <span style={{ color: 'var(--accent-primary)', fontWeight: 800 }}>Inteledge Advisory & Labs</span> helps enterprises translate 
-              AI investment into <span style={{ fontWeight: 800 }}>business performance</span> — through 
-              independent strategy, structured execution, and purpose-built AI products.
-            </motion.p>
-            {/* Animated Underline */}
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: '80px' }}
-              transition={{ delay: 2, duration: 1 }}
-              style={{ height: '2px', background: 'var(--accent-primary)', marginTop: '0.8rem' }}
-            />
-          </div>
-
-          <motion.div
+          {/* Headline */}
+          <motion.h1
+            className="hero-headline"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2 }}
-            style={{ display: 'flex', gap: '2.5rem' }}
+            transition={{ duration: 0.7, delay: 0.35 }}
           >
-            <motion.button
-              className="interactive"
-              whileHover={{ scale: 1.05, boxShadow: '0 0 60px rgba(0, 114, 255, 0.4)' }}
-              style={{
-                background: 'var(--accent-cyan)',
-                color: '#fff',
-                padding: '24px 50px',
-                borderRadius: '100px',
-                fontSize: '1.1rem',
-                fontWeight: 900,
-                border: 'none',
-                cursor: 'none',
-                x: -mousePos.x * 0.2,
-                y: -mousePos.y * 0.2
-              }}
-            >
-              Explore Advisory
-            </motion.button>
+            AI That Works<br />for the Business.
+          </motion.h1>
 
-            <motion.button
-              className="interactive"
-              whileHover={{ scale: 1.05, background: 'rgba(0, 0, 0, 0.05)' }}
-              style={{
-                padding: '24px 50px',
-                borderRadius: '100px',
-                fontSize: '1.1rem',
-                fontWeight: 700,
-                color: 'var(--text-primary)',
-                background: 'rgba(0,0,0,0.02)',
-                border: '1px solid rgba(0,0,0,0.1)',
-                backdropFilter: 'blur(25px)',
-                cursor: 'none',
-                x: -mousePos.x * 0.1,
-                y: -mousePos.y * 0.1
-              }}
-            >
-              Start Building
-            </motion.button>
-          </motion.div>
-        </motion.div>
+          {/* Subheadline */}
+          <motion.p
+            className="hero-subheadline"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.5 }}
+          >
+            Inteledge Advisory & Labs helps enterprises translate AI investment into business performance — through independent strategy, structured execution, and purpose-built AI products.
+          </motion.p>
+
+          {/* Primary CTA */}
+          <motion.button
+            className="hero-cta-primary"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.65 }}
+            whileHover={{ scale: 1.02 }}
+          >
+            Get Started Now
+            <span className="hero-cta-icon">
+              <ArrowIcon />
+            </span>
+          </motion.button>
+        </div>
+
+        {/* Right side — orb occupies this space via absolute positioning */}
+        <div className="hero-right" />
       </div>
 
+      {/* ── Trusted Logos ── */}
       <motion.div
-        animate={{ opacity: [0.3, 0.7, 0.3] }}
-        transition={{ repeat: Infinity, duration: 3 }}
-        style={{
-          position: 'absolute',
-          bottom: '80px',
-          right: '8%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-end',
-          gap: '0.8rem',
-          pointerEvents: 'none',
-          zIndex: 10
-        }}
+        className="hero-trusted"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.8 }}
       >
-        <div style={{ fontSize: '0.8rem', fontWeight: 900, letterSpacing: '8px', textTransform: 'uppercase', color: 'var(--accent-primary)' }}>System Online</div>
-        <div style={{ width: '150px', height: '1px', background: 'linear-gradient(90deg, transparent, var(--accent-primary))' }} />
-      </motion.div>
-
-      <motion.div
-        animate={{ y: [0, 15, 0] }}
-        transition={{ repeat: Infinity, duration: 2.5 }}
-        style={{
-          position: 'absolute',
-          bottom: '50px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          opacity: 0.2,
-          fontSize: '0.8rem',
-          letterSpacing: '5px',
-          textTransform: 'uppercase',
-          zIndex: 10,
-          color: 'var(--text-primary)'
-        }}
-      >
-        Initiate Sequence
+        <p className="hero-trusted-label">Trusted by top-tier product companies</p>
+        <div className="hero-trusted-logos">
+          {['Vercel', 'Stripe', 'Linear', 'Notion', 'Figma'].map((name) => (
+            <span key={name} className="hero-trusted-logo">{name}</span>
+          ))}
+        </div>
       </motion.div>
     </section>
   );

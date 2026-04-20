@@ -1,24 +1,20 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
+import { motion, useScroll, useSpring, useTransform, useMotionValue } from 'framer-motion';
 import { Sphere, MeshDistortMaterial, Float, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 
-const RollingBall = ({ theme }) => {
+const RollingBall = ({ theme, servicesRef }) => {
   const meshRef = useRef();
   const { scrollYProgress } = useScroll();
 
-  // Smooth out the scroll progress for more professional movement
   const smoothProgress = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
     restDelta: 0.001
   });
 
-  // Map scroll progress to Y position (from top to bottom of viewport)
-  // Viewport in THREE usually goes from ~5 to -5 vertically
   const yPos = useTransform(smoothProgress, [0, 1], [4, -4]);
-  // Map scroll progress to horizontal movement (optional, but keep it centered/offset)
   const xPos = useTransform(smoothProgress, [0, 0.2, 0.5, 0.8, 1], [3, 2, -3, -2, 3]);
 
   const isLabs = theme === 'labs' || theme?.mode === 'labs';
@@ -26,13 +22,9 @@ const RollingBall = ({ theme }) => {
 
   useFrame((state) => {
     if (meshRef.current) {
-      // Manual rotation based on scroll to simulate rolling
-      // We use the absolute scroll progress to determine rotation angle
       const rotationAngle = smoothProgress.get() * Math.PI * 10;
       meshRef.current.rotation.x = rotationAngle;
-      meshRef.current.rotation.y += 0.01; // Constant slow spin
-
-      // Update position from Framer Motion
+      meshRef.current.rotation.y += 0.01;
       meshRef.current.position.y = yPos.get();
       meshRef.current.position.x = xPos.get();
     }
@@ -40,30 +32,18 @@ const RollingBall = ({ theme }) => {
 
   return (
     <group>
-      <ambientLight intensity={0.4} />
-      <pointLight position={[10, 10, 10]} intensity={1.5} color={color} />
-      <pointLight position={[-10, -10, -10]} intensity={0.5} color="#fff" />
+      <Environment preset="city" />
+      <ambientLight intensity={0.2} />
+      <pointLight position={[10, 10, 10]} intensity={2} color={color} />
+      <pointLight position={[-10, -10, -10]} intensity={1} color="#444" />
 
       <Float speed={1.5} rotationIntensity={0.5} floatIntensity={0.5}>
-        <mesh ref={meshRef}>
-          <sphereGeometry args={[0.8, 64, 64]} />
-          <MeshDistortMaterial
-            color="#111"
-            speed={3}
-            distort={0.4}
-            radius={1}
-            emissive={color}
-            emissiveIntensity={0.3}
-            roughness={0}
-            metalness={1}
-            clearcoat={1}
-            clearcoatRoughness={0}
-          />
-        </mesh>
+        <group ref={meshRef}>
+          {/* Ambient particles only — no main sphere or burst bubbles */}
+        </group>
       </Float>
 
-      {/* Subtle trail particles */}
-      <Points count={50} color={color} />
+      <Points count={100} color={color} />
     </group>
   );
 };
@@ -115,12 +95,12 @@ const Points = ({ count, color }) => {
           itemSize={3}
         />
       </bufferGeometry>
-      <pointsMaterial size={0.05} color={color || '#00f2ff'} transparent opacity={0.4} sizeAttenuation />
+      <pointsMaterial size={0.06} color={color || '#00f2ff'} transparent opacity={0.4} sizeAttenuation />
     </points>
   );
 };
 
-const Global3DLayer = ({ theme, scale = 1 }) => {
+const Global3DLayer = ({ theme, scale = 1, servicesRef }) => {
   return (
     <div style={{
       position: 'fixed',
@@ -134,7 +114,7 @@ const Global3DLayer = ({ theme, scale = 1 }) => {
     }}>
       <Canvas camera={{ position: [0, 0, 10], fov: 45 }}>
         <group scale={scale}>
-          <RollingBall theme={theme} />
+          <RollingBall theme={theme} servicesRef={servicesRef} />
         </group>
       </Canvas>
     </div>
