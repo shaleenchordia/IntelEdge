@@ -64,11 +64,6 @@ const About = () => {
           </div>
         </div>
 
-        {/* Footer typography */}
-        <div className="about-footer-row">
-          <h1 className="about-location">New York</h1>
-          <h1 className="about-state">NY</h1>
-        </div>
 
       </div>
     </section>

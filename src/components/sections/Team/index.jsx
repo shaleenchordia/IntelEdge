@@ -209,7 +209,7 @@ const teamData = [
 ];
 
 const TeamAccordion = React.forwardRef((props, ref) => {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const activeIndexRef = useRef(0);
   const wheelCooldownRef = useRef(0);
   const isLockActiveRef = useRef(false);
@@ -259,9 +259,10 @@ const TeamAccordion = React.forwardRef((props, ref) => {
 
     const snapToSection = (sectionEl) => {
       const accordionEl = sectionEl.querySelector('.team-accordion');
-      const anchorRect = (accordionEl || sectionEl).getBoundingClientRect();
-      const desiredAnchorTop = accordionEl ? 220 : 90;
-      const targetY = Math.max(0, window.scrollY + anchorRect.top - desiredAnchorTop);
+      if (!accordionEl) return;
+      const accordionRect = accordionEl.getBoundingClientRect();
+      const topPadding = 40;
+      const targetY = Math.max(0, window.scrollY + accordionRect.top - topPadding);
       window.scrollTo({ top: targetY, behavior: 'auto' });
       requestAnimationFrame(() => {
         window.scrollTo({ top: targetY, behavior: 'auto' });
@@ -278,10 +279,14 @@ const TeamAccordion = React.forwardRef((props, ref) => {
       const isSectionVisible = rect.top < window.innerHeight && rect.bottom > 0;
       if (!isSectionVisible) return;
 
-      const lockStartTop = 50;
-      const minVisibleBottom = window.innerHeight * 0.52;
-      const isInLockZone = rect.top <= lockStartTop && rect.bottom >= minVisibleBottom;
-      if (!isInLockZone && !isLockActiveRef.current) return;
+      const accordionEl = sectionEl.querySelector('.team-accordion');
+      let allItemsVisible = false;
+      if (accordionEl) {
+        const aRect = accordionEl.getBoundingClientRect();
+        allItemsVisible = aRect.top >= 0 && aRect.bottom <= window.innerHeight;
+      }
+      const isInLockZone = allItemsVisible || isLockActiveRef.current;
+      if (!isInLockZone) return;
 
       const delta = event.deltaY;
       if (Math.abs(delta) < 6) return;
@@ -308,12 +313,12 @@ const TeamAccordion = React.forwardRef((props, ref) => {
         return;
       }
 
-      if (current > 0) {
+      if (current >= 0) {
         event.preventDefault();
         emitLockState(true);
         snapToSection(sectionEl);
         wheelCooldownRef.current = now;
-        setActiveIndex((prev) => Math.max(prev - 1, 0));
+        setActiveIndex((prev) => Math.max(prev - 1, -1));
       } else {
         emitLockState(false);
       }
