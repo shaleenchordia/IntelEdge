@@ -87,23 +87,35 @@
   border-bottom: none;
 }
 
+.team-row.active {
+  background: rgba(0, 242, 255, 0.04);
+  border-bottom-color: rgba(0, 242, 255, 0.3);
+}
+
 .team-row-inner {
   display: grid;
   grid-template-columns: 40% 1fr 50px;
   gap: 20px;
-  padding: 40px 0;
+  padding: 30px 0;
   align-items: flex-start;
 }
 
 .team-number {
   font-size: 200px;
   line-height: 0.7;
-  font-weight: 300;
-  color: rgba(232, 74, 58, 0.18);
-  letter-spacing: -5px;
+  font-weight: 700;
+  color: rgba(232, 74, 58, 0.15); /* More opaque than before */
+  -webkit-text-stroke: 1.5px rgba(232, 74, 58, 0.4); /* Stronger outline */
+  letter-spacing: -8px;
   margin-top: -10px;
-  /* Slight adjustment to align properly */
   padding-left: 10px;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.team-row.active .team-number {
+  color: rgba(232, 74, 58, 0.35);
+  -webkit-text-stroke: 2px rgba(232, 74, 58, 0.8);
+  transform: scale(1.05) translateX(15px);
 }
 
 .team-content {

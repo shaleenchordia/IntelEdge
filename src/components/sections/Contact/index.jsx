@@ -86,44 +86,35 @@ const Contact = () => {
 
           <div className="contact-methods">
             {/* Email Pill */}
-            <div className="contact-method-pill">
+            <a 
+              href="mailto:anuragupadhyay@inteledge.co.in" 
+              className="contact-method-pill"
+              style={{ textDecoration: 'none' }}
+            >
               <div className="cmp-icon-wrapper"><Mail size={20} /></div>
               <div className="cmp-text">
                 <h4>Email</h4>
-                <p>hello@inteledge.com</p>
+                <p>anuragupadhyay@inteledge.co.in</p>
               </div>
               <div className="cmp-arrow"><ArrowUpRight size={18} /></div>
-            </div>
+            </a>
 
-            {/* Labs Pill */}
-            <div className="contact-method-pill">
-              <div className="cmp-icon-wrapper"><Mail size={20} /></div>
-              <div className="cmp-text">
-                <h4>Labs</h4>
-                <p>labs@inteledge.com</p>
-              </div>
-              <div className="cmp-arrow"><ArrowUpRight size={18} /></div>
-            </div>
-
-            {/* Partnerships Pill */}
-            <div className="contact-method-pill">
-              <div className="cmp-icon-wrapper"><Mail size={20} /></div>
-              <div className="cmp-text">
-                <h4>Partnerships</h4>
-                <p>partners@inteledge.com</p>
-              </div>
-              <div className="cmp-arrow"><ArrowUpRight size={18} /></div>
-            </div>
 
             {/* LinkedIn Pill */}
-            <div className="contact-method-pill">
+            <a 
+              href="https://www.linkedin.com/company/inteledge-advisory-labs/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="contact-method-pill"
+              style={{ textDecoration: 'none' }}
+            >
               <div className="cmp-icon-wrapper"><ArrowUpRight size={20} /></div>
               <div className="cmp-text">
                 <h4>LinkedIn</h4>
-                <p>Inteledge Advisory & Labs</p>
+                <p>IntelEdge Advisory & Labs</p>
               </div>
               <div className="cmp-arrow"><ArrowUpRight size={18} /></div>
-            </div>
+            </a>
           </div>
         </div>
 

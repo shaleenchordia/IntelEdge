@@ -138,7 +138,8 @@
 .gaps-card-icon-wrapper {
   width: 56px;
   height: 56px;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(205, 168, 105, 0.08); /* Subtle gold tint */
+  border: 1px solid rgba(205, 168, 105, 0.2);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -174,26 +175,34 @@
   margin: 30px 0;
 }
 
-.gaps-card-solution {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-}
 
 .gaps-check {
-  color: #10b981; /* Green checkmark */
-  font-weight: bold;
-  font-size: 1.2rem;
+  color: #cda869; /* Premium gold accent */
+  font-weight: 900;
+  font-size: 1.1rem;
   flex-shrink: 0;
-  margin-top: -2px;
+  margin-top: 1px;
+  filter: drop-shadow(0 0 8px rgba(205, 168, 105, 0.4));
 }
 
 .gaps-card-solution p {
   margin: 0;
   font-size: 0.95rem;
-  color: #10b981; /* Green text to match image style */
+  color: rgba(255, 255, 255, 0.85);
   line-height: 1.5;
-  font-weight: 500;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
+.gaps-card-solution {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: rgba(205, 168, 105, 0.05); /* Very subtle gold tint */
+  padding: 18px 22px;
+  border-radius: 12px;
+  border-left: 2px solid rgba(205, 168, 105, 0.3);
+  margin-top: auto;
 }
 
 @media (max-width: 1024px) {

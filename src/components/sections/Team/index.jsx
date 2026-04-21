@@ -353,14 +353,19 @@ const TeamAccordion = React.forwardRef((props, ref) => {
           <p style={{ color: 'rgba(255,255,255,0.7)', maxWidth: '600px', fontSize: '1.1rem', lineHeight: 1.6, marginBottom: '2rem' }}>
             Delivered by a 2-Time TEDx Speaker with 14+ years of enterprise experience — designed for CXOs, senior managers, functional teams, and early-career professionals across the full AI readiness spectrum.
           </p>
-          <a
-            href="#contact"
+          <button
+            onClick={() => {
+              // 1. Explicitly unlock logic
+              window.dispatchEvent(new CustomEvent('services-scroll-lock', { detail: { locked: false } }));
+              window.__servicesScrollLockBypassUntil = Date.now() + 2000;
+              // 2. Scroll to contact
+              document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+            }}
             className="team-get-in-touch"
             aria-label="Get in touch"
-            style={{ textDecoration: 'none' }}
           >
             GET IN TOUCH <ArrowUpRight size={14} />
-          </a>
+          </button>
         </div>
       </div>
 
@@ -371,11 +376,12 @@ const TeamAccordion = React.forwardRef((props, ref) => {
           return (
             <motion.div
               key={item.id}
-              className="team-row"
+              className={`team-row ${isActive ? 'active' : ''}`}
               initial={false}
               animate={{ height: isActive ? 'auto' : 120 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               onClick={() => setActiveIndex(isActive ? -1 : index)}
+              style={{ cursor: 'pointer' }}
             >
               <div className="team-row-inner">
                 {/* 1. Large Number */}

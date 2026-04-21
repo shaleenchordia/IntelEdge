@@ -5,7 +5,9 @@ import './Navbar.css';
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const setServicesBypassWindow = () => {
-    window.__servicesScrollLockBypassUntil = Date.now() + 1600;
+    window.__servicesScrollLockBypassUntil = Date.now() + 2000;
+    // Dispatch unlock event to ensure Lenis restarts immediately
+    window.dispatchEvent(new CustomEvent('services-scroll-lock', { detail: { locked: false } }));
   };
 
   useEffect(() => {

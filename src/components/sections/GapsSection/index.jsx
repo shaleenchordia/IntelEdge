@@ -1,4 +1,5 @@
 import React from 'react';
+import { CircleDollarSign, Compass, Puzzle } from 'lucide-react';
 import './GapsSection.css';
 
 const GapsSection = () => {
@@ -23,7 +24,7 @@ const GapsSection = () => {
           {/* Card 1 */}
           <div className="gaps-card">
             <div className="gaps-card-icon-wrapper">
-              <span className="gaps-card-icon">💸</span>
+              <CircleDollarSign size={28} color="#cda869" strokeWidth={1.5} />
             </div>
             <h3 className="gaps-card-title">AI Spend Without Visible Return</h3>
             <p className="gaps-card-desc">
@@ -39,7 +40,7 @@ const GapsSection = () => {
           {/* Card 2 */}
           <div className="gaps-card">
             <div className="gaps-card-icon-wrapper">
-              <span className="gaps-card-icon">🗺️</span>
+              <Compass size={28} color="#cda869" strokeWidth={1.5} />
             </div>
             <h3 className="gaps-card-title">No Enterprise-Wide AI Strategy</h3>
             <p className="gaps-card-desc">
@@ -55,7 +56,7 @@ const GapsSection = () => {
           {/* Card 3 */}
           <div className="gaps-card">
             <div className="gaps-card-icon-wrapper">
-              <span className="gaps-card-icon">🧩</span>
+              <Puzzle size={28} color="#cda869" strokeWidth={1.5} />
             </div>
             <h3 className="gaps-card-title">Internal Capability Gap</h3>
             <p className="gaps-card-desc">

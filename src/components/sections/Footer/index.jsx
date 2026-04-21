@@ -241,7 +241,7 @@ const Footer = ({ theme }) => {
                 <ul>
                   <li><a href="#about">About Us</a></li>
                   <li><a href="#contact">Contact</a></li>
-                  <li><a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+                  <li><a href="https://www.linkedin.com/company/inteledge-advisory-labs/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
                 </ul>
               </div>
             </div>
@@ -275,16 +275,28 @@ const Footer = ({ theme }) => {
             </div>
 
             <div className="footer-social-grid">
-              <a className="footer-social-card" href="mailto:hello@inteledge.com" aria-label="Gmail">
+              <a className="footer-social-card" href="mailto:anuragupadhyay@inteledge.co.in" aria-label="Gmail">
                 <Mail size={18} />
               </a>
 
-              <a className="footer-social-card footer-linkedin-card" href="#" aria-label="LinkedIn">
+              <a 
+                className="footer-social-card footer-linkedin-card" 
+                href="https://www.linkedin.com/company/inteledge-advisory-labs/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                aria-label="LinkedIn"
+              >
                 <LinkedInIcon />
                 <span className="footer-follow-tag">Follow us</span>
               </a>
 
-              <a className="footer-social-card" href="#" aria-label="Instagram">
+              <a 
+                className="footer-social-card" 
+                href="https://www.instagram.com/inteledge.ai?igsh=dzVvbndtOXdnOHQ=" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                aria-label="Instagram"
+              >
                 <InstagramIcon />
               </a>
             </div>
