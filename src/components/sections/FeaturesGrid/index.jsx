@@ -108,14 +108,10 @@ const ProductsSlider = ({ id }) => {
           display: 'flex',
           flexWrap: 'wrap',
           justifyContent: 'center',
-          gap: '6px',
-          background: 'rgba(255,255,255,0.08)',
-          borderRadius: '100px',
-          padding: '6px',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255,255,255,0.15)',
+          gap: '12px',
           marginTop: '20px',
-          maxWidth: '90vw'
+          maxWidth: '90vw',
+          margin: '20px auto 0'
         }}>
           {products.map((p) => (
             <div
