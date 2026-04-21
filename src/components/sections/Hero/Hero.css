@@ -488,6 +488,46 @@
 
 @media (max-width: 480px) {
   .hero-headline {
-    font-size: 34px;
+    font-size: 32px;
+    letter-spacing: -0.5px;
+  }
+  .hero-content-grid {
+    padding: 60px 20px 24px;
+    gap: 24px;
+  }
+  .hero-subheadline {
+    font-size: 15px;
+  }
+  .hero-ctas {
+    gap: 10px;
+  }
+  .hero-cta-primary,
+  .hero-cta-secondary {
+    padding: 13px 20px;
+    font-size: 14px;
+  }
+  .hero-glass-logo {
+    font-size: 1rem;
+    margin-right: 12px;
+  }
+  .hero-glass-nav-inner {
+    padding: 8px 12px;
+  }
+  .hero-trusted {
+    padding: 8px 20px 24px;
+  }
+  .hero-trusted-logos {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  .hero-headline {
+    font-size: 28px;
+  }
+  .hero-cta-primary,
+  .hero-cta-secondary {
+    padding: 12px 16px;
+    font-size: 13px;
   }
 }

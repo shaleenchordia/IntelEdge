@@ -40,6 +40,23 @@ export function Testimonials() {
   const [displayedQuote, setDisplayedQuote] = useState(testimonials[0].quote)
   const [displayedRole, setDisplayedRole] = useState(testimonials[0].role)
   const [hoveredIndex, setHoveredIndex] = useState(null)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
+  // Sliding window: on mobile show 3 dots centred on the active index
+  const getVisibleIndices = useCallback(() => {
+    if (!isMobile) return testimonials.map((_, i) => i)
+    const count = 3
+    let start = Math.max(0, activeIndex - 1)
+    if (start + count > testimonials.length) start = testimonials.length - count
+    return Array.from({ length: count }, (_, i) => start + i)
+  }, [isMobile, activeIndex])
 
   const handleSelect = useCallback((index) => {
     if (index === activeIndex || isAnimating) return
@@ -90,7 +107,8 @@ export function Testimonials() {
           </p>
 
           <div className="testimonial-controls">
-            {testimonials.map((testimonial, index) => {
+            {getVisibleIndices().map((index) => {
+              const testimonial = testimonials[index]
               const isActive = activeIndex === index
               const isHovered = hoveredIndex === index && !isActive
               const showName = isActive || isHovered

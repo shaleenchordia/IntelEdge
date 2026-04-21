@@ -134,16 +134,16 @@ const SplitHero = () => {
   const labsW = hovered === 'labs' ? '58%' : hovered === 'advisory' ? '42%' : '50%';
 
   return (
-    <section ref={ref} style={{ position: 'relative', width: '100%', height: '100vh', background: 'transparent', overflow: 'hidden', fontFamily: "'Inter', sans-serif" }}>
+    <section ref={ref} style={{ position: 'relative', width: '100%', height: 'max(100vh, 500px)', background: 'transparent', overflow: 'hidden', fontFamily: "'Inter', sans-serif" }}>
       {/* Left Text: Advisory */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : -10 }} transition={{ duration: 0.8, delay: 1.8, ease }}
+      <motion.div className="split-hero-corner-left" initial={{ opacity: 0, y: -10 }} animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : -10 }} transition={{ duration: 0.8, delay: 1.8, ease }}
         style={{ position: 'absolute', top: 32, left: 42, zIndex: 30, color: '#fff', fontSize: 13, lineHeight: 1.4, fontWeight: 700, letterSpacing: '0.5px', pointerEvents: 'none', textTransform: 'uppercase' }}>
         <div style={{ opacity: 0.5, fontSize: 9, marginBottom: 4, letterSpacing: '1.5px' }}>EXPLORE</div>
         Inteledge<br />Advisory<br />Services
       </motion.div>
 
       {/* Right Text: Labs */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : -10 }} transition={{ duration: 0.8, delay: 1.8, ease }}
+      <motion.div className="split-hero-corner-right" initial={{ opacity: 0, y: -10 }} animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : -10 }} transition={{ duration: 0.8, delay: 1.8, ease }}
         style={{ position: 'absolute', top: 32, right: 42, zIndex: 30, color: '#fff', textAlign: 'right', pointerEvents: 'none', fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
         <div style={{ opacity: 0.5, fontSize: 9, marginBottom: 4, letterSpacing: '1.5px' }}>EXPLORE</div>
         Inteledge<br />Labs<br />Division
@@ -230,7 +230,7 @@ const SplitHero = () => {
       </div>
 
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '32vh', zIndex: 10, pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 30 }} transition={{ duration: 1, delay: 1.3, ease }}
+        <motion.h1 className="split-hero-title" initial={{ opacity: 0, y: 30 }} animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 30 }} transition={{ duration: 1, delay: 1.3, ease }}
           style={{ fontFamily: "'Playfair Display', serif", fontWeight: 900, fontSize: 'clamp(3rem, 8vw, 7rem)', lineHeight: 0.95, color: '#fff', margin: 0, letterSpacing: '-2px', textTransform: 'uppercase', textShadow: '0 2px 20px rgba(0,0,0,0.4)', whiteSpace: 'nowrap' }}>
           ADVISORY<span style={{ fontWeight: 300, opacity: 0.6, margin: '0 0.3em' }}>/</span>LABS
         </motion.h1>
@@ -509,6 +509,9 @@ const AdvisorySection = () => {
         @media (max-width: 900px) {
           .adv-heading-grid { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
           .adv-cards-grid { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
+        }
+        @media (max-width: 600px) {
+          .adv-cards-grid { gap: 1rem !important; }
         }
       `}</style>
     </section>
@@ -815,6 +818,9 @@ const LabsSection = () => {
         @media (max-width: 900px) {
           .labs-grid { grid-template-columns: 1fr !important; gap: 3rem !important; }
         }
+        @media (max-width: 480px) {
+          .labs-grid { gap: 2rem !important; }
+        }
       `}</style>
     </section>
   );
@@ -833,6 +839,16 @@ const LabsAdvisoryPage = () => {
         * { box-sizing: border-box; }
         body { margin: 0; background: transparent; }
         html { scroll-behavior: smooth; }
+        @media (max-width: 600px) {
+          .split-hero-title {
+            font-size: clamp(1.5rem, 7.5vw, 3rem) !important;
+            white-space: normal !important;
+            letter-spacing: -1px !important;
+            text-align: center;
+          }
+          .split-hero-corner-left { font-size: 10px !important; left: 14px !important; }
+          .split-hero-corner-right { font-size: 10px !important; right: 14px !important; }
+        }
       `}</style>
 
       <SplitHero />

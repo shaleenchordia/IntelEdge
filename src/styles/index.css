@@ -183,6 +183,20 @@ section {
   scroll-snap-align: start;
 }
 
+@media (max-width: 768px) {
+  section { padding: 80px 5%; }
+}
+@media (max-width: 480px) {
+  section { padding: 60px 5%; }
+}
+
+/* Restore default cursor on touch devices */
+@media (hover: none) {
+  body { cursor: auto; }
+  button { cursor: pointer; }
+  .custom-cursor { display: none !important; }
+}
+
 /* Lenis Smooth Scroll Optimization */
 html.lenis,
 html.lenis body {

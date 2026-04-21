@@ -46,7 +46,7 @@ const LogoStrip = () => {
           overflow: hidden;
           position: relative;
           padding: 2rem 0;
-          margin-top: 0.5rem; /* Further decreased to move up */
+          margin-top: 0.5rem;
           opacity: 1;
           z-index: 10;
           background: #fff;
@@ -54,9 +54,21 @@ const LogoStrip = () => {
           mask-image: linear-gradient(90deg, transparent 0%, black 15%, black 85%, transparent 100%);
         }
         .hero-trusted-slider-wrap {
-          margin-bottom: 8rem; /* Added margin to push away from About section */
+          margin-bottom: 8rem;
           position: relative;
           z-index: 10;
+        }
+        .logo-item { padding-right: 120px; position: relative; }
+        .logo-item img { height: 38px; width: auto; display: block; }
+        @media (max-width: 768px) {
+          .logo-item { padding-right: 64px; }
+          .logo-item img { height: 28px; }
+          .hero-trusted-slider-wrap { margin-bottom: 4rem; margin-top: 3rem; }
+        }
+        @media (max-width: 480px) {
+          .logo-item { padding-right: 44px; }
+          .logo-item img { height: 22px; }
+          .hero-trusted-slider-wrap { margin-top: 2rem; }
         }
       `}</style>
 
@@ -72,7 +84,7 @@ const LogoStrip = () => {
           return (
             <div
               key={index}
-              style={{ paddingRight: '120px', position: 'relative' }}
+              className="logo-item"
               onMouseEnter={() => setHoveredIdx(index)}
               onMouseLeave={() => setHoveredIdx(null)}
             >
@@ -80,7 +92,6 @@ const LogoStrip = () => {
                 src={logo.src}
                 alt={logo.name}
                 style={{
-                  height: '38px', width: 'auto', display: 'block',
                   filter: isHovered
                     ? 'drop-shadow(0 4px 12px rgba(0,0,0,0.15))'
                     : 'none',

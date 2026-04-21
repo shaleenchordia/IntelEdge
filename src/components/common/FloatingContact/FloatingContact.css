@@ -87,5 +87,23 @@
 @media (max-width: 600px) {
   .floating-contact-container {
     bottom: 30px;
+    bottom: calc(30px + env(safe-area-inset-bottom, 0px));
+    max-width: 260px;
+  }
+}
+
+@media (max-width: 480px) {
+  .floating-contact-container {
+    max-width: 220px;
+    padding: 6px 20px 6px 6px;
+  }
+
+  .floating-contact-orb {
+    width: 34px;
+    height: 34px;
+  }
+
+  .floating-contact-text {
+    font-size: 0.8rem;
   }
 }

@@ -115,7 +115,7 @@ const PillarCard = ({ pillar, index }) => {
   const isActive = isInView;
 
   return (
-    <div ref={ref} style={{ display: 'flex', gap: '5vw', position: 'relative', width: '100%' }}>
+    <div ref={ref} className="aia-pillar-row" style={{ display: 'flex', gap: '5vw', position: 'relative', width: '100%' }}>
 
       {/* Timeline Circle */}
       <div style={{
@@ -153,6 +153,7 @@ const PillarCard = ({ pillar, index }) => {
           scale: isActive ? 1 : 0.98,
         }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="aia-pillar-card"
         style={{
           flex: 1,
           padding: '3.5rem',
@@ -167,7 +168,7 @@ const PillarCard = ({ pillar, index }) => {
         }}
       >
         {/* Aesthetic Wireframe Box */}
-        <div style={{
+        <div className="aia-icon-box" style={{
           width: '200px', height: '200px',
           borderRadius: '24px',
           border: `1px solid rgba(255, 255, 255, 0.08)`,
@@ -188,7 +189,7 @@ const PillarCard = ({ pillar, index }) => {
         </div>
 
         {/* Text Details */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
+        <div className="aia-pillar-text" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
           <h3 style={{ fontSize: '2.4rem', fontWeight: 600, color: '#fff', margin: 0, letterSpacing: '-1px' }}>
             {pillar.title}
           </h3>
@@ -237,6 +238,7 @@ const textWords = [
 const AnimatedSubtitle = () => {
   return (
     <motion.div
+      className="aia-subtitle-block"
       style={{
         fontSize: '1.2rem',
         maxWidth: '680px',
@@ -300,14 +302,37 @@ const AIAFramework = () => {
   return (
     <section
       id="framework"
+      className="aia-section"
       style={{
         padding: '150px 5%',
         background: 'transparent',
         position: 'relative'
       }}
     >
-      <div style={{ textAlign: 'center', marginBottom: '8rem' }}>
-        <h2 style={{ fontSize: '4.5rem', fontWeight: 800, color: '#fff', letterSpacing: '-2px', margin: 0 }}>How it works</h2>
+      <style>{`
+        .aia-section { padding: 150px 5%; }
+        @media (max-width: 768px) {
+          .aia-section { padding: 80px 5%; }
+          .aia-heading { font-size: clamp(2.2rem, 8vw, 3.5rem) !important; }
+          .aia-subtitle-block { font-size: 1rem !important; max-width: 100% !important; }
+          .aia-heading-wrap { margin-bottom: 4rem !important; }
+          .aia-pillar-row { gap: 3vw !important; }
+          .aia-pillar-card { padding: 2rem !important; gap: 2rem !important; flex-direction: column !important; }
+          .aia-icon-box { width: 120px !important; height: 120px !important; align-self: flex-start; }
+          .aia-pillar-text h3 { font-size: 1.6rem !important; }
+          .aia-pillar-text p { font-size: 0.9rem !important; }
+        }
+        @media (max-width: 480px) {
+          .aia-section { padding: 60px 4%; }
+          .aia-heading { font-size: clamp(2rem, 9vw, 2.8rem) !important; }
+          .aia-pillar-card { padding: 1.4rem !important; gap: 1.2rem !important; }
+          .aia-icon-box { width: 88px !important; height: 88px !important; border-radius: 16px !important; }
+          .aia-pillar-text h3 { font-size: 1.4rem !important; }
+          .aia-heading-wrap { margin-bottom: 3rem !important; }
+        }
+      `}</style>
+      <div className="aia-heading-wrap" style={{ textAlign: 'center', marginBottom: '8rem' }}>
+        <h2 className="aia-heading" style={{ fontSize: '4.5rem', fontWeight: 800, color: '#fff', letterSpacing: '-2px', margin: 0 }}>How it works</h2>
         <AnimatedSubtitle />
       </div>
 

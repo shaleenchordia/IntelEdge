@@ -10,6 +10,13 @@
   z-index: 10;
 }
 
+@media (max-width: 768px) {
+  .gaps-section-wrapper { padding: 80px 4%; }
+}
+@media (max-width: 480px) {
+  .gaps-section-wrapper { padding: 60px 3%; }
+}
+
 .gaps-glass-container {
   position: relative;
   width: 100%;
@@ -203,11 +210,45 @@
 
 @media (max-width: 600px) {
   .gaps-glass-container {
-    padding: 40px 24px;
-    gap: 40px;
+    padding: 36px 20px;
+    gap: 32px;
+    border-radius: 20px;
   }
 
   .gaps-card {
-    padding: 30px 24px;
+    padding: 28px 20px;
+  }
+
+  .gaps-title {
+    font-size: clamp(1.8rem, 6vw, 2.5rem);
+  }
+
+  .gaps-subtitle {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .gaps-glass-container {
+    padding: 28px 16px;
+    gap: 28px;
+    border-radius: 16px;
+  }
+
+  .gaps-card {
+    padding: 22px 16px;
+  }
+
+  .gaps-card-icon-wrapper {
+    width: 44px;
+    height: 44px;
+  }
+
+  .gaps-card-title {
+    font-size: 1.15rem;
+  }
+
+  .gaps-card-desc {
+    font-size: 0.9rem;
   }
 }

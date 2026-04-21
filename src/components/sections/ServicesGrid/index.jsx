@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Zap, Shield, Cpu, Users, Bot, MessageSquare, BarChart, Database, X } from 'lucide-react';
 
@@ -77,15 +77,63 @@ const services = [
   },
 ];
 
-const ServiceCard = ({ service, index, scrollYProgress, color, total, isLight }) => {
+const ServiceCard = ({ service, index, scrollYProgress, color, total, isLight, isMobile }) => {
   const start = index / total;
   const end = (index + 1) / total;
   const range = end - start;
-  
+
   const scale = useTransform(scrollYProgress, [start, end - range * 0.1, end], [1, 1, 0.9]);
   const opacity = useTransform(scrollYProgress, [start, start + range * 0.2, end - range * 0.2, end], [0, 1, 1, 0]);
   const y = useTransform(scrollYProgress, [start, end], [0, -80]);
   const rotate = useTransform(scrollYProgress, [start, end], [0, -1]);
+
+  if (isMobile) {
+    return (
+      <div style={{
+        padding: '24px 20px',
+        marginBottom: '16px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+        borderRadius: '20px',
+        overflow: 'hidden',
+        background: isLight ? 'rgba(255,255,255,0.98)' : 'var(--glass-bg)',
+        border: `1px solid ${isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.08)'}`,
+        boxShadow: isLight ? '0 8px 24px rgba(0,0,0,0.04)' : '0 16px 40px rgba(0,0,0,0.4)',
+        backdropFilter: 'blur(40px)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{
+            width: '44px', height: '44px', borderRadius: '10px', flexShrink: 0,
+            background: isLight ? 'rgba(0,0,0,0.02)' : 'rgba(255,255,255,0.03)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color, border: `1px solid ${color}33`
+          }}>
+            <service.icon size={22} />
+          </div>
+          <div>
+            <span style={{ fontSize: '0.6rem', textTransform: 'uppercase', color, letterSpacing: '2px', fontWeight: 800 }}>{service.div}</span>
+            <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: '4px 0 0', letterSpacing: '-0.5px', lineHeight: 1, color: 'var(--text-primary)' }}>{service.title}</h2>
+          </div>
+        </div>
+        <p style={{ fontSize: '0.9rem', opacity: 0.6, lineHeight: 1.5, margin: 0, color: 'var(--text-primary)' }}>{service.desc}</p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          {service.features.map((feat, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ width: '4px', height: '4px', borderRadius: '50%', background: color, flexShrink: 0 }} />
+              <span style={{ fontSize: '0.75rem', fontWeight: 600, opacity: 0.8, color: 'var(--text-primary)' }}>{feat}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <h3 style={{ fontSize: '2rem', fontWeight: 900, color, margin: 0, letterSpacing: '-1px' }}>{service.metric.value}</h3>
+            <p style={{ fontSize: '0.7rem', opacity: 0.5, fontWeight: 700, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text-primary)', margin: '4px 0 0' }}>{service.metric.label}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -193,20 +241,62 @@ const ServiceCard = ({ service, index, scrollYProgress, color, total, isLight })
 
 const ServicesGrid = ({ theme, isLight }) => {
   const containerRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
   });
 
-  const color = !isLight 
+  const color = !isLight
     ? (theme === 'labs' ? '#ff00f2' : (theme === 'advisory' ? '#00f2ff' : '#00f2ff'))
     : (theme === 'labs' ? '#d400d4' : '#0072ff');
 
+  if (isMobile) {
+    return (
+      <section
+        id="services-grid"
+        style={{ padding: '60px 5%', background: 'var(--bg-color)', minHeight: 'auto' }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+          <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '4px', color, textTransform: 'uppercase', opacity: 0.6 }}>
+            Architecture of Value
+          </span>
+          <h2 style={{ fontSize: 'clamp(2rem, 7vw, 3rem)', fontWeight: 800, letterSpacing: '-1.5px', lineHeight: 1, marginTop: '0.6rem', color: 'var(--text-primary)' }}>
+            High-Impact <br />
+            <span className="gradient-text">Core Competencies</span>
+          </h2>
+        </div>
+        <div>
+          {services.map((s, index) => (
+            <ServiceCard
+              key={s.id}
+              service={s}
+              index={index}
+              scrollYProgress={scrollYProgress}
+              color={color}
+              total={services.length}
+              isLight={isLight}
+              isMobile={true}
+            />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section 
-      id="services-grid" 
+    <section
+      id="services-grid"
       ref={containerRef}
-      style={{ 
+      style={{
         height: `${services.length * 75}vh`,
         position: 'relative',
         padding: 0,
@@ -237,10 +327,10 @@ const ServicesGrid = ({ theme, isLight }) => {
 
         <div style={{ width: '100%', padding: '0 5%' }}>
           {services.map((s, index) => (
-            <ServiceCard 
-              key={s.id} 
-              service={s} 
-              index={index} 
+            <ServiceCard
+              key={s.id}
+              service={s}
+              index={index}
               scrollYProgress={scrollYProgress}
               color={color}
               total={services.length}

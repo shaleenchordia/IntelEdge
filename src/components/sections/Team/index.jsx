@@ -375,6 +375,7 @@ const TeamAccordion = React.forwardRef((props, ref) => {
               initial={false}
               animate={{ height: isActive ? 'auto' : 120 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              onClick={() => setActiveIndex(isActive ? -1 : index)}
             >
               <div className="team-row-inner">
                 {/* 1. Large Number */}

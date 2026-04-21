@@ -208,7 +208,7 @@
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
 
@@ -410,7 +410,6 @@
   }
 
   .about-stats-grid {
-    grid-template-columns: 1fr 1fr;
     gap: 16px;
   }
 
@@ -422,12 +421,12 @@
 
 @media (max-width: 600px) {
   .about-cinematic-wrapper {
-    padding: 80px 4%;
+    padding: 60px 4%;
   }
 
   .about-glass-card {
-    padding: 36px 20px;
-    gap: 36px;
+    padding: 32px 18px;
+    gap: 32px;
     border-radius: 20px;
   }
 
@@ -437,25 +436,55 @@
   }
 
   .about-stat-item {
-    padding: 24px 20px;
+    padding: 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
   }
 
   .about-stat-item h3 {
     font-size: 2.2rem;
+    margin: 0;
+  }
+
+  .about-stat-item p {
+    margin: 0;
   }
 
   .about-value-block {
-    padding: 28px 24px;
+    padding: 24px 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-cinematic-wrapper {
+    padding: 50px 3%;
   }
 
-  .about-footer-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+  .about-glass-card {
+    padding: 24px 14px;
+    gap: 24px;
+    border-radius: 16px;
   }
 
-  .about-location,
-  .about-state {
-    font-size: 2.5rem;
+  .about-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .about-stat-item h3 {
+    font-size: 1.8rem;
+  }
+
+  .about-mission-text {
+    font-size: clamp(0.95rem, 4.5vw, 1.1rem);
+  }
+
+  .about-value-block {
+    padding: 20px 14px;
+  }
+
+  .about-value-block h4 {
+    font-size: 1rem;
   }
 }

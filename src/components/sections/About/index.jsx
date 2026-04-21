@@ -29,7 +29,7 @@ const About = () => {
         <div className="about-separator"></div>
 
         {/* Stats */}
-        <div className="about-stats-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+        <div className="about-stats-grid">
           <div className="about-stat-item">
             <h3>14+</h3>
             <p>Years</p>

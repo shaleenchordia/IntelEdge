@@ -74,7 +74,7 @@
 .team-row {
   border-bottom: 1px solid rgba(232, 74, 58, 0.12);
   overflow: hidden;
-  cursor: default;
+  cursor: pointer;
   background: transparent;
   transition: background 0.3s ease;
 }
@@ -152,6 +152,10 @@
   .team-number {
     font-size: 120px;
   }
+
+  .team-container {
+    padding: 80px 5%;
+  }
 }
 
 @media (max-width: 600px) {
@@ -164,12 +168,45 @@
 
   .team-icon {
     position: absolute;
-    top: 30px;
+    top: 24px;
     right: 0;
   }
 
   .team-number {
-    font-size: 100px;
+    font-size: 80px;
+    line-height: 0.75;
+  }
+
+  .team-title {
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+  }
+
+  .team-headline {
+    font-size: clamp(2rem, 7vw, 3rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .team-container {
+    padding: 60px 5%;
+  }
+
+  .team-number {
+    font-size: 64px;
+  }
+
+  .team-title {
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+  }
+
+  .team-details {
+    font-size: 0.85rem;
+  }
+
+  .team-header {
+    margin-bottom: 48px;
   }
 }
 

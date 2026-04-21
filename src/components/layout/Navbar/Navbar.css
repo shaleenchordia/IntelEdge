@@ -83,6 +83,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   white-space: nowrap;
+  display: none; /* hidden on desktop — shown only when links are hidden */
 }
 
 .nav-contact-btn:hover {
@@ -92,18 +93,44 @@
 
 @media (max-width: 800px) {
   .nav-capsule-wrapper {
-    width: 90%;
+    width: 92%;
     justify-content: space-between;
-    padding: 6px;
+    padding: 6px 6px 6px 12px;
   }
   .nav-logo-circle {
-    margin-right: 16px;
+    margin-right: 0;
   }
   .nav-links-center {
     display: none;
   }
   .nav-contact-btn {
+    display: block;
     padding: 10px 20px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+  }
+  /* Keep navbar visible when scrolled on mobile */
+  .nav-capsule-scrolled {
+    opacity: 1;
+    background: rgba(10, 10, 12, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  .nav-capsule-scrolled:hover {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 400px) {
+  .nav-capsule-wrapper {
+    width: 94%;
+    padding: 5px 5px 5px 10px;
+  }
+  .nav-logo-circle {
+    width: 36px;
+    height: 36px;
+  }
+  .nav-contact-btn {
+    padding: 8px 14px;
+    font-size: 0.78rem;
   }
 }

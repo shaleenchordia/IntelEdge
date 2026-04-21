@@ -74,7 +74,7 @@ const ProductsSlider = ({ id }) => {
     <section id={id || 'products'} style={{
       background: 'transparent',
       minHeight: '100vh',
-      padding: '120px 0',
+      padding: 'clamp(60px, 10vw, 120px) 0',
       display: 'flex',
       flexDirection: 'column',
       position: 'relative',
@@ -104,26 +104,32 @@ const ProductsSlider = ({ id }) => {
         </h2>
 
         {/* Pills Navigation Menu */}
-        <div style={{
-          display: 'inline-flex',
-          background: 'rgba(255,255,255,0.05)',
+        <div className="products-pills-nav" style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          gap: '6px',
+          background: 'rgba(255,255,255,0.08)',
           borderRadius: '100px',
           padding: '6px',
           backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          marginTop: '20px'
+          border: '1px solid rgba(255,255,255,0.15)',
+          marginTop: '20px',
+          maxWidth: '90vw'
         }}>
           {products.map((p) => (
             <div
               key={`pill-${p.id}`}
               style={{
-                padding: '10px 20px',
+                padding: '8px 18px',
                 borderRadius: '100px',
-                background: 'transparent',
-                color: 'rgba(255,255,255,0.5)',
-                fontSize: '0.85rem',
+                background: 'rgba(255,255,255,0.06)',
+                color: 'rgba(255,255,255,0.85)',
+                fontSize: '0.82rem',
                 fontWeight: 500,
-                fontFamily: "'Inter', sans-serif"
+                fontFamily: "'Inter', sans-serif",
+                whiteSpace: 'nowrap',
+                border: '1px solid rgba(255,255,255,0.08)',
               }}
             >
               {p.name}
@@ -159,6 +165,35 @@ const ProductsSlider = ({ id }) => {
           .marquee-container:hover .marquee-group {
             animation-play-state: paused;
           }
+          /* Pills: single-row swipeable on mobile */
+          @media (max-width: 768px) {
+            .products-pills-nav {
+              flex-wrap: nowrap !important;
+              justify-content: flex-start !important;
+              overflow-x: auto !important;
+              overflow-y: hidden !important;
+              scrollbar-width: none !important;
+              -webkit-overflow-scrolling: touch;
+              border-radius: 50px !important;
+            }
+            .products-pills-nav::-webkit-scrollbar { display: none; }
+          }
+          /* Cards: fade edges + tighter sizing on mobile */
+          @media (max-width: 768px) {
+            .marquee-container {
+              -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+              mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+              padding-bottom: 60px !important;
+            }
+            .marquee-group { gap: 20px; padding-right: 20px; }
+            .product-card-wrap { width: min(300px, 78vw) !important; }
+            .product-card-inner { border-radius: 24px !important; }
+            .product-card-inner > div:last-child { padding: 28px !important; }
+          }
+          @media (max-width: 480px) {
+            .product-card-wrap { width: min(270px, 76vw) !important; }
+            .marquee-group { gap: 16px; padding-right: 16px; }
+          }
         `}</style>
 
         {/* Render 4 identical groups to ensure screen is always filled seamlessly */}
@@ -166,8 +201,9 @@ const ProductsSlider = ({ id }) => {
           <div key={`group-${groupIndex}`} className="marquee-group">
             {products.map((p, i) => (
               <div key={`${groupIndex}-${p.id}`}
+                className="product-card-wrap"
                 style={{
-                  width: '380px',
+                  width: 'min(380px, 82vw)',
                   display: 'flex',
                   flexDirection: 'column',
                 }}
@@ -185,7 +221,7 @@ const ProductsSlider = ({ id }) => {
                 </h4>
 
                 {/* Application Vertical Phone-style Card */}
-                <div style={{
+                <div className="product-card-inner" style={{
                   background: 'linear-gradient(180deg, #111216 0%, #0A0A0C 100%)',
                   border: '1px solid rgba(255,255,255,0.06)',
                   borderRadius: '32px',

@@ -341,10 +341,64 @@
 @media (max-width: 900px) {
   .contact-container {
     grid-template-columns: 1fr;
-    gap: 60px;
+    gap: 48px;
   }
 
   .form-row {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .contact-section {
+    padding: 80px 5%;
+  }
+
+  .contact-container {
+    gap: 36px;
+  }
+
+  .contact-watermark {
+    font-size: clamp(3rem, 20vw, 7rem);
+  }
+
+  .contact-form-glass {
+    padding: 28px 20px;
+  }
+
+  .contact-method-pill {
+    padding: 14px 16px;
+  }
+
+  .contact-heading {
+    font-size: clamp(2.2rem, 8vw, 3.5rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-section {
+    padding: 60px 4%;
+  }
+
+  .contact-container {
+    gap: 28px;
+  }
+
+  .contact-form-glass {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
+
+  .cmp-text h4 {
+    font-size: 0.85rem;
+  }
+
+  .cmp-text p {
+    font-size: 0.78rem;
+  }
+
+  .contact-method-pill {
+    padding: 12px 14px;
+    gap: 12px;
   }
 }

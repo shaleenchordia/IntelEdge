@@ -33,6 +33,14 @@ const Navbar = () => {
         <a href="#contact" className="nav-capsule-link" onClick={setServicesBypassWindow}>Contact Us</a>
       </div>
 
+      {/* Contact button — visible on mobile when links are hidden */}
+      <button
+        className="nav-contact-btn"
+        onClick={() => { setServicesBypassWindow(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }}
+      >
+        Contact Us
+      </button>
+
 
 
     </nav>
