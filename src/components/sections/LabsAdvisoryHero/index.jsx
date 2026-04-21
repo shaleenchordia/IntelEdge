@@ -837,7 +837,9 @@ const LabsAdvisoryPage = () => {
 
       <SplitHero />
       <AdvisorySection />
-      <TeamAccordion />
+      <div id="training">
+        <TeamAccordion />
+      </div>
       <LabsSection />
     </div>
   );

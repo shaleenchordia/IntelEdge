@@ -97,27 +97,27 @@ const BurstOrb = ({ progress, target, index }) => {
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    const forcePlay = () => { v.play().catch(() => {}); };
+    const forcePlay = () => { v.play().catch(() => { }); };
     forcePlay();
     v.addEventListener('pause', forcePlay);
     return () => v.removeEventListener('pause', forcePlay);
   }, []);
 
   return (
-    <motion.div 
+    <motion.div
       ref={wrapperRef}
       className="burst-video-wrapper"
       style={{ x, y, scale, opacity }}
     >
       <div className="burst-orb-inner" ref={innerRef}>
-        <video 
+        <video
           ref={videoRef}
           className="burst-video"
-          src="https://future.co/images/homepage/glassy-orb/orb-purple.webm" 
-          autoPlay 
-          loop 
-          muted 
-          playsInline 
+          src="https://future.co/images/homepage/glassy-orb/orb-purple.webm"
+          autoPlay
+          loop
+          muted
+          playsInline
         />
       </div>
     </motion.div>
@@ -127,11 +127,11 @@ const BurstOrb = ({ progress, target, index }) => {
 const VideoBurst = ({ progress }) => {
   const targets = [
     { x: -300, y: -140, scale: 0.42 },
-    { x: 280,  y: -100, scale: 0.50 },
-    { x: -220, y: 120,  scale: 0.38 },
-    { x: 250,  y: 140,  scale: 0.45 },
-    { x: -60,  y: 180,  scale: 0.40 },
-    { x: 80,   y: -160, scale: 0.36 },
+    { x: 280, y: -100, scale: 0.50 },
+    { x: -220, y: 120, scale: 0.38 },
+    { x: 250, y: 140, scale: 0.45 },
+    { x: -60, y: 180, scale: 0.40 },
+    { x: 80, y: -160, scale: 0.36 },
   ];
 
   const groupRotate = useTransform(progress, [0, 1], [120, 0]);
@@ -209,7 +209,10 @@ const teamData = [
 ];
 
 const TeamAccordion = React.forwardRef((props, ref) => {
-  const [activeIndex, setActiveIndex] = useState(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeIndexRef = useRef(0);
+  const wheelCooldownRef = useRef(0);
+  const isLockActiveRef = useRef(false);
 
   // Manual rAF loop — Framer Motion useScroll doesn't work with Lenis
   const burstProgress = useMotionValue(0);
@@ -226,14 +229,14 @@ const TeamAccordion = React.forwardRef((props, ref) => {
         //           1 when section top reaches center of viewport
         const start = wh;       // section top at viewport bottom
         const end = wh * 0.4;   // section top at 40% from top
-        
+
         let p = 0;
         if (rect.top < start && rect.top > end) {
           p = (start - rect.top) / (start - end);
         } else if (rect.top <= end) {
           p = 1;
         }
-        
+
         p = Math.max(0, Math.min(1, p));
         burstProgress.set(p);
       }
@@ -242,6 +245,86 @@ const TeamAccordion = React.forwardRef((props, ref) => {
     loop();
     return () => cancelAnimationFrame(rafId);
   }, [burstProgress, ref]);
+
+  useEffect(() => {
+    activeIndexRef.current = activeIndex;
+  }, [activeIndex]);
+
+  useEffect(() => {
+    const emitLockState = (locked) => {
+      if (isLockActiveRef.current === locked) return;
+      isLockActiveRef.current = locked;
+      window.dispatchEvent(new CustomEvent('services-scroll-lock', { detail: { locked } }));
+    };
+
+    const snapToSection = (sectionEl) => {
+      const accordionEl = sectionEl.querySelector('.team-accordion');
+      const anchorRect = (accordionEl || sectionEl).getBoundingClientRect();
+      const desiredAnchorTop = accordionEl ? 220 : 90;
+      const targetY = Math.max(0, window.scrollY + anchorRect.top - desiredAnchorTop);
+      window.scrollTo({ top: targetY, behavior: 'auto' });
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: targetY, behavior: 'auto' });
+      });
+    };
+
+    const onWheel = (event) => {
+      const sectionEl = ref?.current || document.getElementById('team');
+      if (!sectionEl) return;
+
+      if (Date.now() < (window.__servicesScrollLockBypassUntil || 0)) return;
+
+      const rect = sectionEl.getBoundingClientRect();
+      const isSectionVisible = rect.top < window.innerHeight && rect.bottom > 0;
+      if (!isSectionVisible) return;
+
+      const lockStartTop = 50;
+      const minVisibleBottom = window.innerHeight * 0.52;
+      const isInLockZone = rect.top <= lockStartTop && rect.bottom >= minVisibleBottom;
+      if (!isInLockZone && !isLockActiveRef.current) return;
+
+      const delta = event.deltaY;
+      if (Math.abs(delta) < 6) return;
+
+      const now = Date.now();
+      if (now - wheelCooldownRef.current < 380) {
+        event.preventDefault();
+        return;
+      }
+
+      const maxIndex = teamData.length - 1;
+      const current = activeIndexRef.current;
+
+      if (delta > 0) {
+        if (current < maxIndex) {
+          event.preventDefault();
+          emitLockState(true);
+          snapToSection(sectionEl);
+          wheelCooldownRef.current = now;
+          setActiveIndex((prev) => Math.min(prev + 1, maxIndex));
+        } else {
+          emitLockState(false);
+        }
+        return;
+      }
+
+      if (current > 0) {
+        event.preventDefault();
+        emitLockState(true);
+        snapToSection(sectionEl);
+        wheelCooldownRef.current = now;
+        setActiveIndex((prev) => Math.max(prev - 1, 0));
+      } else {
+        emitLockState(false);
+      }
+    };
+
+    window.addEventListener('wheel', onWheel, { passive: false, capture: true });
+    return () => {
+      emitLockState(false);
+      window.removeEventListener('wheel', onWheel, { capture: true });
+    };
+  }, [ref]);
 
   const smoothProgress = useSpring(burstProgress, {
     stiffness: 80,
@@ -252,7 +335,7 @@ const TeamAccordion = React.forwardRef((props, ref) => {
   return (
     <section className="team-container" id="team" ref={ref}>
       <VideoBurst progress={smoothProgress} />
-      
+
       {/* Red/Orange glow from the image */}
       <div className="team-glow"></div>
 
@@ -265,9 +348,9 @@ const TeamAccordion = React.forwardRef((props, ref) => {
           <p style={{ color: 'rgba(255,255,255,0.7)', maxWidth: '600px', fontSize: '1.1rem', lineHeight: 1.6, marginBottom: '2rem' }}>
             Delivered by a 2-Time TEDx Speaker with 14+ years of enterprise experience — designed for CXOs, senior managers, functional teams, and early-career professionals across the full AI readiness spectrum.
           </p>
-          <a 
+          <a
             href="#contact"
-            className="team-get-in-touch" 
+            className="team-get-in-touch"
             aria-label="Get in touch"
             style={{ textDecoration: 'none' }}
           >
@@ -276,15 +359,14 @@ const TeamAccordion = React.forwardRef((props, ref) => {
         </div>
       </div>
 
-      <div className="team-accordion" onMouseLeave={() => setActiveIndex(null)}>
+      <div className="team-accordion">
         {teamData.map((item, index) => {
           const isActive = activeIndex === index;
-          
+
           return (
-            <motion.div 
+            <motion.div
               key={item.id}
               className="team-row"
-              onMouseEnter={() => setActiveIndex(index)}
               initial={false}
               animate={{ height: isActive ? 'auto' : 120 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}

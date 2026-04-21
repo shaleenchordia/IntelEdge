@@ -57,6 +57,8 @@ const App = () => {
   const [theme, setTheme] = useState('cyan');
   const [showIntro, setShowIntro] = useState(true);
   const servicesRef = useRef(null);
+  const lenisRef = useRef(null);
+  const servicesScrollLockedRef = useRef(false);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -65,6 +67,7 @@ const App = () => {
       smoothWheel: true,
       wheelMultiplier: 1,
     });
+    lenisRef.current = lenis;
 
     lenis.on('scroll', ScrollTrigger.update);
 
@@ -79,6 +82,16 @@ const App = () => {
     }
     requestAnimationFrame(raf);
 
+    const handleServicesScrollLock = (e) => {
+      servicesScrollLockedRef.current = Boolean(e?.detail?.locked);
+      if (servicesScrollLockedRef.current) {
+        lenis.stop();
+      } else if (!showIntro) {
+        lenis.start();
+      }
+    };
+    window.addEventListener('services-scroll-lock', handleServicesScrollLock);
+
     if (showIntro) {
       lenis.stop();
       window.scrollTo(0, 0);
@@ -87,6 +100,8 @@ const App = () => {
     }
 
     return () => {
+      window.removeEventListener('services-scroll-lock', handleServicesScrollLock);
+      lenisRef.current = null;
       lenis.destroy();
     };
   }, [showIntro]);

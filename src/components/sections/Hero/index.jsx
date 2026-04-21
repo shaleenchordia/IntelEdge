@@ -7,33 +7,29 @@ import './Hero.css';
 gsap.registerPlugin(ScrollTrigger);
 
 /* ─── Logo Assets ─── */
-import WiproLogo     from '../../../assets/wipro.png';
-import HCLLogo       from '../../../assets/hcl.png';
-import TataAigLogo   from '../../../assets/tataaig.png';
-import AccentureLogo from '../../../assets/accenture.png';
-import PwcLogo       from '../../../assets/pwc.jpeg';
-import UiPathLogo    from '../../../assets/uipath.png';
-import IciciLogo     from '../../../assets/icici.png';
-import BajajLogo     from '../../../assets/bajaj.png';
-import DlfLogo       from '../../../assets/dlf.png';
-import SiemensLogo   from '../../../assets/siemens.png';
+import WiproLogo from '../../../assets/wipro.png';
+import HCLLogo from '../../../assets/hcl.png';
+import TataAigLogo from '../../../assets/tataaig.png';
+import UiPathLogo from '../../../assets/uipath.png';
+import IciciLogo from '../../../assets/icici.png';
+import BajajLogo from '../../../assets/bajaj.png';
+import DlfLogo from '../../../assets/dlf.png';
+import SiemensLogo from '../../../assets/siemens.png';
 
 const logoMeta = [
-  { src: WiproLogo,     name: 'Wipro' },
-  { src: HCLLogo,       name: 'HCL' },
-  { src: TataAigLogo,   name: 'Tata AIG' },
-  { src: AccentureLogo, name: 'Accenture' },
-  { src: PwcLogo,       name: 'PwC' },
-  { src: UiPathLogo,    name: 'UiPath' },
-  { src: IciciLogo,     name: 'ICICI' },
-  { src: BajajLogo,     name: 'Bajaj' },
-  { src: DlfLogo,       name: 'DLF' },
-  { src: SiemensLogo,   name: 'Siemens' },
+  { src: WiproLogo, name: 'Wipro' },
+  { src: HCLLogo, name: 'HCL' },
+  { src: TataAigLogo, name: 'Tata AIG' },
+  { src: UiPathLogo, name: 'UiPath' },
+  { src: IciciLogo, name: 'ICICI' },
+  { src: BajajLogo, name: 'Bajaj' },
+  { src: DlfLogo, name: 'DLF' },
+  { src: SiemensLogo, name: 'Siemens' },
 ];
 
 const LogoStrip = () => {
   const displayLogos = [...logoMeta, ...logoMeta, ...logoMeta];
-  const [paused, setPaused]         = useState(false);
+  const [paused, setPaused] = useState(false);
   const [hoveredIdx, setHoveredIdx] = useState(null);
 
   return (
@@ -559,7 +555,7 @@ const Hero = () => {
                 <ArrowIcon />
               </span>
             </motion.button>
-            
+
             <motion.button
               className="hero-cta-secondary"
               initial={{ opacity: 0, y: 20 }}

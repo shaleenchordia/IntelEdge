@@ -8,8 +8,6 @@ import ArchitectureCore from './ArchitectureCore';
 import WiproLogo     from '../../../assets/wipro.png';
 import HCLLogo       from '../../../assets/hcl.png';
 import TataAigLogo   from '../../../assets/tataaig.png';
-import AccentureLogo from '../../../assets/accenture.png';
-import PwcLogo       from '../../../assets/pwc.jpeg';
 import UiPathLogo    from '../../../assets/uipath.png';
 import IciciLogo     from '../../../assets/icici.png';
 import BajajLogo     from '../../../assets/bajaj.png';
@@ -23,8 +21,6 @@ const logoMeta = [
   { src: WiproLogo,     name: 'Wipro' },
   { src: HCLLogo,       name: 'HCL' },
   { src: TataAigLogo,   name: 'Tata AIG' },
-  { src: AccentureLogo, name: 'Accenture' },
-  { src: PwcLogo,       name: 'PwC' },
   { src: UiPathLogo,    name: 'UiPath' },
   { src: IciciLogo,     name: 'ICICI' },
   { src: BajajLogo,     name: 'Bajaj' },

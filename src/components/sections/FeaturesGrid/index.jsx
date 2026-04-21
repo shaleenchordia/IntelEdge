@@ -261,7 +261,7 @@ const ProductsSlider = ({ id }) => {
                       {p.points.map((pt, idx) => (
                         <li key={idx} style={{
                           display: 'flex',
-                          alignItems: 'flex-start',
+                          alignItems: 'center',
                           gap: '12px',
                           marginBottom: '18px',
                           fontSize: '0.95rem',
@@ -269,7 +269,7 @@ const ProductsSlider = ({ id }) => {
                           lineHeight: 1.4,
                           fontWeight: 300,
                         }}>
-                          <div style={{ marginTop: '4px', opacity: 0.6 }}>
+                          <div style={{ flexShrink: 0, opacity: 0.6, display: 'flex', alignItems: 'center' }}>
                             <svg width="5" height="5" viewBox="0 0 5 5" fill="none"><circle cx="2.5" cy="2.5" r="2.5" fill="white" /></svg>
                           </div>
                           {pt}
