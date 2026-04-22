@@ -7,8 +7,8 @@
   overflow: visible;
   font-family: var(--font-main);
   background-image: 
-    linear-gradient(rgba(232, 74, 58, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(232, 74, 58, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(0, 200, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 200, 255, 0.04) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 
@@ -19,7 +19,7 @@
   transform: translate(-50%, -50%);
   width: 60vw;
   height: 60vw;
-  background: radial-gradient(circle, rgba(232, 74, 58, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(0, 200, 255, 0.1) 0%, transparent 70%);
   filter: blur(120px);
   z-index: 0;
   pointer-events: none;
@@ -59,20 +59,20 @@
 }
 
 .team-get-in-touch:hover {
-  background: #e84a3a;
-  color: #fff;
-  border-color: #e84a3a;
+  background: #00c0ee;
+  color: #000;
+  border-color: #00c0ee;
 }
 
 .team-accordion {
   position: relative;
   z-index: 1;
-  border-top: 1px solid rgba(232, 74, 58, 0.25);
-  border-bottom: 1px solid rgba(232, 74, 58, 0.25);
+  border-top: 1px solid rgba(0, 200, 255, 0.25);
+  border-bottom: 1px solid rgba(0, 200, 255, 0.25);
 }
 
 .team-row {
-  border-bottom: 1px solid rgba(232, 74, 58, 0.12);
+  border-bottom: 1px solid rgba(0, 200, 255, 0.12);
   overflow: hidden;
   cursor: pointer;
   background: transparent;
@@ -80,7 +80,7 @@
 }
 
 .team-row:hover {
-  background: rgba(232, 74, 58, 0.06);
+  background: rgba(0, 200, 255, 0.05);
 }
 
 .team-row:last-child {
@@ -104,8 +104,8 @@
   font-size: 200px;
   line-height: 0.7;
   font-weight: 700;
-  color: rgba(232, 74, 58, 0.15); /* More opaque than before */
-  -webkit-text-stroke: 1.5px rgba(232, 74, 58, 0.4); /* Stronger outline */
+  color: rgba(0, 200, 255, 0.12);
+  -webkit-text-stroke: 1.5px rgba(0, 200, 255, 0.35);
   letter-spacing: -8px;
   margin-top: -10px;
   padding-left: 10px;
@@ -113,8 +113,8 @@
 }
 
 .team-row.active .team-number {
-  color: rgba(232, 74, 58, 0.35);
-  -webkit-text-stroke: 2px rgba(232, 74, 58, 0.8);
+  color: rgba(0, 200, 255, 0.28);
+  -webkit-text-stroke: 2px rgba(0, 200, 255, 0.75);
   transform: scale(1.05) translateX(15px);
 }
 
@@ -152,7 +152,7 @@
   margin-top: 10px;
   display: flex;
   justify-content: flex-end;
-  color: rgba(71, 18, 10, 0.8);
+  color: rgba(0, 200, 255, 0.85);
 }
 
 /* Responsiveness */
@@ -243,15 +243,22 @@
   pointer-events: none;
 }
 
-.burst-video {
+.burst-css-orb {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  mix-blend-mode: screen;
-  /* Exact same filter as the Hero orb */
-  filter: hue-rotate(110deg) saturate(180%) brightness(1.2) contrast(0.9) blur(30px);
-  opacity: 0.45;
   border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%,
+    rgba(120, 230, 255, 0.9) 0%,
+    rgba(0, 192, 238, 0.75) 30%,
+    rgba(0, 140, 200, 0.5) 60%,
+    rgba(0, 80, 160, 0.2) 85%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 40px 15px rgba(0, 192, 238, 0.35),
+    0 0 80px 30px rgba(0, 150, 220, 0.2),
+    0 0 120px 50px rgba(0, 100, 180, 0.1);
+  filter: blur(22px);
   pointer-events: none;
 }
 

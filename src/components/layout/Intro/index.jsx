@@ -97,19 +97,23 @@ const Intro = ({ onFinish }) => {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, ease: "easeOut" }}
-          style={{ width: '150px', height: 'auto', marginBottom: '4rem' }}
+          style={{
+            width: 'clamp(80px, 25vw, 150px)',
+            height: 'auto',
+            marginBottom: 'clamp(2rem, 6vw, 4rem)'
+          }}
         />
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', padding: '0 16px' }}>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             style={{
               fontFamily: "'Cinzel', serif",
-              fontSize: 'max(4rem, 8vw)',
+              fontSize: 'clamp(2.2rem, 10vw, 8rem)',
               fontWeight: 800,
-              letterSpacing: '8px',
+              letterSpacing: 'clamp(3px, 1.5vw, 12px)',
               color: '#fff',
               margin: 0,
               textAlign: 'center',
@@ -124,21 +128,21 @@ const Intro = ({ onFinish }) => {
             transition={{ duration: 1, delay: 0.5 }}
             style={{
               fontFamily: "'Montserrat', sans-serif",
-              fontSize: 'max(0.6rem, 1vw)',
+              fontSize: 'clamp(0.55rem, 2vw, 0.85rem)',
               fontWeight: 400,
-              letterSpacing: '10px',
+              letterSpacing: 'clamp(4px, 2vw, 10px)',
               color: '#fff',
               marginTop: '1.5rem',
-              whiteSpace: 'nowrap',
               textAlign: 'center',
               display: 'flex',
               alignItems: 'center',
-              gap: '1rem'
+              gap: '0.6rem',
+              width: '100%'
             }}
           >
-            <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.3)' }} />
-            ADVISORY AND LABS LLP
-            <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.3)' }} />
+            <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.3)', minWidth: '16px' }} />
+            <span style={{ whiteSpace: 'nowrap' }}>ADVISORY AND LABS LLP</span>
+            <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.3)', minWidth: '16px' }} />
           </motion.div>
         </div>
 
@@ -146,10 +150,10 @@ const Intro = ({ onFinish }) => {
           animate={{ opacity: [0.2, 0.5, 0.2], y: [0, 8, 0] }}
           transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
           style={{
-            marginTop: '5rem',
+            marginTop: 'clamp(2.5rem, 8vw, 5rem)',
             textAlign: 'center',
-            fontSize: 'max(0.7rem, 1vw)',
-            letterSpacing: '12px',
+            fontSize: 'clamp(0.55rem, 2.5vw, 0.75rem)',
+            letterSpacing: 'clamp(5px, 3vw, 12px)',
             textTransform: 'uppercase',
             color: '#fff',
             fontWeight: 300,

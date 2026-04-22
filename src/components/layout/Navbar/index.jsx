@@ -1,51 +1,122 @@
 import React, { useState, useEffect } from 'react';
-import { Orbit } from 'lucide-react';
+import { Orbit, Menu, X } from 'lucide-react';
 import './Navbar.css';
 
+const NAV_LINKS = [
+  { label: 'About Us',     href: '#about' },
+  { label: 'Services',     href: '#services' },
+  { label: 'Products',     href: '#products' },
+  { label: 'Testimonials', href: '#testimonials' },
+];
+
 const Navbar = () => {
-  const [scrolled, setScrolled] = useState(false);
-  const setServicesBypassWindow = () => {
+  const [scrolled,   setScrolled]   = useState(false);
+  const [menuOpen,   setMenuOpen]   = useState(false);
+
+  const bypassScrollLock = () => {
     window.__servicesScrollLockBypassUntil = Date.now() + 2000;
-    // Dispatch unlock event to ensure Lenis restarts immediately
     window.dispatchEvent(new CustomEvent('services-scroll-lock', { detail: { locked: false } }));
   };
 
+  const handleNavClick = (href) => {
+    bypassScrollLock();
+    setMenuOpen(false);
+    const id = href.replace('#', '');
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Close menu on scroll
   useEffect(() => {
-    const handleScroll = () => {
+    const onScroll = () => {
       setScrolled(window.scrollY > 50);
+      if (menuOpen) setMenuOpen(false);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [menuOpen]);
+
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
 
   return (
-    <nav className={`nav-capsule-wrapper ${scrolled ? 'nav-capsule-scrolled' : ''}`}>
-      
-      {/* Left Icon (Planet in white circle matching user image) */}
-      <div className="nav-logo-circle">
-        <Orbit size={24} strokeWidth={2.5} />
+    <>
+      <nav className={`nav-capsule-wrapper ${scrolled ? 'nav-capsule-scrolled' : ''}`}>
+
+        {/* Logo */}
+        <div className="nav-logo-circle">
+          <Orbit size={24} strokeWidth={2.5} />
+        </div>
+
+        {/* Brand — mobile centre */}
+        <span className="nav-brand-mobile">INTELEDGE</span>
+
+        {/* Desktop links */}
+        <div className="nav-links-center">
+          {NAV_LINKS.map(({ label, href }) => (
+            <a
+              key={href}
+              href={href}
+              className="nav-capsule-link"
+              onClick={(e) => { e.preventDefault(); handleNavClick(href); }}
+            >
+              {label}
+            </a>
+          ))}
+        </div>
+
+        {/* Desktop CTA */}
+        <button
+          className="nav-contact-btn nav-contact-desktop"
+          onClick={() => handleNavClick('#contact')}
+        >
+          Contact Us
+        </button>
+
+        {/* Hamburger — mobile only */}
+        <button
+          className="nav-hamburger"
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((v) => !v)}
+        >
+          {menuOpen ? <X size={22} strokeWidth={2} /> : <Menu size={22} strokeWidth={2} />}
+        </button>
+
+      </nav>
+
+      {/* Mobile drawer backdrop */}
+      {menuOpen && (
+        <div className="nav-mobile-backdrop" onClick={() => setMenuOpen(false)} />
+      )}
+
+      {/* Mobile drawer */}
+      <div className={`nav-mobile-drawer ${menuOpen ? 'nav-mobile-drawer-open' : ''}`}>
+        <div className="nav-mobile-links">
+          {NAV_LINKS.map(({ label, href }, i) => (
+            <button
+              key={href}
+              className="nav-mobile-link"
+              style={{ transitionDelay: menuOpen ? `${i * 55}ms` : '0ms' }}
+              onClick={() => handleNavClick(href)}
+            >
+              <span className="nav-mobile-link-num">0{i + 1}</span>
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className="nav-mobile-footer">
+          <button
+            className="nav-mobile-cta"
+            onClick={() => handleNavClick('#contact')}
+          >
+            Contact Us
+          </button>
+        </div>
       </div>
-
-      {/* Center Links (Mapped to requested mockup text for exact replica, or site routes) */}
-      <div className="nav-links-center">
-        <a href="#about" className="nav-capsule-link" onClick={setServicesBypassWindow}>About Us</a>
-        <a href="#services" className="nav-capsule-link" onClick={setServicesBypassWindow}>Services</a>
-        <a href="#products" className="nav-capsule-link" onClick={setServicesBypassWindow}>Products</a>
-        <a href="#testimonials" className="nav-capsule-link" onClick={setServicesBypassWindow}>Testimonials</a>
-        <a href="#contact" className="nav-capsule-link" onClick={setServicesBypassWindow}>Contact Us</a>
-      </div>
-
-      {/* Contact button — visible on mobile when links are hidden */}
-      <button
-        className="nav-contact-btn"
-        onClick={() => { setServicesBypassWindow(); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }}
-      >
-        Contact Us
-      </button>
-
-
-
-    </nav>
+    </>
   );
 };
 

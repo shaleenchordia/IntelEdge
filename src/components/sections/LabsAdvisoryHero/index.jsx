@@ -164,8 +164,8 @@ const SplitHero = () => {
           onMouseEnter={() => setHovered('advisory')} onMouseLeave={() => setHovered(null)}
           onClick={() => document.getElementById('advisory')?.scrollIntoView({ behavior: 'smooth' })}
           style={{ position: 'absolute', left: 0, top: 0, bottom: 0, overflow: 'hidden', cursor: 'pointer' }}>
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #8b3a2e 0%, #5e1f17 55%, #2e0a07 100%)' }} />
-          <div style={{ position: 'absolute', inset: 0, opacity: 0.6, background: 'radial-gradient(ellipse at 30% 35%, rgba(210,110,70,0.35) 0%, transparent 55%)' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #0a2a3a 0%, #051520 55%, #020a10 100%)' }} />
+          <div style={{ position: 'absolute', inset: 0, opacity: 0.6, background: 'radial-gradient(ellipse at 30% 35%, rgba(0,200,255,0.18) 0%, transparent 55%)' }} />
           <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 50%, transparent 20%, rgba(0,0,0,0.5) 100%)' }} />
         </motion.div>
 
@@ -190,8 +190,8 @@ const SplitHero = () => {
           style={{ position: 'absolute', left: '50%', bottom: 0, transform: 'translateX(-50%)', height: '92%', width: 'clamp(200px, 28%, 340px)', zIndex: 5, pointerEvents: 'none' }}>
           <svg viewBox="0 0 300 700" preserveAspectRatio="xMidYMax meet" style={{ width: '100%', height: '100%' }}>
             <defs>
-              <linearGradient id="warmGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#e8a870" /><stop offset="30%" stopColor="#c56838" /><stop offset="70%" stopColor="#8b2e1e" /><stop offset="100%" stopColor="#3d0f08" />
+              <linearGradient id="blueGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#00c0ee" /><stop offset="30%" stopColor="#0090bb" /><stop offset="70%" stopColor="#006088" /><stop offset="100%" stopColor="#021520" />
               </linearGradient>
               <linearGradient id="coldGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#4a5560" /><stop offset="50%" stopColor="#2a3038" /><stop offset="100%" stopColor="#0e1115" />
@@ -201,10 +201,10 @@ const SplitHero = () => {
             </defs>
             {/* Left side is now warm (Advisory) */}
             <g clipPath="url(#leftHalf)">
-              <rect x="140" y="20" width="20" height="280" fill="url(#warmGrad)" />
-              <ellipse cx="150" cy="30" rx="28" ry="18" fill="url(#warmGrad)" />
-              <path d="M 150 300 Q 60 320, 50 480 Q 50 640, 150 680 Z" fill="url(#warmGrad)" />
-              {[80, 120, 160, 200, 240, 280].map((y, i) => (<line key={i} x1="143" y1={y} x2="157" y2={y} stroke="rgba(255,220,180,0.4)" strokeWidth="0.8" />))}
+              <rect x="140" y="20" width="20" height="280" fill="url(#blueGrad)" />
+              <ellipse cx="150" cy="30" rx="28" ry="18" fill="url(#blueGrad)" />
+              <path d="M 150 300 Q 60 320, 50 480 Q 50 640, 150 680 Z" fill="url(#blueGrad)" />
+              {[80, 120, 160, 200, 240, 280].map((y, i) => (<line key={i} x1="143" y1={y} x2="157" y2={y} stroke="rgba(0,200,255,0.4)" strokeWidth="0.8" />))}
             </g>
             {/* Right side is now cold (Labs) */}
             <g clipPath="url(#rightHalf)">
@@ -225,17 +225,17 @@ const SplitHero = () => {
       </div>
 
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '32vh', display: 'flex' }}>
-        <motion.div initial={{ y: '101%' }} animate={{ y: isInView ? 0 : '101%', width: advW }} transition={{ y: { duration: 1.1, delay: 0.4, ease }, width: { duration: 0.7, ease } }} style={{ background: '#a82417', height: '100%' }} />
+        <motion.div initial={{ y: '101%' }} animate={{ y: isInView ? 0 : '101%', width: advW }} transition={{ y: { duration: 1.1, delay: 0.4, ease }, width: { duration: 0.7, ease } }} style={{ background: '#021520', height: '100%' }} />
         <motion.div initial={{ y: '101%' }} animate={{ y: isInView ? 0 : '101%', width: labsW }} transition={{ y: { duration: 1.1, delay: 0.4, ease }, width: { duration: 0.7, ease } }} style={{ background: '#0a0a0a', height: '100%', flex: 1 }} />
       </div>
 
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '32vh', zIndex: 10, pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         <motion.h1 className="split-hero-title" initial={{ opacity: 0, y: 30 }} animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 30 }} transition={{ duration: 1, delay: 1.3, ease }}
           style={{ fontFamily: "'Playfair Display', serif", fontWeight: 900, fontSize: 'clamp(3rem, 8vw, 7rem)', lineHeight: 0.95, color: '#fff', margin: 0, letterSpacing: '-2px', textTransform: 'uppercase', textShadow: '0 2px 20px rgba(0,0,0,0.4)', whiteSpace: 'nowrap' }}>
-          ADVISORY<span style={{ fontWeight: 300, opacity: 0.6, margin: '0 0.3em' }}>/</span>LABS
+          ADVISORY<span style={{ fontWeight: 300, opacity: 0.6, margin: '0 0.3em' }}>&</span>LABS
         </motion.h1>
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 12 }} transition={{ duration: 1, delay: 1.55, ease }}
-          style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 500, fontSize: 'clamp(1.1rem, 2.2vw, 1.9rem)', color: '#f5c08a', marginTop: '0.3em', letterSpacing: '0.5px' }}>
+          style={{ fontFamily: "'Dancing Script', cursive", fontWeight: 500, fontSize: 'clamp(1.1rem, 2.2vw, 1.9rem)', color: '#00c0ee', marginTop: '0.3em', letterSpacing: '0.5px' }}>
           two sides of one vision
         </motion.div>
       </div>
@@ -284,7 +284,7 @@ const ServiceCard = ({ service, index, isInView }) => {
           transition={{ duration: 4, repeat: Infinity, delay: index * 0.6 }}
           style={{
             position: 'absolute', inset: -20,
-            background: 'radial-gradient(ellipse, rgba(232,74,58,0.22) 0%, transparent 70%)',
+            background: 'radial-gradient(ellipse, rgba(0,200,255,0.18) 0%, transparent 70%)',
             filter: 'blur(30px)', pointerEvents: 'none',
           }}
         />
@@ -292,8 +292,8 @@ const ServiceCard = ({ service, index, isInView }) => {
         <div
           style={{
             position: 'relative',
-            background: 'linear-gradient(145deg, rgba(30,8,8,0.5), rgba(12,3,3,0.4))',
-            border: '1px solid rgba(232,74,58,0.2)',
+            background: 'linear-gradient(145deg, rgba(6,18,32,0.6), rgba(2,8,16,0.45))',
+            border: '1px solid rgba(0,200,255,0.18)',
             borderRadius: 18, padding: '1.6rem 1.7rem',
             backdropFilter: 'blur(20px)',
             boxShadow: '0 45px 90px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05)',
@@ -304,7 +304,7 @@ const ServiceCard = ({ service, index, isInView }) => {
         >
           <div style={{
             position: 'absolute', top: 14, right: 14, width: 22, height: 22,
-            borderTop: '1.5px solid rgba(232,74,58,0.5)', borderRight: '1.5px solid rgba(232,74,58,0.5)', pointerEvents: 'none'
+            borderTop: '1.5px solid rgba(0,200,255,0.5)', borderRight: '1.5px solid rgba(0,200,255,0.5)', pointerEvents: 'none'
           }} />
 
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.1rem', transform: 'translateZ(30px)' }}>
@@ -313,7 +313,7 @@ const ServiceCard = ({ service, index, isInView }) => {
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : -6 }}
                 transition={{ duration: 0.5, delay: baseDelay + 0.15, ease }}
-                style={{ fontSize: 9, fontWeight: 800, letterSpacing: '3px', color: 'rgba(232,74,58,0.8)', marginBottom: 8, textTransform: 'uppercase' }}
+                style={{ fontSize: 9, fontWeight: 800, letterSpacing: '3px', color: 'rgba(0,200,255,0.8)', marginBottom: 8, textTransform: 'uppercase' }}
               >
                 {S.num}
               </motion.div>
@@ -333,14 +333,14 @@ const ServiceCard = ({ service, index, isInView }) => {
               transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: index * 0.4 }}
               style={{
                 width: 52, height: 52, borderRadius: 14, flexShrink: 0, marginLeft: 16,
-                background: 'linear-gradient(135deg, rgba(232,74,58,0.25), rgba(139,22,22,0.15))',
-                border: '1px solid rgba(232,74,58,0.35)',
+                background: 'linear-gradient(135deg, rgba(0,200,255,0.18), rgba(0,100,180,0.12))',
+                border: '1px solid rgba(0,200,255,0.35)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: '0 10px 30px rgba(232,74,58,0.25)',
+                boxShadow: '0 10px 30px rgba(0,200,255,0.2)',
                 transform: 'translateZ(40px)',
               }}
             >
-              <S.Icon size={24} color="#ff6b52" strokeWidth={1.5} />
+              <S.Icon size={24} color="#00c0ee" strokeWidth={1.5} />
             </motion.div>
           </div>
 
@@ -361,7 +361,7 @@ const ServiceCard = ({ service, index, isInView }) => {
                   initial={{ scale: 0 }}
                   animate={{ scale: isInView ? 1 : 0 }}
                   transition={{ duration: 0.35, delay: baseDelay + 0.3 + i * 0.08, type: 'spring' }}
-                  style={{ width: 6, height: 6, borderRadius: '50%', background: '#ff6b52', flexShrink: 0, boxShadow: '0 0 8px rgba(255,107,82,0.6)' }}
+                  style={{ width: 6, height: 6, borderRadius: '50%', background: '#00c0ee', flexShrink: 0, boxShadow: '0 0 8px rgba(0,192,238,0.6)' }}
                 />
                 <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.4 }}>{pt}</span>
               </motion.div>
@@ -372,9 +372,9 @@ const ServiceCard = ({ service, index, isInView }) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 10 }}
             transition={{ duration: 0.6, delay: baseDelay + 0.9, ease }}
-            style={{ borderTop: '1px solid rgba(232,74,58,0.2)', paddingTop: '1.2rem', transform: 'translateZ(15px)' }}
+            style={{ borderTop: '1px solid rgba(0,200,255,0.18)', paddingTop: '1.2rem', transform: 'translateZ(15px)' }}
           >
-            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '3px', color: 'rgba(232,74,58,0.7)', textTransform: 'uppercase', marginBottom: 10 }}>
+            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '3px', color: 'rgba(0,200,255,0.75)', textTransform: 'uppercase', marginBottom: 10 }}>
               Outcome
             </div>
             <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 16, color: 'rgba(255,255,255,0.9)', margin: 0, fontStyle: 'italic', lineHeight: 1.5 }}>
@@ -411,9 +411,9 @@ const AdvisorySection = () => {
       style={{ position: 'relative', width: '100%', background: 'transparent', overflow: 'hidden', fontFamily: "'Inter', sans-serif", paddingBottom: '5rem' }}
     >
       <motion.div style={{ position: 'absolute', inset: '-10% 0', y: bgY, scale: bgScale, pointerEvents: 'none' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(46,10,7,0.2) 0%, rgba(24,6,6,0.1) 60%, transparent 100%)' }} />
-        <div style={{ position: 'absolute', top: '15%', right: '-10%', width: '65%', height: '65%', background: 'radial-gradient(ellipse, rgba(210,110,70,0.15) 0%, transparent 60%)' }} />
-        <div style={{ position: 'absolute', top: '40%', left: '-15%', width: '60%', height: '60%', background: 'radial-gradient(ellipse, rgba(139,22,22,0.12) 0%, transparent 65%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(5,14,30,0.2) 0%, rgba(3,7,9,0.1) 60%, transparent 100%)' }} />
+        <div style={{ position: 'absolute', top: '15%', right: '-10%', width: '65%', height: '65%', background: 'radial-gradient(ellipse, rgba(0,175,255,0.1) 0%, transparent 60%)' }} />
+        <div style={{ position: 'absolute', top: '40%', left: '-15%', width: '60%', height: '60%', background: 'radial-gradient(ellipse, rgba(0,100,200,0.08) 0%, transparent 65%)' }} />
       </motion.div>
 
       <div style={{
@@ -446,13 +446,13 @@ const AdvisorySection = () => {
           <motion.div
             animate={{ scaleX: isInView ? 1 : 0 }}
             transition={{ duration: 1, delay: 0.2, ease }}
-            style={{ height: 1, width: 80, background: '#e84a3a', transformOrigin: 'left' }}
+            style={{ height: 1, width: 80, background: '#00c0ee', transformOrigin: 'left' }}
           />
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <motion.div animate={{ scale: [1, 1.5, 1], opacity: [0.6, 1, 0.6] }}
               transition={{ duration: 2, repeat: Infinity }}
-              style={{ width: 8, height: 8, borderRadius: '50%', background: '#e84a3a' }} />
-            <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: '5px', color: '#e84a3a', textTransform: 'uppercase' }}>
+              style={{ width: 8, height: 8, borderRadius: '50%', background: '#00c0ee' }} />
+            <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '4px', color: '#00c0ee', textTransform: 'uppercase' }}>
               Inteledge Advisory
             </span>
           </div>
@@ -474,7 +474,7 @@ const AdvisorySection = () => {
           }}>
             <SplitText text="Independent." isInView={isInView} delay={0.3} />{' '}
             <SplitText text="Vendor-Neutral." isInView={isInView} delay={0.5} />{' '}
-            <span style={{ color: '#e84a3a' }}>
+            <span style={{ color: '#00c0ee' }}>
               <SplitText text="Execution-Focused." isInView={isInView} delay={0.7} />
             </span>
           </h2>

@@ -13,7 +13,6 @@ if (typeof window !== 'undefined') {
 }
 
 const BurstOrb = ({ progress, target, index }) => {
-  const videoRef = useRef(null);
   const innerRef = useRef(null);
   const wrapperRef = useRef(null);
   const x = useTransform(progress, [0, 1], [0, target.x]);
@@ -50,13 +49,11 @@ const BurstOrb = ({ progress, target, index }) => {
     const animate = (t) => {
       const s = t * 0.001;
 
-      // Random float
       const floatX = Math.sin(s * speedX + sx) * ampX + Math.sin(s * speedX * 1.7 + sx * 2) * ampX * 0.4;
       const floatY = Math.cos(s * speedY + sy) * ampY + Math.cos(s * speedY * 1.3 + sy * 3) * ampY * 0.3;
       const floatR = Math.sin(s * speedR + sr) * ampR;
       const floatS = 1 + Math.sin(s * 0.4 + sx) * 0.06;
 
-      // Cursor repulsion - velocity based for free floating
       const rect = wrapper.getBoundingClientRect();
       const orbCX = rect.left + rect.width / 2 + repelX.current;
       const orbCY = rect.top + rect.height / 2 + repelY.current;
@@ -66,20 +63,14 @@ const BurstOrb = ({ progress, target, index }) => {
 
       if (dist < REPEL_RADIUS && dist > 0) {
         const force = (REPEL_RADIUS - dist) / REPEL_RADIUS;
-        // Add momentum away from cursor
         repelVX.current += (dx / dist) * force * REPEL_ACCEL;
         repelVY.current += (dy / dist) * force * REPEL_ACCEL;
       }
 
-      // Apply velocity
       repelX.current += repelVX.current;
       repelY.current += repelVY.current;
-
-      // Friction
       repelVX.current *= 0.94;
       repelVY.current *= 0.94;
-
-      // Very gentle tether to slowly drift back eventually
       repelVX.current -= repelX.current * 0.002;
       repelVY.current -= repelY.current * 0.002;
 
@@ -93,16 +84,6 @@ const BurstOrb = ({ progress, target, index }) => {
     return () => cancelAnimationFrame(rafId);
   }, []);
 
-  // Force video to always play
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    const forcePlay = () => { v.play().catch(() => { }); };
-    forcePlay();
-    v.addEventListener('pause', forcePlay);
-    return () => v.removeEventListener('pause', forcePlay);
-  }, []);
-
   return (
     <motion.div
       ref={wrapperRef}
@@ -110,15 +91,7 @@ const BurstOrb = ({ progress, target, index }) => {
       style={{ x, y, scale, opacity }}
     >
       <div className="burst-orb-inner" ref={innerRef}>
-        <video
-          ref={videoRef}
-          className="burst-video"
-          src="https://future.co/images/homepage/glassy-orb/orb-purple.webm"
-          autoPlay
-          loop
-          muted
-          playsInline
-        />
+        <div className="burst-css-orb" />
       </div>
     </motion.div>
   );
