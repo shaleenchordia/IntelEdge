@@ -144,7 +144,7 @@ const teamData = [
     title: 'Digital Transformation for Managers',
     content: (
       <>
-        <h4 style={{ color: '#fff', fontSize: '1.2rem', marginBottom: '0.5rem' }}>Digital Transformation for Managers</h4>
+        <h4 style={{ color: '#fff', fontSize: '1.2rem', marginBottom: '0.5rem' }}></h4>
         <p>For Senior, Mid, and Functional Managers. Equips participants to lead or facilitate digital transformation programs, with real-world examples across critical business functions.</p>
       </>
     )

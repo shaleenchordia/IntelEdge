@@ -15,7 +15,7 @@ const About = () => {
           <div className="about-mission-text">
             <p><strong>Applied Intelligence Architecture for Enterprise Transformation.</strong></p>
             <p style={{ marginTop: '1.2rem', fontSize: 'clamp(1rem, 1.8vw, 1.25rem)', color: 'rgba(200, 220, 255, 0.6)', lineHeight: 1.7 }}>
-              We are an Applied Intelligence Architecture firm — built at the intersection of strategy, systems, and scalable execution. Our work spans AI strategy, governance, workforce enablement, and purpose-built AI products.
+              We are an AI strategy and transformation firm - we don't just advise, we build. From boardroom decisions to production-ready systems. Our work spans AI strategy, governance, workforce enablement, and purpose-built AI products.
             </p>
             <p style={{ marginTop: '0.8rem', fontSize: 'clamp(1rem, 1.8vw, 1.25rem)', color: 'rgba(200, 220, 255, 0.6)', lineHeight: 1.7 }}>
               We help organizations move beyond AI experimentation — building strategies that are executable, solutions that are adoptable, and products built around how businesses actually operate.

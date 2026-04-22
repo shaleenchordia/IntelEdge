@@ -96,7 +96,7 @@ const pillars = [
   {
     title: "Implementation",
     tagline: "Execution & Engineering",
-    description: "Strategy without execution is a slide deck. We handle solution design, vendor-neutral technology selection, systems integration, and performance tracking — all engineered for production environments, not demos.",
+    description: "Strategy without execution is a slide deck. We handle solution design, vendor-neutral technology selection, systems integration, and performance tracking — built to run in your environment - not just look good in a presentation",
     icon: ImplementationIcon,
     num: "2",
   },
@@ -194,7 +194,7 @@ const PillarCard = ({ pillar, index }) => {
             {pillar.title}
           </h3>
           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.1rem', margin: 0, fontWeight: 500 }}>
-            {pillar.tagline}...
+            {pillar.tagline}
           </p>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.95rem', lineHeight: 1.6, margin: 0, marginTop: '1rem', maxWidth: '90%' }}>
             {pillar.description}
